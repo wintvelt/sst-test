@@ -8,5 +8,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-      - run: npm install -g bats
-      - run: bats -v
+      - name: Read package.json
+        id: package
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./package.json
+      - name: Echo package.json
+        run: echo "${{ steps.package.outputs.content }}"
