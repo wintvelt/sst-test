@@ -3,6 +3,7 @@ on: [push]
 jobs:
   publish-dependencies:
     runs-on: ubuntu-latest
+    if: (endsWith(github.ref, '/master') || endsWith(github.ref, '/dev'))
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -13,12 +14,19 @@ jobs:
         uses: juliangruber/read-file-action@v1
         with:
           path: ./package.json
-      - name: Echo package.json
-        run: echo "${{ steps.package.outputs.content }}"
-      - name: install dependencies if on dev/master
-        if: (endsWith(github.ref, 'master') || endsWith(github.ref, 'dev'))
-        run: echo "This was true!"
-      - name: echo github ref
-        run: echo "${{ github.ref }}"
-      # - name: deploy to AWS
-      #   run: npx sst deploy
+      - name: if on dev - Publish dependencies
+        if: (endsWith(github.ref, '/dev')
+        # run: echo "${{ steps.package.outputs.content }}"
+        # TODO: hier moet een of ander CURL statement komen
+      - name: if on master - Publish dependencies
+        if: (endsWith(github.ref, '/master')
+        # run: echo "${{ steps.package.outputs.content }}"
+        # TODO: hier moet een of ander CURL statement komen
+      - name: install dependencies
+        run: npm install
+      - name: if on dev - deploy
+        if: (endsWith(github.ref, '/dev')
+        run: npx sst deploy --stage dev
+      - name: if on master - deploy
+        if: (endsWith(github.ref, '/master')
+        run: npx sst deploy --stage prod
