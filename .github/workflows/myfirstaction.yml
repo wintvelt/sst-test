@@ -15,8 +15,9 @@ jobs:
           path: ./package.json
       - name: Echo package.json
         run: echo "${{ steps.package.outputs.content }}"
-      - name: install dependencies
-        run: npm install
+      - name: install dependencies if on dev/master
+        if: endsWith(github.ref, 'master')
+        run: echo "This was true!"
       - name: echo github ref
         run: echo "${{ github.ref }}"
       # - name: deploy to AWS
