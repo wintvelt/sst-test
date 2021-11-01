@@ -27,18 +27,38 @@ export const main = validator(
         (event) => {
             // Get data from event body
             const { name, stage, pack } = event.body;
+            const params = (dependency, version) => {
+                return {
+                    TableName: process.env.TABLE_NAME,
+                    Item: {
+                        packageStage: `${stage}-${name}`,
+                        dependency,
+                        version,
+                        createdAt: Date.now(),
+                    }
+                }
+            }
 
-            const params = {
-                TableName: process.env.TABLE_NAME,
-                Item: {
-                    packageStage: `${stage}-${name}`,
-                    dependency: pack,
-                    createdAt: Date.now(),
-                },
-            };
+            // ASSUME pack is already parsed
+            // const  { dependencies } = pack
+            let dependencies = {}
+            try {
+                dependencies = {...pack.dependencies}
+            } catch (error) {
+                throw new Error('pack is not an object yet')
+            }
 
-            await dynamo.put(params);
-            return params.Item
+            let updates = []
+            for (const key in dependencies) {
+                if (Object.hasOwnProperty.call(dependencies, key)) {
+                    const version = dependencies[key];
+                    updates.push(dynamo.put(params(key, version)))
+                }
+            }
+
+            await Promise.all(updates);
+
+            return `${updates.length} dependencies published`
         }
     )
 )
