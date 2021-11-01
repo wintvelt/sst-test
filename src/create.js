@@ -1,43 +1,44 @@
-// test comment
-import AWS from "aws-sdk";
+// main handler function
+import { handler } from "./libs/handler";
+import { dynamo } from "./libs/dynamo-lib";
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
-
-export async function main(event) {
-    // Get package.json from event body
-    let data;
-    try {
-        data = JSON.parse(event.body);
-    } catch (e) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: e.message }),
-        };
+// validate header before processing
+const validator = (lambda => {
+    return async function (event, context) {
+        if (event.headers?.Authorization !== process.env.SECRET_TOKEN) {
+            return {
+                statusCode: 402,
+                message: "Forbidden"
+            }
+        }
+        if (!event.body) {
+            return {
+                statusCode: 403,
+                message: "Bad request"
+            }
+        }
+        // all good, run lambda
+        return lambda(event, context)
     }
-    const name = data.name;
-    const stage = data.stage;
-    const pack = data.package;
+})
 
-    const params = {
-        TableName: process.env.TABLE_NAME,
-        Item: {
-            packageStage: `${stage}-${name}`,
-            dependency: pack,
-            createdAt: Date.now(),
-        },
-    };
+export const main = validator(
+    handler(
+        (event) => {
+            // Get data from event body
+            const { name, stage, pack } = event.body;
 
-    try {
-        await dynamoDb.put(params).promise();
+            const params = {
+                TableName: process.env.TABLE_NAME,
+                Item: {
+                    packageStage: `${stage}-${name}`,
+                    dependency: pack,
+                    createdAt: Date.now(),
+                },
+            };
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify(params.Item),
-        };
-    } catch (e) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: e.message }),
-        };
-    }
-}
+            await dynamo.put(params);
+            return params.Item
+        }
+    )
+)
