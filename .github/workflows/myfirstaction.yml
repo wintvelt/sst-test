@@ -17,5 +17,7 @@ jobs:
         run: echo "${{ steps.package.outputs.content }}"
       - name: install dependencies
         run: npm install
-      - name: deploy to AWS
-        run: npx sst deploy
+      - name: echo github ref
+        run: echo "${{ github.ref == 'refs/heads/main' }}"
+      # - name: deploy to AWS
+      #   run: npx sst deploy
