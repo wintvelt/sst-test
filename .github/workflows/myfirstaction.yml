@@ -1,7 +1,7 @@
-name: my-first-action
+name: deployment workflow
 on: [push]
 jobs:
-  check-bats-version:
+  publish-dependencies:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -15,3 +15,5 @@ jobs:
           path: ./package.json
       - name: Echo package.json
         run: echo "${{ steps.package.outputs.content }}"
+      - name: deploy to AWS
+        run: npx sst deploy
