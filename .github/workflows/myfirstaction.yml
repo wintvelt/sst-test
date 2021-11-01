@@ -18,6 +18,7 @@ jobs:
         if: (endsWith(github.ref, '/dev')
         # run: echo "${{ steps.package.outputs.content }}"
         # TODO: hier moet een of ander CURL statement komen
+        # Inclusief header uit env voor validatie
       - name: if on master - Publish dependencies
         if: (endsWith(github.ref, '/master')
         # run: echo "${{ steps.package.outputs.content }}"
