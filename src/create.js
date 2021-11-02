@@ -17,7 +17,7 @@ const validator = (lambda => {
             }
         }
         // token must be in body, because API gateway does not forward header to lambda
-        if (parsedBody.authToken !== `Basic ${process.env.SECRET_TOKEN}`) {
+        if (parsedBody.AuthToken !== `Basic ${process.env.SECRET_TOKEN}`) {
             return {
                 statusCode: 401,
                 message: "Unauthorized"
