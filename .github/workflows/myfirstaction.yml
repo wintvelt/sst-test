@@ -16,8 +16,12 @@ jobs:
           path: ./package.json
       - name: echo ref just in case
         run: echo '${{ github.ref }}'
-      - name: Serverless Authentication
-        run: sls config credentials --provider aws --key ${{ env.AWS_ACCESS_KEY_ID }} --secret ${{ env.AWS_SECRET_ACCESS_KEY }}
+      - name: set AWS credentials from env
+        run: |
+          touch ~/.aws/credentials
+          echo [default] >> ~/.aws/credentials
+          echo aws_access_key_id=${{ env.AWS_ACCESS_KEY_ID }} >> ~/.aws/credentials
+          echo aws_secret_access_key=${{ env.AWS_SECRET_ACCESS_KEY }} >> ~/.aws/credentials
       - name: if on dev - Install, deploy and publish dependencies
         if: endsWith(github.ref, '/dev')
         run: |
