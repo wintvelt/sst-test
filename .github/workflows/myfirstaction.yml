@@ -18,10 +18,10 @@ jobs:
         run: echo '${{ github.ref }}'
       - name: set AWS credentials from env
         run: |
-          touch ~/.aws/credentials
-          echo [default] >> ~/.aws/credentials
-          echo aws_access_key_id=${{ env.AWS_ACCESS_KEY_ID }} >> ~/.aws/credentials
-          echo aws_secret_access_key=${{ env.AWS_SECRET_ACCESS_KEY }} >> ~/.aws/credentials
+          touch .aws/credentials
+          echo [default] >> .aws/credentials
+          echo aws_access_key_id=${{ env.AWS_ACCESS_KEY_ID }} >> .aws/credentials
+          echo aws_secret_access_key=${{ env.AWS_SECRET_ACCESS_KEY }} >> .aws/credentials
       - name: if on dev - Install, deploy and publish dependencies
         if: endsWith(github.ref, '/dev')
         run: |
