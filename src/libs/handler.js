@@ -39,7 +39,7 @@ export const handler = (lambda) => {
 
         // run the lambda
         try {
-            result = lambda(event, context)
+            result = lambda(parsedEvent, context)
         } catch (error) {
             // some internal error
             return response(500, error.message)
