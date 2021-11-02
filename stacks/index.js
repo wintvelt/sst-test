@@ -1,5 +1,5 @@
 import DbStack from "./DbStack";
-import ApiStack from "./ApiStack";
+import ApiStack from "./apiStack";
 
 export default function main(app) {
   const dbStack = new DbStack(app, "dependencies");
