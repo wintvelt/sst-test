@@ -2,8 +2,10 @@ name: deployment workflow
 on: [push]
 jobs:
   publish-dependencies:
-    runs-on: ubuntu-latest
     if: (endsWith(github.ref, '/master') || endsWith(github.ref, '/dev'))
+    runs-on: ubuntu-latest
+    env:
+      AWS_SDK_LOAD_CONFIG: 1
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
