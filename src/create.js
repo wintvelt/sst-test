@@ -24,7 +24,7 @@ const validator = (lambda => {
 
 export const main = validator(
     handler(
-        (event) => {
+        async (event) => {
             // Get data from event body
             const { name, stage, pack } = event.body;
             const params = (dependency, version) => {

@@ -8,7 +8,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: '15'
+          node-version: '14'
       - name: Read package.json
         id: package
         uses: juliangruber/read-file-action@v1
@@ -16,22 +16,20 @@ jobs:
           path: ./package.json
       - name: echo ref just in case
         run: echo '${{ github.ref }}'
-      - name: if on dev - Publish dependencies
+      - name: if on dev - Install, deploy and publish dependencies
         if: endsWith(github.ref, '/dev')
-        run: echo "I am placeholder"
+        run: |
+          npm install
+          echo "I am placeholder"
+          npx sst deploy --stage dev
         # run: echo "${{ steps.package.outputs.content }}"
         # TODO: hier moet een of ander CURL statement komen
         # Inclusief header uit env voor validatie
-      - name: if on master - Publish dependencies
+      - name: if on master - Publish dependencies, install and deploy
         if: endsWith(github.ref, '/master')
-        run: echo "I am placeholder"
+        run: |
+          npm install
+          echo "I am placeholder"
+          npx sst deploy --stage prod
         # run: echo "${{ steps.package.outputs.content }}"
         # TODO: hier moet een of ander CURL statement komen
-      - name: install dependencies
-        run: npm install
-      - name: if on dev - deploy
-        if: endsWith(github.ref, '/dev')
-        run: npx sst deploy --stage dev
-      - name: if on master - deploy
-        if: endsWith(github.ref, '/master')
-        run: npx sst deploy --stage prod
