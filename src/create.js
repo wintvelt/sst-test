@@ -5,16 +5,29 @@ import { dynamo } from "./libs/dynamo-lib";
 // validate header before processing
 const validator = (lambda => {
     return async function (event, context) {
-        if (event.headers?.Authorization !== `Basic ${process.env.SECRET_TOKEN}`) {
+        // parse event body
+        let parsedBody = event.body;
+        try {
+            parsedBody = JSON.parse(event.body)
+        } catch (error) {
+            // Bad request, could not find event body, so could not Auth
             return {
-                statusCode: 402,
-                message: "Forbidden"
+                statusCode: 401,
+                message: "Unauthorized"
             }
         }
-        if (!event.body) {
+        // token must be in body, because API gateway does not forward header to lambda
+        if (parsedBody.authToken !== `Basic ${process.env.SECRET_TOKEN}`) {
+            return {
+                statusCode: 401,
+                message: "Unauthorized"
+            }
+        }
+        // body must contain name, stage, pack
+        if (!(parsedBody.name && parsedBody.stage && parsedBody.pack)) {
             return {
                 statusCode: 403,
-                message: "Bad request"
+                message: "body must include name, stage and pack"
             }
         }
         // all good, run lambda
@@ -43,7 +56,7 @@ export const main = validator(
             // const  { dependencies } = pack
             let dependencies = {}
             try {
-                dependencies = {...pack.dependencies}
+                dependencies = { ...pack.dependencies }
             } catch (error) {
                 throw new Error('pack is not an object yet')
             }

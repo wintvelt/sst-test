@@ -24,7 +24,7 @@ const response = (statusCode, content) => {
 
 export const handler = (lambda) => {
     return async function (event, context) {
-        // parse event
+        // parse eventbody in event
         let parsedEvent = event;
         let result;
         try {
