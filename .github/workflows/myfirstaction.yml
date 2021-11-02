@@ -22,6 +22,8 @@ jobs:
       - name: set AWS credentials from env
         run: |
           mkdir ~/.aws
+          echo secrets.AWS_ACCESS_KEY_ID
+          echo secrets.AWS_SECRET_ACCESS_KEY
         # touch ~/.aws/config
         # echo [default] >> ~/.aws/config
         # touch ~/.aws/credentials
