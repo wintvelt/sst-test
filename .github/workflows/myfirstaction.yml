@@ -30,7 +30,7 @@ jobs:
         # echo [default] >> ~/.aws/credentials
         # echo aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }} >> ~/.aws/credentials
         # echo aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> ~/.aws/credentials
-      - name: if on dev - Install, deploy and publish dependencies
+      - name: if on dev - Install and deploy
         if: endsWith(github.ref, '/dev')
         run: |
           npm install
@@ -39,7 +39,15 @@ jobs:
         # run: echo "${{ steps.package.outputs.content }}"
         # TODO: hier moet een of ander CURL statement komen
         # Inclusief header uit env voor validatie
-      - name: if on master - Publish dependencies, install and deploy
+      - name: if on dev - Publish dependencies
+        if: endsWith(github.ref, '/dev')
+        uses: indiesdev/curl@v1
+        with:
+          url: https://6klsawe709.execute-api.eu-central-1.amazonaws.com
+          method: PUT
+          headers: '{ "Authorization": "Basic the-most-important-rule-in-life-is-not-to-take-yourself-too-seriously" }'
+          body: '{ "name": "Package name", "stage": "dev", pack: "${{ steps.package.outputs.content }}" }'
+      - name: if on master - Install and deploy
         if: endsWith(github.ref, '/master')
         run: |
           npm install

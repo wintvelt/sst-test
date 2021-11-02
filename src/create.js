@@ -5,7 +5,7 @@ import { dynamo } from "./libs/dynamo-lib";
 // validate header before processing
 const validator = (lambda => {
     return async function (event, context) {
-        if (event.headers?.Authorization !== process.env.SECRET_TOKEN) {
+        if (event.headers?.Authorization !== `Basic ${process.env.SECRET_TOKEN}`) {
             return {
                 statusCode: 402,
                 message: "Forbidden"
