@@ -11,6 +11,7 @@ const validator = (lambda => {
             parsedBody = JSON.parse(event.body)
         } catch (error) {
             // Bad request, could not find event body, so could not Auth
+            console.error('could not parse event body')
             return {
                 statusCode: 401,
                 message: "Unauthorized"
@@ -18,6 +19,7 @@ const validator = (lambda => {
         }
         // token must be in body, because API gateway does not forward header to lambda
         if (parsedBody.AuthToken !== `Basic ${process.env.SECRET_TOKEN}`) {
+            console.error('Auth token mismatch')
             return {
                 statusCode: 401,
                 message: "Unauthorized"

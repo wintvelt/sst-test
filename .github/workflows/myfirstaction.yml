@@ -19,17 +19,14 @@ jobs:
           path: ./package.json
       - name: echo ref just in case
         run: echo '${{ github.ref }}'
-      - name: set AWS credentials from env
-        run: |
-          mkdir ~/.aws
-        # echo secrets.AWS_ACCESS_KEY_ID
-        # echo secrets.AWS_SECRET_ACCESS_KEY
-        # touch ~/.aws/config
-        # echo [default] >> ~/.aws/config
-        # touch ~/.aws/credentials
-        # echo [default] >> ~/.aws/credentials
-        # echo aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }} >> ~/.aws/credentials
-        # echo aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> ~/.aws/credentials
+      - name: if on dev - Publish dependencies
+        if: endsWith(github.ref, '/dev')
+        uses: indiesdev/curl@v1
+        with:
+          url: https://6klsawe709.execute-api.eu-central-1.amazonaws.com
+          method: PUT
+          body: '{ "name": "Package name", "stage": "dev", pack: "${{ steps.package.outputs.content }}",
+            "AuthToken": "Basic the-most-important-rule-in-life-is-not-to-take-yourself-too-seriously" }'
       - name: if on dev - Install and deploy
         if: endsWith(github.ref, '/dev')
         run: |
@@ -39,14 +36,6 @@ jobs:
         # run: echo "${{ steps.package.outputs.content }}"
         # TODO: hier moet een of ander CURL statement komen
         # Inclusief header uit env voor validatie
-      - name: if on dev - Publish dependencies
-        if: endsWith(github.ref, '/dev')
-        uses: indiesdev/curl@v1
-        with:
-          url: https://6klsawe709.execute-api.eu-central-1.amazonaws.com
-          method: PUT
-          body: '{ "name": "Package name", "stage": "dev", pack: "${{ steps.package.outputs.content }}",
-            "AuthToken": "Basic the-most-important-rule-in-life-is-not-to-take-yourself-too-seriously" }'
       - name: if on master - Install and deploy
         if: endsWith(github.ref, '/master')
         run: |
