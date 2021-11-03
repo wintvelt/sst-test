@@ -17,8 +17,8 @@ jobs:
         uses: juliangruber/read-file-action@v1
         with:
           path: ./package.json
-      - name: echo ref just in case
-        run: echo '${{ github.ref }}'
+      - name: echo package contents
+        run: echo "${{ steps.package.outputs.content }}"
       - name: if on dev - Install and deploy
         if: endsWith(github.ref, '/dev')
         run: |
@@ -40,7 +40,6 @@ jobs:
         if: endsWith(github.ref, '/master')
         run: |
           npm install
-          echo "I am placeholder"
           npx sst deploy --stage prod
         # run: echo "${{ steps.package.outputs.content }}"
         # TODO: hier moet een of ander CURL statement komen
