@@ -68,11 +68,13 @@ export const main = validator(
                 console.error('pack is not an object yet')
                 throw new Error('pack is not an object yet')
             }
+            console.log(dependencies);
 
             let updates = []
             for (const key in dependencies) {
-                if (Object.hasOwnProperty.call(dependencies, key)) {
+                if (Object.hasOwnProperty(key)) {
                     const version = dependencies[key];
+                    console.log({key, version})
                     updates.push(dynamo.put(params(key, version)))
                 }
             }
