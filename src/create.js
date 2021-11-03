@@ -4,7 +4,7 @@ import { dynamo } from "./libs/dynamo-lib";
 
 // validate header before processing
 const validator = (lambda => {
-    return async function (event, context) {
+    return function (event, context) {
         // parse event body
         let parsedBody = event.body;
         try {
@@ -45,7 +45,6 @@ export const main = validator(
         async (event) => {
             // Get data from event body
             const { ownerName, stage, pack } = event.body;
-            console.log(pack);
             const name = ownerName.split('/')[1]
             const params = (dependency, version) => {
                 return {
@@ -76,9 +75,10 @@ export const main = validator(
                     updates.push(dynamo.put(params(key, version)))
                 }
             }
-
+            console.log(`${updates.length} updates todo`)
             const result = await Promise.all(updates);
-            console.log(result);
+            console.log('do I even get here?')
+            console.log(result)
 
             return `${updates.length} dependencies published`
         }

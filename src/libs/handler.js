@@ -23,7 +23,7 @@ const response = (statusCode, content) => {
 }
 
 export const handler = (lambda) => {
-    return async function (event, context) {
+    return function (event, context) {
         // parse eventbody in event if needed
         let parsedEvent = event;
         let result;
