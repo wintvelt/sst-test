@@ -10,7 +10,7 @@ const validator = (lambda => {
         console.log(typeof event.body)
         console.log(event.body)
         try {
-            parsedBody = JSON.parse(event.body)
+            if (typeof parsedBody === 'string') parsedBody = JSON.parse(event.body)
         } catch (error) {
             // Bad request, could not find event body, so could not Auth
             console.error('could not parse event body')

@@ -34,7 +34,7 @@ jobs:
         with:
           url: https://6klsawe709.execute-api.eu-central-1.amazonaws.com
           method: PUT
-          body: '{ "name": "Package name", "stage": "dev", pack: "${{ steps.package.outputs.content }}",
+          body: '{ "name": "Package name", "stage": "dev", pack: "check",
             "AuthToken": "Basic the-most-important-rule-in-life-is-not-to-take-yourself-too-seriously" }'
       - name: if on master - Install and deploy
         if: endsWith(github.ref, '/master')
