@@ -30,13 +30,17 @@ jobs:
         # Inclusief header uit env voor validatie
       - name: if on dev - Publish dependencies
         if: endsWith(github.ref, '/dev')
+        id: publish-api
         uses: indiesdev/curl@v1
         with:
           url: https://6klsawe709.execute-api.eu-central-1.amazonaws.com
           method: PUT
           headers: '{ "Content-Type": "application/json" }'
-          body: '{ "name": "Package name", "stage": "dev", "pack": "check",
+          body: '{ "name": "Package name", "stage": "dev", 
+            "pack": "check",
             "AuthToken": "Basic ${{ secrets.SECRET_PUBLISH_TOKEN }}" }'
+      - name: if on dev - publish response
+          run: echo ${{ steps.publish-api.outputs.response }}
       - name: if on master - Install and deploy
         if: endsWith(github.ref, '/master')
         run: |
