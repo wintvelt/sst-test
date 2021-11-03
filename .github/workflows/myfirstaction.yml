@@ -19,7 +19,7 @@ jobs:
           path: ./package.json
       - name: echo package contents
         run: echo "${{ steps.package.outputs.content }}"
-      - nane: store token in env
+      - name: store token in env
         run: |
           touch .env
           echo SECRET_PUBLISH_TOKEN=${{ secrets.SECRET_PUBLISH_TOKEN }} >> .env
