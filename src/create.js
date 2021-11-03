@@ -72,7 +72,7 @@ export const main = validator(
 
             let updates = []
             for (const key in dependencies) {
-                if (Object.hasOwnProperty(key)) {
+                if (dependencies.hasOwnProperty(key)) {
                     const version = dependencies[key];
                     console.log({key, version})
                     updates.push(dynamo.put(params(key, version)))
