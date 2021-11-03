@@ -72,13 +72,13 @@ export const main = validator(
             for (const key in dependencies) {
                 if (Object.hasOwnProperty.call(dependencies, key)) {
                     const version = dependencies[key];
-                    updates.push(dynamo.put(params(key, version)))
+                    // updates.push(dynamo.put(params(key, version)))
+                    console.log(params(key, version))
+                    const result = await dynamo.put(params(key, version))
+                    console.log(result)
                 }
             }
-            console.log(`${updates.length} updates todo`)
-            const result = await Promise.all(updates);
-            console.log('do I even get here?')
-            console.log(result)
+            // await Promise.all(updates);
 
             return `${updates.length} dependencies published`
         }
