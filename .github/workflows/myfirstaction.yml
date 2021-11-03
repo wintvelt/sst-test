@@ -1,13 +1,13 @@
 name: deployment workflow
 on: [push]
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  SECRET_PUBLISH_TOKEN: ${{ secrets. SECRET_PUBLISH_TOKEN }}
 jobs:
   publish-dependencies:
     if: (endsWith(github.ref, '/master') || endsWith(github.ref, '/dev'))
     runs-on: ubuntu-latest
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      SECRET_PUBLISH_TOKEN: ${{ secrets. SECRET_PUBLISH_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
