@@ -20,7 +20,7 @@ const validator = (lambda => {
             }
         }
         // token must be in body, because API gateway does not forward header to lambda
-        if (parsedBody.AuthToken !== `Basic ${process.env.SECRET_TOKEN}`) {
+        if (parsedBody.AuthToken !== `Basic ${process.env.SECRET_PUBLISH_TOKEN}`) {
             console.error('Auth token mismatch')
             return {
                 statusCode: 401,

@@ -7,11 +7,12 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SECRET_PUBLISH_TOKEN: ${{ secrets. SECRET_PUBLISH_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '16'
       - name: Read package.json
         id: package
         uses: juliangruber/read-file-action@v1
@@ -36,7 +37,7 @@ jobs:
           method: PUT
           headers: '{ "Content-Type": "application/json" }'
           body: '{ "name": "Package name", "stage": "dev", "pack": "check",
-            "AuthToken": "Basic the-most-important-rule-in-life-is-not-to-take-yourself-too-seriously" }'
+            "AuthToken": "Basic ${{ env.SECRET_PUBLISH_TOKEN }}" }'
       - name: if on master - Install and deploy
         if: endsWith(github.ref, '/master')
         run: |
