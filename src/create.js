@@ -7,6 +7,8 @@ const validator = (lambda => {
     return async function (event, context) {
         // parse event body
         let parsedBody = event.body;
+        console.log(typeof event.body)
+        console.log(event.body)
         try {
             parsedBody = JSON.parse(event.body)
         } catch (error) {

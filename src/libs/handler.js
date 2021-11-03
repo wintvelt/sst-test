@@ -24,11 +24,11 @@ const response = (statusCode, content) => {
 
 export const handler = (lambda) => {
     return async function (event, context) {
-        // parse eventbody in event
+        // parse eventbody in event if needed
         let parsedEvent = event;
         let result;
         try {
-            if (event.body) {
+            if (event.body && typeof event.body === 'string') {
                 const body = JSON.parse(event.body)
                 parsedEvent = { ...event, body }
             }
