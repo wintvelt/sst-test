@@ -1,6 +1,7 @@
 // main handler function
 import { handler } from "./libs/handler";
 import { dynamo } from "./libs/dynamo-lib";
+require('dotenv').config()
 
 // validate header before processing
 const validator = (lambda => {
@@ -24,7 +25,6 @@ const validator = (lambda => {
             console.error('Auth token mismatch')
             console.log(parsedBody.AuthToken)
             console.log(process.env.SECRET_PUBLISH_TOKEN)
-            console.log(process.env.TESTJE)
             return {
                 statusCode: 401,
                 message: "Unauthorized"
