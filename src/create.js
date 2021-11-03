@@ -24,6 +24,7 @@ const validator = (lambda => {
             console.error('Auth token mismatch')
             console.log(parsedBody.AuthToken)
             console.log(process.env.SECRET_PUBLISH_TOKEN)
+            console.log(process.env.TESTJE)
             return {
                 statusCode: 401,
                 message: "Unauthorized"
