@@ -39,6 +39,7 @@ jobs:
           body: '{ "name": "Package name", "stage": "dev", 
             "pack": "check",
             "AuthToken": "Basic ${{ secrets.SECRET_PUBLISH_TOKEN }}" }'
+          accept: 200, 201, 204, 401, 403, 500
       - name: if on dev - publish response
         if: endsWith(github.ref, '/dev')
         run: echo ${{ steps.publishDevApi.outputs.response }}
