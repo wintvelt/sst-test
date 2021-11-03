@@ -49,18 +49,11 @@ export const main = validator(
             const params = (dependency, version) => {
                 return {
                     TableName: process.env.TABLE_NAME,
-                    Key:{
+                    Item:{
                         packageStage: `${stage}-${name}`,
                         dependency,
-                    },
-                    UpdateExpression: "set #v = :v, #ca = :ca",
-                    ExpressionAttributeNames: { 
-                        '#v': 'version',
-                        '#ca': 'createdAt'
-                    },
-                    ExpressionAttributeValues:{
-                        ":v":version,
-                        ":ca": Date.now()
+                        version,
+                        createdAt: Date.now()
                     }
                 }
             }
@@ -80,7 +73,6 @@ export const main = validator(
                 if (Object.hasOwnProperty.call(dependencies, key)) {
                     const version = dependencies[key];
                     updates.push(dynamo.put(params(key, version)))
-                    const result = await dynamo.update(params(key, version))
                 }
             }
             const result = await Promise.all(updates);
