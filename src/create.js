@@ -1,7 +1,8 @@
 // main handler function
 import { handler } from "./libs/handler";
 import { dynamo } from "./libs/dynamo-lib";
-require('dotenv').config()
+import dotenv  from 'dotenv';
+dotenv.config()
 
 // validate header before processing
 const validator = (lambda => {
