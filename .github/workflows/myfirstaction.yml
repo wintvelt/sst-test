@@ -40,8 +40,8 @@ jobs:
             "pack": "check",
             "AuthToken": "Basic ${{ secrets.SECRET_PUBLISH_TOKEN }}" }'
       - name: if on dev - publish response
-          if: endsWith(github.ref, '/dev')
-          run: echo ${{ steps.publishDevApi.outputs.response }}
+        if: endsWith(github.ref, '/dev')
+        run: echo ${{ steps.publishDevApi.outputs.response }}
       - name: if on master - Install and deploy
         if: endsWith(github.ref, '/master')
         run: |
