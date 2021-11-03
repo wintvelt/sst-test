@@ -45,7 +45,8 @@ export const main = validator(
     handler(
         async (event) => {
             // Get data from event body
-            const { name, stage, pack } = event.body;
+            const { ownerName, stage, pack } = event.body;
+            const name = ownerName.split('/')[1]
             const params = (dependency, version) => {
                 return {
                     TableName: process.env.TABLE_NAME,
