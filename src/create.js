@@ -31,7 +31,7 @@ const validator = (lambda => {
         }
         // body must contain ownerName, stage, pack, and ownerName must have /
         if (!(parsedBody.ownerName && parsedBody.stage && parsedBody.pack
-            && ownerName.split('/').length === 2)) {
+            && parsedBoby.ownerName.split('/').length === 2)) {
             return {
                 statusCode: 403,
                 message: "body must include ownerName, stage and pack"
