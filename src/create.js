@@ -75,8 +75,11 @@ export const main = validator(
                     updates.push(dynamo.put(params(key, version)))
                 }
             }
-            const result = await Promise.all(updates);
-            console.log(result)
+            try {
+                await Promise.all(updates);
+            } catch (error) {
+                console.error(error.message);
+            }
 
             return `${updates.length} dependencies published`
         }
