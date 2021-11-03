@@ -29,11 +29,12 @@ const validator = (lambda => {
                 message: "Unauthorized"
             }
         }
-        // body must contain name, stage, pack
-        if (!(parsedBody.name && parsedBody.stage && parsedBody.pack)) {
+        // body must contain ownerName, stage, pack, and ownerName must have /
+        if (!(parsedBody.ownerName && parsedBody.stage && parsedBody.pack
+            && ownerName.split('/').length === 2)) {
             return {
                 statusCode: 403,
-                message: "body must include name, stage and pack"
+                message: "body must include ownerName, stage and pack"
             }
         }
         // all good, run lambda
