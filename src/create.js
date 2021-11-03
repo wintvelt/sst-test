@@ -7,8 +7,6 @@ const validator = (lambda => {
     return async function (event, context) {
         // parse event body
         let parsedBody = event.body;
-        console.log(typeof event.body)
-        console.log(event.body)
         try {
             if (typeof parsedBody === 'string') parsedBody = JSON.parse(event.body)
         } catch (error) {
@@ -66,6 +64,7 @@ export const main = validator(
             try {
                 dependencies = { ...pack.dependencies }
             } catch (error) {
+                console.error('pack is not an object yet')
                 throw new Error('pack is not an object yet')
             }
 
