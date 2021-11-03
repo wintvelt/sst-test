@@ -6,6 +6,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SECRET_PUBLISH_TOKEN: ${{ secrets.SECRET_PUBLISH_TOKEN }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -19,11 +20,6 @@ jobs:
           path: ./package.json
       - name: echo package contents
         run: echo "${{ steps.package.outputs.content }}"
-      - name: store token in env
-        run: |
-          touch ~/.env
-          echo SECRET_PUBLISH_TOKEN =${{ secrets.SECRET_PUBLISH_TOKEN }} >> ~/.env
-          echo TESTJE =blabla >> ~/.env
       - name: if on dev - Install and deploy
         if: endsWith(github.ref, '/dev')
         run: |

@@ -14,6 +14,7 @@ export default class ApiStack extends sst.Stack {
       defaultFunctionProps: {
         environment: {
           TABLE_NAME: table.tableName,
+          SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN
         },
       },
       routes: {
