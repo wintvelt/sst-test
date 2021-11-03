@@ -36,7 +36,7 @@ jobs:
           method: PUT
           headers: '{ "Content-Type": "application/json" }'
           body: '{ 
-            "ownerName": "$GITHUB_REPOSITORY", 
+            "ownerName": "${{ github.repository }}", 
             "stage": "dev", 
             "pack": "check",
             "AuthToken": "Basic ${{ secrets.SECRET_PUBLISH_TOKEN }}" 
