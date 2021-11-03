@@ -38,7 +38,7 @@ jobs:
           body: '{ 
             "ownerName": "${{ github.repository }}", 
             "stage": "dev", 
-            "pack": "check",
+            "pack": "${{ steps.package.outputs.content }}",
             "AuthToken": "Basic ${{ secrets.SECRET_PUBLISH_TOKEN }}" 
             }'
       - name: if on master - Install and deploy
@@ -46,5 +46,4 @@ jobs:
         run: |
           npm install
           npx sst deploy --stage prod
-        # run: echo "${{ steps.package.outputs.content }}"
         # TODO: hier moet een of ander CURL statement komen

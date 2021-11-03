@@ -45,6 +45,7 @@ export const main = validator(
         async (event) => {
             // Get data from event body
             const { ownerName, stage, pack } = event.body;
+            console.log(pack);
             const name = ownerName.split('/')[1]
             const params = (dependency, version) => {
                 return {
