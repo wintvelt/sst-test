@@ -38,7 +38,7 @@ jobs:
           body: '{ 
             "ownerName": "${{ github.repository }}", 
             "stage": "dev", 
-            "pack": "${{ steps.package.outputs.content }}",
+            "pack": ${{ steps.package.outputs.content }},
             "AuthToken": "Basic ${{ secrets.SECRET_PUBLISH_TOKEN }}" 
             }'
       - name: if on master - Install and deploy
