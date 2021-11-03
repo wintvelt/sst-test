@@ -24,7 +24,6 @@ jobs:
         if: endsWith(github.ref, '/dev')
         run: |
           npm install
-          echo "I am placeholder"
           npx sst deploy --stage dev
         # run: echo "${{ steps.package.outputs.content }}"
         # TODO: hier moet een of ander CURL statement komen
