@@ -20,41 +20,39 @@ jobs:
         uses: juliangruber/read-file-action@v1
         with:
           path: ./package.json
-      - name: echo package contents
-        run: echo "${{ steps.package.outputs.content }}"
-      - name: if on dev - Install and deploy
-        if: endsWith(github.ref, '/dev')
+      - name: set env vars for deployment
+        run: |
+          if [[ ${{ github.ref }} =~ '/dev' ]]; then
+            echo "we are on DEV branch"
+            echo "DEPLOY=true" >> $GITHUB_ENV
+            echo "STAGE=dev" >> $GITHUB_ENV
+            echo "PUBLISH_ENDPOINT=${{ env.DEV_PUBLISH_ENDPOINT }}" >> $GITHUB_ENV
+          else 
+            if [[ ${{ github.ref }} =~ '/master' ]]; then
+              echo "we are on MASTER branch"
+              echo "DEPLOY=true" >> $GITHUB_ENV
+              echo "STAGE=prod" >> $GITHUB_ENV
+              echo "PUBLISH_ENDPOINT=${{ env.PROD_PUBLISH_ENDPOINT }}" >> $GITHUB_ENV
+            else
+              echo "we are on another branch"
+              echo "DEPLOY=false" >> $GITHUB_ENV
+            fi
+          fi
+      - name: If on master or dev - Install and deploy
+        if: env.DEPLOY == 'true'
         run: |
           npm install
-          npx sst deploy --stage dev
-      - name: if on dev - Publish dependencies
-        if: endsWith(github.ref, '/dev')
+          npx sst deploy --stage ${{ env.STAGE }}
+      - name: if on mater or dev - Publish dependencies
+        if: env.DEPLOY == 'true'
         uses: indiesdev/curl@v1
         with:
-          url: ${{ env.PROD_PUBLISH_ENDPOINT }}
+          url: ${{ env.PUBLISH_ENDPOINT }}
           method: PUT
           headers: '{ "Content-Type": "application/json" }'
           body: '{ 
             "ownerName": "${{ github.repository }}", 
-            "stage": "dev", 
-            "pack": ${{ steps.package.outputs.content }},
-            "AuthToken": "Basic ${{ secrets.SECRET_PUBLISH_TOKEN }}" 
-            }'
-      - name: if on master - Install and deploy
-        if: endsWith(github.ref, '/master')
-        run: |
-          npm install
-          npx sst deploy --stage prod
-      - name: if on master - Publish dependencies
-        if: endsWith(github.ref, '/master')
-        uses: indiesdev/curl@v1
-        with:
-          url: ${{ env.PROD_PUBLISH_ENDPOINT }}
-          method: PUT
-          headers: '{ "Content-Type": "application/json" }'
-          body: '{ 
-            "ownerName": "${{ github.repository }}", 
-            "stage": "prod", 
+            "stage": "${{ env.STAGE }}", 
             "pack": ${{ steps.package.outputs.content }},
             "AuthToken": "Basic ${{ secrets.SECRET_PUBLISH_TOKEN }}" 
             }'
