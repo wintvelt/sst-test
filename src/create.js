@@ -73,8 +73,6 @@ const baseHandler = async (event) => {
     const delUpdates = makeDeletes(pack, oldDeps).map(it => dynamo.del(it))
 
     const updateParams = makeUpdates(event)
-    console.log('updateParams')
-    console.log(updateParams)
     const updates = updateParams.map(it => dynamo.put(it))
 
     try {
