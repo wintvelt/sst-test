@@ -68,26 +68,21 @@ const baseHandler = async (event) => {
         console.error(error.message);
         throw new Error(error.message);
     }
-    console.log('queryResult')
-    console.log(queryResult)
     const oldDeps = queryResult.Items || []
 
-    console.log('oldDeps')
-    console.log(oldDeps)
-    console.log(makeDeletes(pack, oldDeps))
-    // const delUpdates = makeDeletes(pack, oldDeps).map(it => dynamo.del(it))
+    const delUpdates = makeDeletes(pack, oldDeps).map(it => dynamo.del(it))
 
-    // const updateParams = makeUpdates(event)
-    // console.log('updateParams')
-    // console.log(updateParams)
-    // const updates = updateParams.map(it => dynamo.put(it))
+    const updateParams = makeUpdates(event)
+    console.log('updateParams')
+    console.log(updateParams)
+    const updates = updateParams.map(it => dynamo.put(it))
 
-    // try {
-    //     await Promise.all(updates.concat(delUpdates));
-    // } catch (error) {
-    //     console.error(error.message);
-    //     throw new Error(error.message);
-    // }
+    try {
+        await Promise.all(updates.concat(delUpdates));
+    } catch (error) {
+        console.error(error.message);
+        throw new Error(error.message);
+    }
 
     const response = { result: 'success', message: `${'updates.length'} dependencies published` }
     return { statusCode: 200, body: JSON.stringify(response) }
