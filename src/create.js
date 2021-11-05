@@ -68,6 +68,7 @@ const baseHandler = async (event) => {
     const queryResult = await dynamo.query(queryParams)
     const oldDeps = queryResult.Items || []
 
+    console.log(oldDeps)
     console.log(makeDeletes(pack, oldDeps))
     const delUpdates = makeDeletes(pack, oldDeps).map(dynamo.del)
 
