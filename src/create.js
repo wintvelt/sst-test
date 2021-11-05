@@ -53,7 +53,7 @@ export const makeDeletes = (pack, oldDeps) => {
 
 const baseHandler = async (event) => {
     const updateParams = makeUpdates(event)
-    console.log({ updateParams })
+    console.log(updateParams)
     const updates = updateParams.map(dynamo.put)
 
     const { ownerName, stage, pack } = event.body;
@@ -68,7 +68,7 @@ const baseHandler = async (event) => {
     const queryResult = await dynamo.query(queryParams)
     const oldDeps = queryResult.Items || []
 
-    console.log({ oldDeps })
+    console.log(makeDeletes(pack, oldDeps))
     const delUpdates = makeDeletes(pack, oldDeps).map(dynamo.del)
 
     try {
