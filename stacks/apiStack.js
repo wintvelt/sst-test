@@ -19,7 +19,7 @@ export default class ApiStack extends sst.Stack {
         },
       },
       routes: {
-        "PUT    /": "src/create.main",
+        "PUT    /": "src/create.handler",
       },
     });
 
