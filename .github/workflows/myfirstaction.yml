@@ -69,7 +69,7 @@ jobs:
             "AuthToken": "Basic ${{ secrets.SECRET_PUBLISH_TOKEN }}" 
             }'
       - name: if on master and npm exists -bump npm patch version and publish
-        if: (env.STAGE == 'prod' && env.DEPLOY)
+        if: (env.NPM_EXISTS == 'true' && env.STAGE == 'prod')
         env:
           NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
         run: |
