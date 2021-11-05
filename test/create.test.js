@@ -1,5 +1,5 @@
 // tests for the PUT endpoint = create function
-import { makeUpdates } from '../src/create';
+import { makeUpdates, makeDeletes } from '../src/create';
 
 const baseEvent = {
     body: {
@@ -15,7 +15,7 @@ const baseItem = {
     dependency: 'firstdep',
     version: '0.0.1',
     createdAt: expect.anything()
-  }
+}
 
 test("Test making updates", () => {
     const result = makeUpdates(baseEvent)
@@ -23,4 +23,16 @@ test("Test making updates", () => {
     expect(result[0]).toHaveProperty('Item')
     const Item = result[0].Item
     expect(Item).toMatchObject(baseItem)
+})
+
+test("Making delete updates", () => {
+    const { pack } = baseEvent.body;
+    const oldDeps = [
+        { packageStage: 'dev-test-run', dependency: 'OLD-DEP' },
+        { packageStage: 'dev-test-run', dependency: 'firstdep' },
+    ]
+    const result = makeDeletes(pack, oldDeps)
+    expect(result).toHaveLength(1)
+    const Item = result[0]
+    expect(Item.Key).toMatchObject({ packageStage: 'dev-test-run', dependency: 'OLD-DEP' })
 })

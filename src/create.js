@@ -43,6 +43,13 @@ const deleteParams = ({ packageStage, dependency }) => ({
     }
 })
 
+export const makeDeletes = (pack, oldDeps) => {
+    const { dependencies } = pack
+    return oldDeps
+        .filter(({dependency}) => !Object.hasOwnProperty.call(dependencies, dependency))
+        .map(deleteParams)
+}
+
 const baseHandler = async (event) => {
     const updateParams = makeUpdates(event)
     const updates = updateParams.map(dynamo.put)
@@ -57,13 +64,9 @@ const baseHandler = async (event) => {
         ExpressionAttributeValues: { ':ps': `${stage}-${name}` },
     };
     const queryResult = await dynamo.query(queryParams)
-    const depsToDel = queryResult.Items || []
+    const oldDeps = queryResult.Items || []
 
-    const { dependencies } = pack
-    const delUpdates = depsToDel
-        .filter(({dependency}) => !Object.hasOwnProperty.call(dependencies, dependency))
-        .map(deleteParams)
-        .map(dynamo.del)
+    const delUpdates = makeDeletes(pack, oldDeps).map(dynamo.del)
 
     try {
         await Promise.all(updates.concat(delUpdates));
