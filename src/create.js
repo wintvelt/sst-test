@@ -6,7 +6,7 @@ import validator from '@middy/validator'
 import cors from '@middy/http-cors'
 import { dynamo } from "./libs/dynamo-lib";
 
-const baseHandler = async (event) => {
+export const makeUpdates = (event) => {
     // Get data from event body
     const { ownerName, stage, pack } = event.body;
     const name = ownerName.split('/')[1]
@@ -36,11 +36,40 @@ const baseHandler = async (event) => {
     for (const key in dependencies) {
         if (Object.hasOwnProperty.call(dependencies, key)) {
             const version = dependencies[key];
-            updates.push(dynamo.put(putParams(key, version)))
+            updates.push(putParams(key, version))
         }
     }
+    return updates
+}
+
+const deleteParams = ({packageStage, dependency}) => ({
+    TableName: process.env.TABLE_NAME,
+    Key: {
+        packageStage,
+        dependency
+    }
+})
+
+const baseHandler = async (event) => {
+    const updateParams = makeUpdates(event)
+    const updates = updateParams.map(dynamo.put)
+
+    const { ownerName, stage } = event.body;
+    const name = ownerName.split('/')[1]
+
+    const queryParams = {
+        TableName: process.env.TABLE_NAME,
+        KeyConditionExpression: '#ps = :ps',
+        ExpressionAttributeNames: { '#ps': 'packageStage' },
+        ExpressionAttributeValues: { ':ps': `${stage}-${name}` },
+    };
+    const queryResult = await dynamo.query(queryParams)
+    const depsToDel = queryResult.Items || []
+
+    const delUpdates = depsToDel.map(deleteParams).map(dynamo.del)
+
     try {
-        await Promise.all(updates);
+        await Promise.all(updates.concat(delUpdates));
     } catch (error) {
         console.error(error.message);
         throw new Error(error.message);
@@ -66,10 +95,8 @@ const inputSchema = {
     }
 }
 
-const handler = middy(baseHandler)
+export const handler = middy(baseHandler)
     .use(errorLogger())
     .use(jsonBodyParser()) // parses the request body when it's a JSON and converts it to an object
     .use(validator({ inputSchema })) // validates the input
     .use(cors())
-
-module.exports = { handler }

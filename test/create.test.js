@@ -1,5 +1,5 @@
 // tests for the PUT endpoint = create function
-import { handler } from '../src/create';
+import { makeUpdates } from '../src/create';
 
 const baseEvent = {
     body: {
@@ -10,7 +10,17 @@ const baseEvent = {
     }
 }
 
-test("Test invalid requests", async () => {
-    const result = await handler(baseEvent)
-    console.log(result)
+const baseItem = {
+    packageStage: 'dev-test-run',
+    dependency: 'firstdep',
+    version: '0.0.1',
+    createdAt: expect.anything()
+  }
+
+test("Test making updates", () => {
+    const result = makeUpdates(baseEvent)
+    expect(result).toHaveLength(1)
+    expect(result[0]).toHaveProperty('Item')
+    const Item = result[0].Item
+    expect(Item).toMatchObject(baseItem)
 })
