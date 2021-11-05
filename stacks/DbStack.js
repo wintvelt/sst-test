@@ -14,6 +14,9 @@ export default class DbStack extends sst.Stack {
         dependency: sst.TableFieldType.STRING,
       },
       primaryIndex: { partitionKey: "packageStage", sortKey: "dependency" },
+      globalIndexes: {
+        dependencyIndex: { partitionKey: "dependency", sortKey: "packageStage" },
+      },
     });
   }
 }
