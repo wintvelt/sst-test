@@ -43,6 +43,7 @@ const baseHandler = async (event) => {
         await Promise.all(updates);
     } catch (error) {
         console.error(error.message);
+        throw new Error(error.message);
     }
 
     const response = { result: 'success', message: `${updates.length} dependencies published` }
