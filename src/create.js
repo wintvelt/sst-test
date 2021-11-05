@@ -55,7 +55,7 @@ const inputSchema = {
         body: {
             type: 'object',
             properties: {
-                ownerName: { type: 'string', pattern: '.+\/{1}.+' }, // string with 1 slash
+                ownerName: { type: 'string', pattern: '.+/{1}.+' }, // string with 1 slash
                 stage: { type: 'string', enum: ['prod', 'dev'] },
                 pack: { type: 'object' },
                 authToken: { type: 'string', const: `Basic ${process.env.SECRET_PUBLISH_TOKEN}` }
