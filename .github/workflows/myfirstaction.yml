@@ -41,6 +41,8 @@ jobs:
               echo "DEPLOY=false" >> $GITHUB_ENV
             fi
           fi
+      - name: run tests
+        run: npx sst test
       - name: If on master or dev - Install and deploy
         if: env.DEPLOY == 'true'
         run: |
