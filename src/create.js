@@ -52,11 +52,6 @@ export const makeDeletes = (pack, oldDeps) => {
 }
 
 const baseHandler = async (event) => {
-    const updateParams = makeUpdates(event)
-    console.log('updateParams')
-    console.log(updateParams)
-    const updates = updateParams.map(it => dynamo.put(it))
-
     const { ownerName, stage, pack } = event.body;
     const name = ownerName.split('/')[1]
 
@@ -80,7 +75,12 @@ const baseHandler = async (event) => {
     console.log('oldDeps')
     console.log(oldDeps)
     console.log(makeDeletes(pack, oldDeps))
-    const delUpdates = makeDeletes(pack, oldDeps).map(it => dynamo.del(it))
+    // const delUpdates = makeDeletes(pack, oldDeps).map(it => dynamo.del(it))
+
+    // const updateParams = makeUpdates(event)
+    // console.log('updateParams')
+    // console.log(updateParams)
+    // const updates = updateParams.map(it => dynamo.put(it))
 
     // try {
     //     await Promise.all(updates.concat(delUpdates));
@@ -89,7 +89,7 @@ const baseHandler = async (event) => {
     //     throw new Error(error.message);
     // }
 
-    const response = { result: 'success', message: `${updates.length} dependencies published` }
+    const response = { result: 'success', message: `${'updates.length'} dependencies published` }
     return { statusCode: 200, body: JSON.stringify(response) }
 }
 
