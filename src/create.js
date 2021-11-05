@@ -66,7 +66,13 @@ const baseHandler = async (event) => {
         ExpressionAttributeNames: { '#ps': 'packageStage' },
         ExpressionAttributeValues: { ':ps': `${stage}-${name}` },
     };
-    const queryResult = await dynamo.query(queryParams)
+    const queryResult
+    try {
+        queryResult = await dynamo.query(queryParams)
+    } catch (error) {
+        console.error(error.message);
+        throw new Error(error.message);
+    }
     const oldDeps = queryResult.Items || []
 
     console.log('oldDeps')
