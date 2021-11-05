@@ -18,8 +18,11 @@ export default class ApiStack extends sst.Stack {
           AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
         },
       },
+      defaultThrottlingRateLimit: 500,
+      defaultThrottlingBurstLimit: 100,
       routes: {
         "PUT    /": "src/create.handler",
+        "GET    /{id}": "src/get.handler"
       },
     });
 

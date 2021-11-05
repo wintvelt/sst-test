@@ -82,7 +82,7 @@ const baseHandler = async (event) => {
         throw new Error(error.message);
     }
 
-    const response = { result: 'success', message: `${'updates.length'} dependencies published` }
+    const response = { result: 'success', message: `${updates.length} dependencies published` }
     return { statusCode: 200, body: JSON.stringify(response) }
 }
 
