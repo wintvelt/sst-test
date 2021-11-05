@@ -41,12 +41,13 @@ jobs:
               echo "DEPLOY=false" >> $GITHUB_ENV
             fi
           fi
-      - name: run tests
-        run: npx sst test
-      - name: If on master or dev - Install and deploy
-        if: env.DEPLOY == 'true'
+      - name: install and run tests
         run: |
           npm install
+          npx sst test
+      - name: If on master or dev - deploy
+        if: env.DEPLOY == 'true'
+        run: |
           npx sst deploy --stage ${{ env.STAGE }}
       - name: check if npm folder exists
         run: |
