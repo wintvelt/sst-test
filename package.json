@@ -19,6 +19,11 @@
   },
   "dependencies": {
     "@aws-cdk/core": "1.126.0",
+    "@middy/core": "^2.5.2",
+    "@middy/error-logger": "^2.5.2",
+    "@middy/http-cors": "^2.5.2",
+    "@middy/http-json-body-parser": "^2.5.2",
+    "@middy/validator": "^2.5.2",
     "@serverless-stack/cli": "0.50.2",
     "@serverless-stack/resources": "0.50.2",
     "nanoid": "^3.1.30"

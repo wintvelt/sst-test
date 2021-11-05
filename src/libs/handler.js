@@ -1,3 +1,5 @@
+import middy from '@middy/core'
+
 // generic handler to parse body and catch general errors
 const response = (statusCode, content) => {
     if (statusCode <= 299) {

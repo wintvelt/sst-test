@@ -14,7 +14,8 @@ export default class ApiStack extends sst.Stack {
       defaultFunctionProps: {
         environment: {
           TABLE_NAME: table.tableName,
-          SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN
+          SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
+          AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
         },
       },
       routes: {

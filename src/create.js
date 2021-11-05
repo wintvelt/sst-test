@@ -1,87 +1,74 @@
-// main handler function
-import { handler } from "./libs/handler";
+// handler for PUT route
+import middy from '@middy/core'
+import jsonBodyParser from '@middy/http-json-body-parser'
+import errorLogger from '@middy/error-logger'
+import validator from '@middy/validator'
+import cors from '@middy/http-cors'
 import { dynamo } from "./libs/dynamo-lib";
 
-// validate header before processing
-const validator = (lambda => {
-    return function (event, context) {
-        // parse event body
-        let parsedBody = event.body;
-        try {
-            if (typeof parsedBody === 'string') parsedBody = JSON.parse(event.body)
-        } catch (error) {
-            // Bad request, could not find event body, so could not Auth
-            console.error('could not parse event body')
-            return {
-                statusCode: 401,
-                message: "Unauthorized"
+const baseHandler = async (event) => {
+    // Get data from event body
+    const { ownerName, stage, pack } = event.body;
+    const name = ownerName.split('/')[1]
+    const putParams = (dependency, version) => {
+        return {
+            TableName: process.env.TABLE_NAME,
+            Item: {
+                packageStage: `${stage}-${name}`,
+                dependency,
+                version,
+                createdAt: Date.now()
             }
         }
-        // token must be in body, because API gateway does not forward header to lambda
-        if (parsedBody.AuthToken !== `Basic ${process.env.SECRET_PUBLISH_TOKEN}`) {
-            console.error('Auth token mismatch')
-            console.log(parsedBody.AuthToken)
-            console.log(process.env.SECRET_PUBLISH_TOKEN)
-            return {
-                statusCode: 401,
-                message: "Unauthorized"
-            }
-        }
-        // body must contain ownerName, stage, pack, and ownerName must have /
-        if (!(parsedBody.ownerName && parsedBody.stage && parsedBody.pack
-            && parsedBody.ownerName.split('/').length === 2)) {
-            return {
-                statusCode: 403,
-                message: "body must include ownerName, stage and pack"
-            }
-        }
-        // all good, run lambda
-        return lambda(event, context)
     }
-})
 
-export const main = validator(
-    handler(
-        async (event) => {
-            // Get data from event body
-            const { ownerName, stage, pack } = event.body;
-            const name = ownerName.split('/')[1]
-            const params = (dependency, version) => {
-                return {
-                    TableName: process.env.TABLE_NAME,
-                    Item:{
-                        packageStage: `${stage}-${name}`,
-                        dependency,
-                        version,
-                        createdAt: Date.now()
-                    }
-                }
-            }
+    // ASSUME pack is already parsed
+    // const  { dependencies } = pack
+    let dependencies = {}
+    try {
+        dependencies = { ...pack.dependencies }
+    } catch (error) {
+        console.error('pack is not an object yet')
+        throw new Error('pack is not an object yet')
+    }
 
-            // ASSUME pack is already parsed
-            // const  { dependencies } = pack
-            let dependencies = {}
-            try {
-                dependencies = { ...pack.dependencies }
-            } catch (error) {
-                console.error('pack is not an object yet')
-                throw new Error('pack is not an object yet')
-            }
-
-            let updates = []
-            for (const key in dependencies) {
-                if (Object.hasOwnProperty.call(dependencies, key)) {
-                    const version = dependencies[key];
-                    updates.push(dynamo.put(params(key, version)))
-                }
-            }
-            try {
-                await Promise.all(updates);
-            } catch (error) {
-                console.error(error.message);
-            }
-
-            return `${updates.length} dependencies published`
+    let updates = []
+    for (const key in dependencies) {
+        if (Object.hasOwnProperty.call(dependencies, key)) {
+            const version = dependencies[key];
+            updates.push(dynamo.put(putParams(key, version)))
         }
-    )
-)
+    }
+    try {
+        await Promise.all(updates);
+    } catch (error) {
+        console.error(error.message);
+    }
+
+    const response = { result: 'success', message: `${updates.length} dependencies published` }
+    return { statusCode: 200, body: JSON.stringify(response) }
+}
+
+const inputSchema = {
+    type: 'object',
+    properties: {
+        body: {
+            type: 'object',
+            properties: {
+                ownerName: { type: 'string', pattern: '.+\/{1}.+' }, // string with 1 slash
+                stage: { type: 'string', enum: ['prod', 'dev'] },
+                pack: { type: 'object' },
+                authToken: { type: 'string', const: `Basic ${process.env.SECRET_PUBLISH_TOKEN}` }
+            },
+            required: ['ownerName', 'stage', 'pack', 'authToken']
+        }
+    }
+}
+
+const handler = middy(baseHandler)
+    .use(errorLogger())
+    .use(jsonBodyParser()) // parses the request body when it's a JSON and converts it to an object
+    .use(validator({ inputSchema })) // validates the input
+    .use(cors())
+
+module.exports = { handler }
