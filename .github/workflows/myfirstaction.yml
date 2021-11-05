@@ -9,12 +9,15 @@ jobs:
       SECRET_PUBLISH_TOKEN: ${{ secrets.SECRET_PUBLISH_TOKEN }}
       DEV_PUBLISH_ENDPOINT: https://6klsawe709.execute-api.eu-central-1.amazonaws.com
       PROD_PUBLISH_ENDPOINT: https://urhe9nipda.execute-api.eu-central-1.amazonaws.com
+      NPM_FOLDER: npm
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
+          registry-url: https://registry.npmjs.org/
       - name: Read package.json
         id: package
         uses: juliangruber/read-file-action@v1
@@ -43,6 +46,15 @@ jobs:
         run: |
           npm install
           npx sst deploy --stage ${{ env.STAGE }}
+      - name: check if npm folder exists
+        run: |
+          if test -e "${{ env.NPM_FOLDER }}"; then
+            echo "NPM_EXISTS=true" >> $GITHUB_ENV
+            echo "npm folder exists"
+          else
+            echo "NPM_EXISTS=false" >> $GITHUB_ENV
+            echo "no npm folder here"
+          fi
       - name: if on mater or dev - Publish dependencies
         if: env.DEPLOY == 'true'
         uses: indiesdev/curl@v1
@@ -56,3 +68,11 @@ jobs:
             "pack": ${{ steps.package.outputs.content }},
             "AuthToken": "Basic ${{ secrets.SECRET_PUBLISH_TOKEN }}" 
             }'
+      - name: if on master or dev and npm exists -bump npm patch version and publish
+        if: (env.NPM_EXISTS && env.DEPLOY)
+        env:
+          NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
+        run: |
+          cd npm
+          npm version patch
+          npm publish
