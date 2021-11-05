@@ -22,15 +22,8 @@ export const makeUpdates = (event) => {
         }
     }
 
-    // ASSUME pack is already parsed
-    // const  { dependencies } = pack
-    let dependencies = {}
-    try {
-        dependencies = { ...pack.dependencies }
-    } catch (error) {
-        console.error('pack is not an object yet')
-        throw new Error('pack is not an object yet')
-    }
+    // pack is already parsed
+    const  { dependencies } = pack
 
     let updates = []
     for (const key in dependencies) {
@@ -42,7 +35,7 @@ export const makeUpdates = (event) => {
     return updates
 }
 
-const deleteParams = ({packageStage, dependency}) => ({
+const deleteParams = ({ packageStage, dependency }) => ({
     TableName: process.env.TABLE_NAME,
     Key: {
         packageStage,
@@ -54,7 +47,7 @@ const baseHandler = async (event) => {
     const updateParams = makeUpdates(event)
     const updates = updateParams.map(dynamo.put)
 
-    const { ownerName, stage } = event.body;
+    const { ownerName, stage, pack } = event.body;
     const name = ownerName.split('/')[1]
 
     const queryParams = {
@@ -66,7 +59,11 @@ const baseHandler = async (event) => {
     const queryResult = await dynamo.query(queryParams)
     const depsToDel = queryResult.Items || []
 
-    const delUpdates = depsToDel.map(deleteParams).map(dynamo.del)
+    const { dependencies } = pack
+    const delUpdates = depsToDel
+        .filter(({dependency}) => !Object.hasOwnProperty.call(dependencies, dependency))
+        .map(deleteParams)
+        .map(dynamo.del)
 
     try {
         await Promise.all(updates.concat(delUpdates));
