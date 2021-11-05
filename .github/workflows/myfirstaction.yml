@@ -69,7 +69,7 @@ jobs:
             "ownerName": "${{ github.repository }}", 
             "stage": "${{ env.STAGE }}", 
             "pack": ${{ steps.package.outputs.content }},
-            "AuthToken": "Basic ${{ secrets.SECRET_PUBLISH_TOKEN }}" 
+            "authToken": "Basic ${{ secrets.SECRET_PUBLISH_TOKEN }}" 
             }'
           timeout: 5000
       - name: if on master and npm exists -bump npm patch version and publish
