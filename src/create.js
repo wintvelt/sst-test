@@ -24,7 +24,7 @@ export const makeUpdates = (event) => {
     }
 
     // pack is already parsed
-    const  { dependencies } = pack
+    const { dependencies } = pack
 
     let updates = []
     for (const key in dependencies) {
@@ -47,12 +47,13 @@ const deleteParams = ({ packageStage, dependency }) => ({
 export const makeDeletes = (pack, oldDeps) => {
     const { dependencies } = pack
     return oldDeps
-        .filter(({dependency}) => !Object.hasOwnProperty.call(dependencies, dependency))
+        .filter(({ dependency }) => !Object.hasOwnProperty.call(dependencies, dependency))
         .map(deleteParams)
 }
 
 const baseHandler = async (event) => {
     const updateParams = makeUpdates(event)
+    console.log({ updateParams })
     const updates = updateParams.map(dynamo.put)
 
     const { ownerName, stage, pack } = event.body;
@@ -67,6 +68,7 @@ const baseHandler = async (event) => {
     const queryResult = await dynamo.query(queryParams)
     const oldDeps = queryResult.Items || []
 
+    console.log({ oldDeps })
     const delUpdates = makeDeletes(pack, oldDeps).map(dynamo.del)
 
     try {
