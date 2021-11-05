@@ -55,7 +55,7 @@ jobs:
             echo "NPM_EXISTS=false" >> $GITHUB_ENV
             echo "no npm folder here"
           fi
-      - name: if on mater or dev - Publish dependencies
+      - name: if on master or dev - Publish dependencies
         if: env.DEPLOY == 'true'
         uses: indiesdev/curl@v1
         with:
@@ -68,8 +68,8 @@ jobs:
             "pack": ${{ steps.package.outputs.content }},
             "AuthToken": "Basic ${{ secrets.SECRET_PUBLISH_TOKEN }}" 
             }'
-      - name: if on master or dev and npm exists -bump npm patch version and publish
-        if: (env.NPM_EXISTS && env.DEPLOY)
+      - name: if on master and npm exists -bump npm patch version and publish
+        if: (env.STAGE == 'prod' && env.DEPLOY)
         env:
           NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
         run: |
