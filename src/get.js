@@ -7,10 +7,10 @@ import cors from '@middy/http-cors'
 
 
 const baseHandler = async (event) => {
-    const encodedId = event.pathParameters.id
+    const encodedId = event.queryStringParameters.id
     const dependency = decodeURIComponent(encodedId)
 
-    const response = { result: 'success', message: `parsed as "${dependency}"` }
+    const response = { result: 'success', message: `parsed as "${dependency}" with encoded "${encodedId}""` }
     return { statusCode: 200, body: JSON.stringify(response) }
 }
 

@@ -22,7 +22,7 @@ export default class ApiStack extends sst.Stack {
       defaultThrottlingBurstLimit: 100,
       routes: {
         "PUT    /": "src/create.handler",
-        "GET    /{id}": "src/get.handler"
+        "GET    /": "src/get.handler"
       },
     });
 
