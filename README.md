@@ -31,7 +31,7 @@ Returns list of all [stage-packages] in database who published dependencies. Can
 ```
 
 ### `GET /?id=[package name]`
-Returns all subscribers to [package name] as a list
+Returns all subscribers to `[package name]` as a list
 ```json
 [
     { 
@@ -54,6 +54,14 @@ Request body must be
 }
 ```
 Authorization token is a basic secret. Created and distributed by the owner who deploys this service.
+
+Response includes
+```javascript
+data: {
+    result: 'success',
+    message: '1 dependencies removed, 1 added, 1 updated, 1 unchanged'
+}
+```
 
 ## Pub Topics
 
