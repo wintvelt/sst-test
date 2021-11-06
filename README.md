@@ -24,6 +24,12 @@ It is up to the processing (receiving) microservice to
 ## API
 API is public, but heavily throttled.
 
+### `GET /`
+Returns list of all [stage-packages] in database who published dependencies. Can be useful to collect the complete contents of the database, by using these ids to perform individual get requests for each.
+```json
+[ "[stage]-[package name]" ]
+```
+
 ### `GET /?id=[package name]`
 Returns all subscribers to [package name] as a list
 ```json
