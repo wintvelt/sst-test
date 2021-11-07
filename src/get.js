@@ -60,5 +60,5 @@ const baseHandler = async (event) => {
 
 export const handler = middy(baseHandler)
     .use(errorLogger())
-    .use(httpErrorHandler())
+    .use(httpErrorHandler({fallbackMessage: 'server error'}))
     .use(cors())

@@ -80,7 +80,6 @@ const baseHandler = async (event) => {
         TableName: process.env.TABLE_NAME,
         Item
     })).map(dynamo.put)
-
     try {
         await Promise.all(updates.concat(delUpdates));
     } catch (error) {
@@ -113,5 +112,5 @@ export const handler = middy(baseHandler)
     .use(errorLogger())
     .use(jsonBodyParser()) // parses the request body when it's a JSON and converts it to an object
     .use(validator({ inputSchema })) // validates the input
-    .use(httpErrorHandler())
     .use(cors())
+    .use(httpErrorHandler({fallbackMessage: 'server error'}))

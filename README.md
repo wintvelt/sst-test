@@ -15,9 +15,18 @@ The general idea is that a microservice
 This template contains the service for posting (and retrieving) microservice dependencies. Inner workings described at the end of this doc.
 
 ## Event streams
+The microservice is responsible for
+- Setup SNS topic to publish internal events, for other services to subscribe to
+- Setup SQS queue for other services to post commands to, and setup function to consume commands
+- Publish a client that allows other services to connect (to dev and prod versions)
+    - to subscribe to the published SNS topic - includes arns
+    - to post commands to SQS queue - includes arns and input validation
+
 It is up to the processing (receiving) microservice to
-- connect to the SNS topic(s) to consume
+- connect to the SNS topic(s) to consume events
 - (optionally) setup an SQS queue connected to the SNS topic to consume
+
+
 
 # Dependency publication service
 
@@ -63,8 +72,10 @@ data: {
 }
 ```
 
-## Pub Topics
+## Published event topics
+
+## Published queues for external commands
 
 
-## Sub Topics
+## Subscription to external event topics
 (none)
