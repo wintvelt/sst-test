@@ -7,10 +7,10 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SECRET_PUBLISH_TOKEN: ${{ secrets.SECRET_PUBLISH_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       DEV_PUBLISH_ENDPOINT: https://6klsawe709.execute-api.eu-central-1.amazonaws.com
       PROD_PUBLISH_ENDPOINT: https://urhe9nipda.execute-api.eu-central-1.amazonaws.com
       NPM_FOLDER: npm
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

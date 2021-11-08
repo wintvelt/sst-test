@@ -12,7 +12,7 @@ The general idea is that a microservice
 - includes a github action workflow, that runs tests and deploys (only if on branch master or dev)
 - the workflow also calls a public API, to publish all dependencies
 
-This template contains the service for posting (and retrieving) microservice dependencies. Inner workings described at the end of this doc.
+This template contains all the basics, and an example service, for posting (and retrieving) microservice dependencies. Inner workings described at the [end of this doc](#dependency-publication-service).
 
 ## APIs and Event streams
 The microservice is responsible for the following
@@ -83,7 +83,20 @@ Notes to this structure
     - this also makes referencing in the code easier
     - for multiple same-type stacks, prepend with a short qualifier, in camelCase. E.g. `simpleTopic` and `versionedTopic`
 
-# Dependency publication service - replace with specifics for the service
+## Environment variables
+Github repo needs to have the following secrets - they are accessed and used by the github workflow (in `.github/workflows`)
+- `AWS_ACCESS_KEY_ID` to allow deployment to AWS and set permission to access other services
+- `AWS_SECRET_ACCESS_KEY`
+- `SECRET_PUBLISH_TOKEN`: Basic token used to publish dependencies to a common shared service
+- `NPM_TOKEN`: Token to allow publication of client npm package to npm registry
+- `DEV_PUBLISH_ENDPOINT`: hardcoded url of API endpoint to publish dependencies when on dev branch
+- `PROD_PUBLISH_ENDPOINT`: url for dependencies when on master branch (= prod stage)
+
+Other environment variables in backend functions can only be set in stack definition. E.g. the dynamoDb tablename needs to be set in API Gateway for the handler function to access `process.env.TABLE_NAME`. And all stack entities (tables, queues, etc) should be set as environment variables, because the name depend on the stage (dev or prod).
+
+---
+# Dependency publication service
+*on cloning this repo, replace with specifics for the service*
 
 ## API
 API is public, but heavily throttled. `PUT` API does require a secret token to be included in request body.
@@ -109,7 +122,7 @@ Returns all subscribers to `[package name]` as a list
 ### `PUT /`
 Updates dependencies from a `package.json` file.
 Request body must be
-```json
+```javascript
 { 
     "ownerName": "[owner]/[package name]",
     "stage": "dev|prod", // other values not allowed, will return error
