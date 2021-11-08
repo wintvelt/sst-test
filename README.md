@@ -74,8 +74,16 @@ Notes to this structure
 - `src/` service core code/ business logic
 - `stacks/` infrastructure-as-code setup of the AWS architecture of the service - will be deployed by CI/CD action workflow only if branch is master (to prod) or dev (to dev)
 
+## Naming conventions
+- Service name (`name` in root `package.json`) should be of format `[project]-[service]`
+    - sst serverless will automatically prepend `[stage]-` before the service name upon deployment in infra stack - for API Gateway, Lambda functions, Dynamo tables, Queues, Cloudwatch etc)
+    - for Lambda functions, sst serverless will append `[method]` after function name
+- Stack names (inside sst stack code) ideally have simple names, like `table` (for DynamoDb) or `queue` (for SQS).
+    - no need to duplicate the service name. And in deployment, service name will be added anyway.
+    - this also makes referencing in the code easier
+    - for multiple same-type stacks, prepend with a short qualifier, in camelCase. E.g. `simpleTopic` and `versionedTopic`
 
-# Dependency publication service
+# Dependency publication service - replace with specifics for the service
 
 ## API
 API is public, but heavily throttled. `PUT` API does require a secret token to be included in request body.
