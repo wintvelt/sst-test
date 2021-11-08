@@ -6,6 +6,7 @@ import httpErrorHandler from '@middy/http-error-handler'
 import sqsJsonBodyParser from '@middy/sqs-json-body-parser'
 
 import { handler as eventHandler } from './create'
+import { inputSchema, inputSchema } from './libs/create-input-schema'
 
 const baseHandler = async (event) => {
     // extract records from event
@@ -34,20 +35,7 @@ const inputSchema = {
     properties: {
         Records: {
             type: "array",
-            items:
-            {
-                type: 'object',
-                properties: {
-                    body: {
-                        type: 'object',
-                        properties: {
-                            ownerName: { type: 'string', pattern: '.+/{1}.+' }, // string with 1 slash
-                            stage: { type: 'string', enum: ['prod', 'dev'] },
-                        },
-                        required: ['ownerName', 'stage']
-                    }
-                }
-            }
+            items: inputSchema
         }
     }
 }

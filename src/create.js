@@ -5,7 +5,9 @@ import errorLogger from '@middy/error-logger'
 import validator from '@middy/validator'
 import httpErrorHandler from '@middy/http-error-handler'
 import cors from '@middy/http-cors'
-import { dynamo } from "./libs/dynamo-lib";
+
+import { dynamo } from "./libs/dynamo-lib"
+import { inputSchema } from './libs/create-input-schema'
 
 export const makeLatest = (event) => {
     // Get data from event body
@@ -90,22 +92,6 @@ const baseHandler = async (event) => {
         `${depsToChange.length} updated, ${unchanged} unchanged`
     const response = { result: 'success', message }
     return { statusCode: 200, body: JSON.stringify(response) }
-}
-
-const inputSchema = {
-    type: 'object',
-    properties: {
-        body: {
-            type: 'object',
-            properties: {
-                ownerName: { type: 'string', pattern: '.+/{1}.+' }, // string with 1 slash
-                stage: { type: 'string', enum: ['prod', 'dev'] },
-                pack: { type: 'object' },
-                authToken: { type: 'string', const: `Basic ${process.env.SECRET_PUBLISH_TOKEN}` }
-            },
-            required: ['ownerName', 'stage', 'pack', 'authToken']
-        }
-    }
 }
 
 export const handler = middy(baseHandler)

@@ -1,7 +1,7 @@
 # Serverless microservice setup
 
 This project was bootstrapped with [Create Serverless Stack](https://docs.serverless-stack.com/packages/create-serverless-stack).
-Quite heavily adapted though, for personal microservice setup on AWS.
+Quite heavily adapted though, for personal microservice setup on AWS with github actions CI/CD.
 
 The general idea is that a microservice
 - exposes an API (AWS API Gateway and Lambda) on various routes
