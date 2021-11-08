@@ -14,24 +14,71 @@ The general idea is that a microservice
 
 This template contains the service for posting (and retrieving) microservice dependencies. Inner workings described at the end of this doc.
 
-## Event streams
-The microservice is responsible for
+## APIs and Event streams
+The microservice is responsible for the following
+- Expose APIs to read/ write to database, and to post commands to the SQS queue, for async processing.
+    - async queue APIs should have route format like `/normal/route/async/`
 - Setup SNS topic to publish internal events, for other services to subscribe to
 - Setup SQS queue for other services to post commands to, and setup function to consume commands
 - Publish a client that allows other services to connect (to dev and prod versions)
-    - to subscribe to the published SNS topic - includes arns
-    - to post commands to SQS queue - includes arns and input validation
+    - to subscribe to the published SNS topic - includes name/ endpoint
+    - to post commands to SQS queue - includes queue name/endpoint and input validation
 
 It is up to the processing (receiving) microservice to
-- connect to the SNS topic(s) to consume events
-- (optionally) setup an SQS queue connected to the SNS topic to consume
+- connect to external SNS topic(s) to consume events
+- (optionally) setup an SQS queue connected to the SNS topic to consume events
 
+## Service structure
+Service structure is typically as follows
+![microservice structure](/assets/microservice-structure.png)
+Notes
+- Only 1 version of npm package is available, published from master branch. Stage (dev or prod) can be passed as a parameter to most functions exposed in package.
+- Copies of some private functions may be exposed in npm package too. The consuming service needs to have sufficient authorization to access the infrastructure (database, queues etc) from these clients.
+    - advantage is that services on the same (AWS) infrastructure can access each other within the infrastructure - calling `AWS.lambda.invoke()`, without the detour through public access
+    - normal use case would be synchronous calls, where the consumer cares about the response from the lambda function
+- Even if consuming services only call public API Endpoints - typical for front-end services, it is still recommended to use the public npm client for this. This ensures proper registration of dependencies.
+
+## Folder structure
+```
+├───.github/
+│   └───workflows/
+│       └───myfirstaction.yml
+├───assets/
+│   └───microservice-structure.png
+├───npm/
+│   ├───index.js
+│   └───package.json
+├───src/
+│   ├───libs/
+│   │   └───dynamo-lib.js
+│   ├───create.js
+│   ├───get.js
+│   └───queueConsumer.js
+├───stacks/
+│   ├───DbStack.js
+│   ├───apiStack.js
+│   ├───index.js
+│   └───queueStack.js
+├───test/
+│   ├───apiStack.test.js
+│   └───create.test.js
+├───.gitignore
+├───README.md
+├───package-lock.json
+├───package.json
+└───sst.json
+```
+Notes to this structure
+- `.github/workflows/myfirstaction.yml` contains (github) CI/CD workflow for deploying to dev or prod, and to publish any npm package on client side (if the npm folder exists and if the pushed branch is master)
+- `npm/` contains the client package to published
+- `src/` service core code/ business logic
+- `stacks/` infrastructure-as-code setup of the AWS architecture of the service - will be deployed by CI/CD action workflow only if branch is master (to prod) or dev (to dev)
 
 
 # Dependency publication service
 
 ## API
-API is public, but heavily throttled.
+API is public, but heavily throttled. `PUT` API does require a secret token to be included in request body.
 
 ### `GET /`
 Returns list of all [stage-packages] in database who published dependencies. Can be useful to collect the complete contents of the database, by using these ids to perform individual get requests for each.
