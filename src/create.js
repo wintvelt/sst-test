@@ -25,7 +25,7 @@ export const makeLatest = (event) => {
                 packageStage: `${stage}-${name}`,
                 dependency: key,
                 version,
-                createdAt: Date.now()
+                createdAt: new Date().toISOString()
             })
         }
     }
