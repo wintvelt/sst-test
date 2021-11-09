@@ -89,8 +89,11 @@ Github repo needs to have the following secrets - they are accessed and used by 
 - `AWS_SECRET_ACCESS_KEY`
 - `SECRET_PUBLISH_TOKEN`: Basic token used to publish dependencies to a common shared service
 - `NPM_TOKEN`: Token to allow publication of client npm package to npm registry
-- `DEV_PUBLISH_ENDPOINT`: hardcoded url of API endpoint to publish dependencies when on dev branch
+
+In the `.github/workflows` yml doc, the following env var can stay, they are for publishing dependencies
+- `DEV_PUBLISH_ENDPOINT`: hardcoded url of API endpoint to publish dependencies - only used for the dependency-service
 - `PROD_PUBLISH_ENDPOINT`: url for dependencies when on master branch (= prod stage)
+Your service will always publish to the prod endpoint. Also when on dev branch. (TODO)
 
 Other environment variables in backend functions can only be set in stack definition. E.g. the dynamoDb tablename needs to be set in API Gateway for the handler function to access `process.env.TABLE_NAME`. And all stack entities (tables, queues, etc) should be set as environment variables, because the name depend on the stage (dev or prod).
 
