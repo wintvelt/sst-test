@@ -7,13 +7,14 @@ export default class ApiStack extends sst.Stack {
   constructor(scope, id, props) {
     super(scope, id, props);
 
-    const { table } = props;
+    const { table, queue } = props;
 
     // Create the API
     this.api = new sst.Api(this, "Api", {
       defaultFunctionProps: {
         environment: {
           TABLE_NAME: table.tableName,
+          QUEUE_NAME: queue.queueName,
           SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
           AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
         },
@@ -21,13 +22,15 @@ export default class ApiStack extends sst.Stack {
       defaultThrottlingRateLimit: 500,
       defaultThrottlingBurstLimit: 100,
       routes: {
-        "PUT    /": "src/create.handler",
-        "GET    /": "src/get.handler"
+        "PUT   /": "src/create.handler",
+        "PUT   /async": "src/createAsync.handler",
+        "GET   /": "src/get.handler"
       },
     });
 
     // Allow the API to access the table
     this.api.attachPermissions([table]);
+    this.api.attachPermissionsToRoute("PUT   /async",[queue])
 
     // Show the API endpoint in the output
     this.addOutputs({
