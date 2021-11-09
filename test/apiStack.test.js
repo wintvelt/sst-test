@@ -8,10 +8,16 @@ test("Test Stack", () => {
 
   const dbStack = new DbStack(app, "dependencies");
 
+  const queue = new queueStack(app, "dependencyQueue", {
+    table: dbStack.table
+  })
+
   const apiStack = new ApiStack(app, "api", {
     table: dbStack.table,
-  });
+    queue: queue.queue
+  })
 
   expect(dbStack).to(haveResource("AWS::DynamoDB::Table"));
+  expect(queue).to(haveResource("AWS::SQS::Queue"));
   expect(apiStack).to(haveResource("AWS::Lambda::Function"));
 });
