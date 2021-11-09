@@ -5,12 +5,12 @@ import queueStack from "./queueStack";
 export default function main(app) {
   const dbStack = new DbStack(app, "dependencies")
 
-  new queueStack(app, "dependencyQueue", {
+  const queue = new queueStack(app, "dependencyQueue", {
     table: dbStack.table
   })
 
   new ApiStack(app, "api", {
     table: dbStack.table,
-    queue: queueStack.queue
+    queue: queue.queue
   })
 }
