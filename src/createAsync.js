@@ -25,9 +25,8 @@ const baseHandler = async (event) => {
         QueueUrl: process.env.QUEUE_NAME
     };
 
-    let result
     try {
-        result = await sqs.sendMessage(params)
+        await sqs.sendMessage(params)
     } catch (error) {
         throw new Error('could not post to queue')
     }
@@ -42,4 +41,4 @@ export const handler = middy(baseHandler)
     .use(jsonBodyParser()) // parses the request body when it's a JSON and converts it to an object
     .use(validator({ inputSchema })) // validates the input
     .use(cors())
-    .use(httpErrorHandler({fallbackMessage: 'server error'}))
+    .use(httpErrorHandler({ fallbackMessage: 'server error' }))
