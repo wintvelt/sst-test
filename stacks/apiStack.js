@@ -1,5 +1,11 @@
 import * as sst from "@serverless-stack/resources";
 
+const routeNames = {
+  get: "GET   /",
+  put: "PUT   /",
+  putAsync: "PUT   /async"
+}
+
 export default class ApiStack extends sst.Stack {
   // Public reference to the API
   api;
@@ -22,19 +28,20 @@ export default class ApiStack extends sst.Stack {
       defaultThrottlingRateLimit: 500,
       defaultThrottlingBurstLimit: 100,
       routes: {
-        "PUT   /": "src/create.handler",
-        "PUT   /async": "src/createAsync.handler",
-        "GET   /": "src/get.handler"
+        [routeNames.put]: "src/create.handler",
+        [routeNames.putAsync]: "src/createAsync.handler",
+        [routeNames.get]: "src/get.handler"
       },
     });
 
     // Allow the API to access the table
     this.api.attachPermissions([table]);
-    this.api.attachPermissionsToRoute("PUT   /async",[queue])
+    this.api.attachPermissionsToRoute(routeNames.putAsync,[queue])
 
     // Show the API endpoint in the output
     this.addOutputs({
       ApiEndpoint: this.api.url,
+      PutFunctionName: this.api.getFunction(routeNames.put).functionName
     });
   }
 }
