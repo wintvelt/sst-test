@@ -79,10 +79,5 @@ jobs:
           NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
         run: |
           cd npm
-          touch env.js
-          echo "export const queueUrl = {" >> env.js
-          echo "    dev: '${{ env.DEV_QUEUE_ENDPOINT }}'," >> env.js
-          echo "    prod: '${{ env.PROD_QUEUE_ENDPOINT }}'" >> env.js
-          echo "}" >> env.js
           npm version patch
           npm publish --access=public
