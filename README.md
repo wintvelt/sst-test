@@ -82,7 +82,7 @@ Notes to this structure
     - no need to duplicate the service name. And in deployment, service name will be added anyway.
     - this also makes referencing in the code easier
     - for multiple same-type stacks, prepend with a short qualifier, in camelCase. E.g. `simpleTopic` and `versionedTopic`
-- Client package name (to be published on npm) should be of format `[project]-[service]-client`
+- Client package name (to be published on npm) should be of format `@owner/[project]-[service]-client`
     - set in `package.json` in /npm folder
 
 ## Environment variables

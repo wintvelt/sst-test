@@ -85,4 +85,4 @@ jobs:
           echo "    prod: '${{ env.PROD_QUEUE_ENDPOINT }}'" >> env.js
           echo "}" >> env.js
           npm version patch
-          npm publish
+          npm publish --access-public
