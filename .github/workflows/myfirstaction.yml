@@ -49,7 +49,8 @@ jobs:
       - name: If on master or dev - deploy
         if: env.DEPLOY == 'true'
         run: |
-          npx sst deploy --stage ${{ env.STAGE }}
+          touch testOutput
+          npx sst deploy --stage ${{ env.STAGE }} >> testOutput
       - name: check if npm folder exists
         run: |
           if test -e "${{ env.NPM_FOLDER }}"; then
