@@ -41,7 +41,7 @@ export default class ApiStack extends sst.Stack {
     // Show the API endpoint in the output
     this.addOutputs({
       ApiEndpoint: this.api.url,
-      PutFunctionName: this.api.getFunction(routeNames.put).functionName
+      PutFunctionArn: this.api.getFunction(routeNames.put).functionArn
     });
   }
 }

@@ -43,9 +43,10 @@ Notes
 ├───.github/
 │   └───workflows/
 │       └───myfirstaction.yml
-├───assets/
-│   └───microservice-structure.png
 ├───npm/
+│   ├───api.js
+│   ├───arns.js
+│   ├───functions.js
 │   ├───index.js
 │   └───package.json
 ├───src/
@@ -55,16 +56,12 @@ Notes
 │   ├───get.js
 │   └───queueConsumer.js
 ├───stacks/
-│   ├───DbStack.js
 │   ├───apiStack.js
-│   ├───index.js
-│   └───queueStack.js
+│   └───index.js
 ├───test/
 │   ├───apiStack.test.js
 │   └───create.test.js
 ├───.gitignore
-├───README.md
-├───package-lock.json
 ├───package.json
 └───sst.json
 ```
@@ -100,17 +97,29 @@ Your service will always publish to the prod endpoint. Also when on dev branch. 
 Other environment variables in backend functions can only be set in stack definition. E.g. the dynamoDb tablename needs to be set in API Gateway for the handler function to access `process.env.TABLE_NAME`. And all stack entities (tables, queues, etc) should be set as environment variables, because the name depend on the stage (dev or prod).
 
 ## Service client setup
-Client packages expose:
+Client packages are published to npm with public access. They expose:
 
-`apiEndpoints.js` file, which exports a default object, containing endpoint urls, structured as follows
+`api.js` file, which exports a default object, containing endpoint urls, structured as follows
 - properties for each endpoint, named in camelCase in the format `[method][route]`, e.g. `putAsync`
 - each endpoint property has a `dev` and `prod` property
-so they can be imported and used like this
+
+`arns.js` file, exposing lambda arns in the same way. For setting permissions.  
+`functions.js`, which exposes `invoke[FunctionName]` style functions for lambda invocation.
+
+so they can be used like this
 ```javascript
 // consumer.js
-import apiUrls from '@wintvelt/spqr-albums-client/apiEndpoints`
+import apiUrls from '@wintvelt/spqr-albums-client/api'
+import { invokePut } from '@wintvelt/spqr-albums-client/functions'
 
-const endpoint = apiUrls.getAlbumsId[process.env.stage]
+const url = apiUrls.getAlbumsId[process.env.stage]
+
+let result
+try {
+    result = await invokePut(params)
+} catch (error) {
+    ///
+}
 ```
 
 
