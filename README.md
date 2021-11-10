@@ -82,6 +82,8 @@ Notes to this structure
     - no need to duplicate the service name. And in deployment, service name will be added anyway.
     - this also makes referencing in the code easier
     - for multiple same-type stacks, prepend with a short qualifier, in camelCase. E.g. `simpleTopic` and `versionedTopic`
+- Client package name (to be published on npm) should be of format `[project]-[service]-client`
+    - set in `package.json` in /npm folder
 
 ## Environment variables
 Github repo needs to have the following secrets - they are accessed and used by the github workflow (in `.github/workflows`)
@@ -96,6 +98,34 @@ In the `.github/workflows` yml doc, the following env var can stay, they are for
 Your service will always publish to the prod endpoint. Also when on dev branch. (TODO)
 
 Other environment variables in backend functions can only be set in stack definition. E.g. the dynamoDb tablename needs to be set in API Gateway for the handler function to access `process.env.TABLE_NAME`. And all stack entities (tables, queues, etc) should be set as environment variables, because the name depend on the stage (dev or prod).
+
+## Service client setup
+Client packages expose:
+
+`apiEndpoints.js` file, which exports a default object, containing endpoint urls, structured as follows
+- properties for each endpoint, named in camelCase in the format `[method][route]`, e.g. `putAsync`
+- each endpoint property has a `dev` and `prod` property
+so they can be imported and used like this
+```javascript
+// consumer.js
+import apiUrls from '@wintvelt/spqr-albums-client/apiEndpoints`
+
+const endpoint = apiUrls.getAlbumsId[process.env.stage]
+```
+
+
+package content example:
+
+```javascript
+// apiEndpoints.js
+export default {
+    getAlbumsId: {
+        dev: 'https://aws/route/to/some/endpoint',
+        prod: 'https://aws/route/to/some/other/endpoint',
+    }
+}
+
+```
 
 ---
 # Dependency publication service
