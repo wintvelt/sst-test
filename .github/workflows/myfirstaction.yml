@@ -8,6 +8,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SECRET_PUBLISH_TOKEN: ${{ secrets.SECRET_PUBLISH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      REPO: ${{ github.repository }}
       PROD_PUBLISH_ENDPOINT: https://urhe9nipda.execute-api.eu-central-1.amazonaws.com
       DEV_PUBLISH_ENDPOINT: https://6klsawe709.execute-api.eu-central-1.amazonaws.com
       DEV_QUEUE_ENDPOINT: https://sqs.eu-central-1.amazonaws.com/899888592127/dev-sst-test-dependencyQueue.fifo

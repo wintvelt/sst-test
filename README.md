@@ -33,7 +33,7 @@ Service structure is typically as follows
 ![microservice structure](/assets/microservice-structure.png)
 Notes
 - Only 1 version of npm package is available, published from master branch. Stage (dev or prod) can be passed as a parameter to most functions exposed in package.
-- Copies of some private functions may be exposed in npm package too. The consuming service needs to have sufficient authorization to access the infrastructure (database, queues etc) from these clients.
+- Some private functions may be exposed in npm package too. The consuming service needs to have sufficient authorization to access the infrastructure (database, queues etc) from these clients.
     - advantage is that services on the same (AWS) infrastructure can access each other within the infrastructure - calling `AWS.lambda.invoke()`, without the detour through public access
     - normal use case would be synchronous calls, where the consumer cares about the response from the lambda function
 - Even if consuming services only call public API Endpoints - typical for front-end services, it is still recommended to use the public npm client for this. This ensures proper registration of dependencies.
@@ -101,10 +101,11 @@ Client packages are published to npm with public access. They expose:
 
 `api.js` file, which exports a default object, containing endpoint urls, structured as follows
 - properties for each endpoint, named in camelCase in the format `[method][route]`, e.g. `putAsync`
-- each endpoint property has a `dev` and `prod` property
 
 `arns.js` file, exposing lambda arns in the same way. For setting permissions.  
 `functions.js`, which exposes `invoke[FunctionName]` style functions for lambda invocation.
+
+All functions in client will expect `process.env.STAGE` to be set (to either prod or dev)
 
 so they can be used like this
 ```javascript
@@ -112,11 +113,11 @@ so they can be used like this
 import apiUrls from '@wintvelt/spqr-albums-client/api'
 import { invokePut } from '@wintvelt/spqr-albums-client/functions'
 
-const url = apiUrls.getAlbumsId[process.env.stage]
+const url = apiUrls.getAlbumsId
 
 let result
 try {
-    result = await invokePut(params)
+    result = await invokePut(body)
 } catch (error) {
     ///
 }
@@ -139,6 +140,14 @@ export default {
 ---
 # Dependency publication service
 *on cloning this repo, replace with specifics for the service*
+
+## Client
+Per standard, all functions in client will expect `process.env.STAGE` to be set (to either prod or dev)
+Addition, client functions need
+- `process.env.SECRET_PUBLISH_TOKEN` to be set, to allow publishing dependencies.
+- `process.env.REPO` to be set to github repo name (including owner)
+
+
 
 ## API
 API is public, but heavily throttled. `PUT` API does require a secret token to be included in request body.
