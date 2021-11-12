@@ -75,10 +75,10 @@ Notes to this structure
 - Service name (`name` in root `package.json`) should be of format `[project]-[service]`
     - sst serverless will automatically prepend `[stage]-` before the service name upon deployment in infra stack - for API Gateway, Lambda functions, Dynamo tables, Queues, Cloudwatch etc)
     - for Lambda functions, sst serverless will append `[method]` after function name
-- Stack names (inside sst stack code) ideally have simple names, like `table` (for DynamoDb) or `queue` (for SQS).
+- Stack names (inside sst stack code) ideally have simple names, like `table` (for DynamoDb) or `queue` (for SQS). Api should end in `-api` to ensure output is published to parameter store (for client to retrieve)
     - no need to duplicate the service name. And in deployment, service name will be added anyway.
     - this also makes referencing in the code easier
-    - for multiple same-type stacks, prepend with a short qualifier, in camelCase. E.g. `simpleTopic` and `versionedTopic`
+    - for multiple same-type stacks, prepend with a short qualifier, in with dashes. E.g. `simple-topic` and `versioned-topic`
 - Client package name (to be published on npm) should be of format `@owner/[project]-[service]-client`
     - set in `package.json` in /npm folder
 

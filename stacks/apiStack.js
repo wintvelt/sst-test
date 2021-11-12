@@ -35,18 +35,17 @@ export default class ApiStack extends sst.Stack {
       },
     });
 
-    this.api.attachPermissions([table]);
+    this.api.attachPermissions([...generalPermissions, table]);
     this.api.attachPermissionsToRoute(routeNames.putAsync,[queue])
-    this.api.attachPermissions(generalPermissions);
      
     const outputs = {
-      
+      "url": this.api.url,
+      "asyncurl": this.api.url,
+      "createarn": this.api.getFunction(routeNames.put).functionArn,
+      "createAsyncarn": this.api.getFunction(routeNames.putAsync).functionArn
     }
 
     // Show the API endpoint in the output
-    this.addOutputs({
-      ApiEndpoint: this.api.url,
-      PutFunctionArn: this.api.getFunction(routeNames.put).functionArn
-    });
+    this.addOutputs(outputs);
   }
 }

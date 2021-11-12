@@ -23,17 +23,26 @@ export const invokeCreate = async (package) => {
     }
 
     // invoke the lambda
+    const event = { body: {
+        ownerName: process.env.REPO,
+        stage,
+        pack: package,
+        authToken: `Basic ${process.env.SECRET_PUBLISH_TOKEN}`
+    }}
+
     const lambdaParams = {
         FunctionName: functionName,
         InvocationType: 'RequestResponse',
         LogType: 'Tail',
-        Payload: body
+        Payload: JSON.stringify(event)
     }
 
     let result
     try {
         result = await lambda.invoke(lambdaParams)
-        if (result.statusCode > 299) throw new Error(`lambda invoke failed with statuscode ${result.statusCode}`)
+        if (result.statusCode > 299) {
+            throw new Error(`lambda invoke failed with statuscode ${result.statusCode} message ${result.message}`)
+        }
     } catch (error) {
         console.error('invoke lambda failed')
         throw new Error(error.message)

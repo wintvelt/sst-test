@@ -43,16 +43,6 @@ jobs:
               echo "DEPLOY=false" >> $GITHUB_ENV
             fi
           fi
-      - name: install and run tests
-        run: |
-          npm install
-          npx sst test
-      - name: If on master or dev - deploy
-        if: env.DEPLOY == 'true'
-        run: |
-          npx sst deploy --stage ${{ env.STAGE }} > testOutput
-      - name: check if npm folder exists
-        run: |
           if test -e "${{ env.NPM_FOLDER }}"; then
             echo "NPM_EXISTS=true" >> $GITHUB_ENV
             echo "npm folder exists"
@@ -60,6 +50,19 @@ jobs:
             echo "NPM_EXISTS=false" >> $GITHUB_ENV
             echo "no npm folder here"
           fi
+      - name: install and run tests
+        run: |
+          npm install
+          npx sst test
+      - name: If on master or dev - deploy
+        if: env.DEPLOY == 'true'
+        run: |
+          if [[ ${{ env.NPM_EXISTS }} =~ 'true' ]]; then
+            npx sst deploy --stage ${{ env.STAGE }} --outputs-file ./npm/${{ env.STAGE }}-stack-output.json
+            echo "saving stack output for ${{ env.stage }} in npm root"
+          else
+            npx sst deploy --stage ${{ env.STAGE }}
+            echo "just deploy stack, no npm folder, so output not saved"
       - name: if on master or dev - Publish dependencies
         if: env.DEPLOY == 'true'
         uses: indiesdev/curl@v1
@@ -74,7 +77,7 @@ jobs:
             "authToken": "Basic ${{ secrets.SECRET_PUBLISH_TOKEN }}" 
             }'
           timeout: 5000
-      - name: if on master and npm exists - bump npm patch version and publish
+      - name: if we deploy and npm exists - bump npm patch version and publish
         if: (env.NPM_EXISTS == 'true' && env.STAGE == 'prod')
         env:
           NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
