@@ -89,9 +89,9 @@ Github repo needs to have the following secrets - they are accessed and used by 
 - `SECRET_PUBLISH_TOKEN`: Basic token used to publish dependencies to a common shared service
 - `NPM_TOKEN`: Token to allow publication of client npm package to npm registry
 
-In the `.github/workflows` yml doc, the following env var can stay, they are for publishing dependencies
-- `DEV_PUBLISH_ENDPOINT`: hardcoded url of API endpoint to publish dependencies - only used for the dependency-service
-- `PROD_PUBLISH_ENDPOINT`: url for dependencies when on master branch (= prod stage)
+In the `.github/workflows` yml doc, the following env var for publishing dependencies
+- this one you can delete: `DEV_PUBLISH_ENDPOINT`: hardcoded url of API endpoint to publish dependencies - only used for the dependency-service
+- should stay in: `PROD_PUBLISH_ENDPOINT`: url for dependencies when on master branch (= prod stage)
 Your service will always publish to the prod endpoint. Also when on dev branch. (TODO)
 
 Other environment variables in backend functions can only be set in stack definition. E.g. the dynamoDb tablename needs to be set in API Gateway for the handler function to access `process.env.TABLE_NAME`. And all stack entities (tables, queues, etc) should be set as environment variables, because the name depend on the stage (dev or prod).
@@ -143,9 +143,9 @@ export default {
 
 ## Client
 Per standard, all functions in client will expect `process.env.STAGE` to be set (to either prod or dev)
-Addition, client functions need
+Additionally, client functions need
 - `process.env.SECRET_PUBLISH_TOKEN` to be set, to allow publishing dependencies.
-- `process.env.REPO` to be set to github repo name (including owner)
+- `process.env.REPO` to be set to github repo name (including owner) - for publishing dependencies
 
 
 

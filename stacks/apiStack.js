@@ -1,5 +1,4 @@
 import * as sst from "@serverless-stack/resources";
-import { generalPermissions } from "../src/libs/permissions-lib";
 
 const routeNames = {
   get: "GET   /",
@@ -35,7 +34,7 @@ export default class ApiStack extends sst.Stack {
       },
     });
 
-    this.api.attachPermissions([...generalPermissions, table]);
+    this.api.attachPermissions([table]);
     this.api.attachPermissionsToRoute(routeNames.putAsync,[queue])
      
     const outputs = {

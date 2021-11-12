@@ -11,7 +11,6 @@ jobs:
       REPO: ${{ github.repository }}
       PROD_PUBLISH_ENDPOINT: https://urhe9nipda.execute-api.eu-central-1.amazonaws.com
       DEV_PUBLISH_ENDPOINT: https://6klsawe709.execute-api.eu-central-1.amazonaws.com
-      DEV_QUEUE_ENDPOINT: https://sqs.eu-central-1.amazonaws.com/899888592127/dev-sst-test-dependencyQueue.fifo
       NPM_FOLDER: npm
     runs-on: ubuntu-latest
     steps:
@@ -63,6 +62,7 @@ jobs:
           else
             npx sst deploy --stage ${{ env.STAGE }}
             echo "just deploy stack, no npm folder, so output not saved"
+          fi
       - name: if on master or dev - Publish dependencies
         if: env.DEPLOY == 'true'
         uses: indiesdev/curl@v1
@@ -78,10 +78,15 @@ jobs:
             }'
           timeout: 5000
       - name: if we deploy and npm exists - bump npm patch version and publish
-        if: (env.NPM_EXISTS == 'true' && env.STAGE == 'prod')
+        if: (env.NPM_EXISTS == 'true' && env.DEPLOY == 'true')
         env:
           NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
         run: |
           cd npm
-          npm version patch
+          if [[ ${{ env.STAGE }} =~ 'dev' ]]; then
+            rm prod-stack-output.json
+            npm version prepatch --preid beta
+          else
+            npm version patch
+          fi
           npm publish --access=public
