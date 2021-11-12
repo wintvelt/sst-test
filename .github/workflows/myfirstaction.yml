@@ -84,9 +84,14 @@ jobs:
         run: |
           cd npm
           if [[ ${{ env.STAGE }} =~ 'dev' ]]; then
-            rm prod-stack-output.json
+            if [[ ${{ env.NPM_EXISTS }} =~ 'true ']] then
+              rm prod-stack-output.json
+            fi
             npm version prepatch --preid beta
           else
             npm version patch
           fi
           npm publish --access=public
+      - name: if we deploy and npm exists - create pull request to save npm updates
+        if: (env.NPM_EXISTS == 'true' && env.DEPLOY == 'true')
+
