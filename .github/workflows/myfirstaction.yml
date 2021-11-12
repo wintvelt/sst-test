@@ -94,4 +94,6 @@ jobs:
           npm publish --access=public
       - name: if we deploy and npm exists - create pull request to save npm updates
         if: (env.NPM_EXISTS == 'true' && env.DEPLOY == 'true')
+        run: |
+          echo "This is todo"
 
