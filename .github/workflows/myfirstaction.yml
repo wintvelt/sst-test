@@ -68,7 +68,6 @@ jobs:
             git merge $BRANCH -m "auto merge from deploy workflow"
           else
             echo "no remote hotfix branch $HOTFIX_BRANCH"
-            git checkout -b $HOTFIX_BRANCH
           fi
           if git show-ref --quiet refs/heads/$HOTFIX_BRANCH; then
             echo "did find hotfix branch"
