@@ -1,17 +1,21 @@
 name: deployment workflow
-on: [push]
+on: 
+  push:
+    branches:
+      - master
+      - dev
+    paths-ignore: # if only npm stack-output or package changed, we can ignore this update
+      - 'npm/*-stack-output.json'
+      - 'npm/package.json'
 jobs:
   publish-dependencies:
-    if: (endsWith(github.ref, '/master') || endsWith(github.ref, '/dev'))
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SECRET_PUBLISH_TOKEN: ${{ secrets.SECRET_PUBLISH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      REPO: ${{ github.repository }}
       PROD_PUBLISH_ENDPOINT: https://urhe9nipda.execute-api.eu-central-1.amazonaws.com
       DEV_PUBLISH_ENDPOINT: https://6klsawe709.execute-api.eu-central-1.amazonaws.com
-      NPM_FOLDER: npm
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -19,52 +23,68 @@ jobs:
         with:
           node-version: '16'
           registry-url: https://registry.npmjs.org/
+      - name: set env vars
+        id: localenv
+        run: |
+          BRANCH=$(git branch --show-current)
+          echo "::set-output name=branch::$BRANCH"
+          if [[ $BRANCH == 'master' ]]; then
+            echo "we are on MASTER branch"
+            echo "::set-output name=STAGE::prod"
+          else 
+            echo "we are on DEV branch"
+            echo "::set-output name=STAGE::dev"
+          fi
+      - name: set npm exists
+        id: npm
+        run: |
+          if test -e "${{ env.NPM_FOLDER }}"; then
+            echo "npm folder exists"
+            echo "::set-output name=EXISTS::true"
+          else
+            echo "no npm folder here"
+            echo "::set-output name=EXISTS::false"
+          fi
       - name: Read package.json
         id: package
         uses: juliangruber/read-file-action@v1
         with:
           path: ./package.json
-      - name: set env vars for deployment
+      - name: switch to hotfix branch
+        id: branch
         run: |
-          if [[ ${{ github.ref }} =~ '/dev' ]]; then
-            echo "we are on DEV branch"
-            echo "DEPLOY=true" >> $GITHUB_ENV
-            echo "STAGE=dev" >> $GITHUB_ENV
-            echo "PUBLISH_ENDPOINT=${{ env.DEV_PUBLISH_ENDPOINT }}" >> $GITHUB_ENV
-          else 
-            if [[ ${{ github.ref }} =~ '/master' ]]; then
-              echo "we are on MASTER branch"
-              echo "DEPLOY=true" >> $GITHUB_ENV
-              echo "STAGE=prod" >> $GITHUB_ENV
-              echo "PUBLISH_ENDPOINT=${{ env.PROD_PUBLISH_ENDPOINT }}" >> $GITHUB_ENV
-            else
-              echo "we are on another branch"
-              echo "DEPLOY=false" >> $GITHUB_ENV
-            fi
+          BRANCH=$(git branch --show-current)
+          HOTFIX_BRANCH=$BRANCH-workflow-auto-hotfix
+          echo "::set-output name=BRANCH::$BRANCH"
+          echo "::set-output name=HOTFIX_BRANCH::$HOTFIX_BRANCH"
+          git config --local user.email "action@github.com"
+          git config --local user.name "github-actions"
+          if git show-ref --quiet refs/remotes/origin/$HOTFIX_BRANCH; then
+            echo "found and deleted remote hotfix branch"
+            git checkout $HOTFIX_BRANCH
+            git merge $BRANCH -m "auto merge from deploy workflow"
           fi
-          if test -e "${{ env.NPM_FOLDER }}"; then
-            echo "NPM_EXISTS=true" >> $GITHUB_ENV
-            echo "npm folder exists"
+          if git show-ref --quiet refs/heads/$HOTFIX_BRANCH; then
+            echo "did find hotfix branch"
+            git checkout $HOTFIX_BRANCH
+            git merge $BRANCH -m "auto merge from deploy workflow"
           else
-            echo "NPM_EXISTS=false" >> $GITHUB_ENV
-            echo "no npm folder here"
+            echo "did not find hotfix branch"
+            git checkout -b $HOTFIX_BRANCH
           fi
-      - name: install and run tests
+          git branch
+      - name: deploy and (if npm exists) save output in npm folder
         run: |
           npm install
-          npx sst test
-      - name: If on master or dev - deploy
-        if: env.DEPLOY == 'true'
-        run: |
-          if [[ ${{ env.NPM_EXISTS }} =~ 'true' ]]; then
-            npx sst deploy --stage ${{ env.STAGE }} --outputs-file ./npm/${{ env.STAGE }}-stack-output.json
-            echo "saving stack output for ${{ env.stage }} in npm root"
+          STAGE=${{ steps.localenv.outputs.STAGE }}
+          if [[ ${{ steps.npm.outputs.EXISTS }} == 'true' ]]; then
+            npx sst deploy --stage $STAGE --outputs-file ./npm/$STAGE-stack-output.json
+            echo "saving stack output for $STAGE in npm root"
           else
-            npx sst deploy --stage ${{ env.STAGE }}
+            npx sst deploy --stage $STAGE
             echo "just deploy stack, no npm folder, so output not saved"
           fi
-      - name: if on master or dev - Publish dependencies
-        if: env.DEPLOY == 'true'
+      - name: Publish dependencies
         uses: indiesdev/curl@v1
         with:
           url: ${{ env.PUBLISH_ENDPOINT }}
@@ -72,28 +92,54 @@ jobs:
           headers: '{ "Content-Type": "application/json" }'
           body: '{ 
             "ownerName": "${{ github.repository }}", 
-            "stage": "${{ env.STAGE }}", 
+            "stage": "${{ steps.localenv.outputs.STAGE }}", 
             "pack": ${{ steps.package.outputs.content }},
             "authToken": "Basic ${{ secrets.SECRET_PUBLISH_TOKEN }}" 
             }'
           timeout: 5000
-      - name: if we deploy and npm exists - bump npm patch version and publish
-        if: (env.NPM_EXISTS == 'true' && env.DEPLOY == 'true')
+      - name: if npm exists - bump npm patch version and publish
+        if: (steps.npm.outputs.EXISTS == 'true')
         env:
           NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
         run: |
           cd npm
-          if [[ ${{ env.STAGE }} =~ 'dev' ]]; then
-            if [[ ${{ env.NPM_EXISTS }} =~ 'true ']] then
+          STAGE=${{ steps.localenv.outputs.STAGE }}
+          if [[ $STAGE == 'dev' ]]; then
+            if test -e prod-stack-output.json; then
               rm prod-stack-output.json
             fi
-            npm version prepatch --preid beta
+            npm version prepatch --preid dev
           else
             npm version patch
           fi
           npm publish --access=public
-      - name: if we deploy and npm exists - create pull request to save npm updates
-        if: (env.NPM_EXISTS == 'true' && env.DEPLOY == 'true')
+      - name: Add all changes and check if we need to commit files
+        id: commit
+        shell: bash
         run: |
-          echo "This is todo"
-
+          git add --all
+          if [[ -z "$(git status --porcelain)" ]]; then
+            echo "nothing changed"
+            echo "::set-output name=PUSH::false"
+          else
+            echo "trying to commit"
+            git commit -m "auto push from workflow run"
+            echo "::set-output name=PUSH::true"
+          fi
+      - name: if something committed - Push changes out
+        if: steps.commit.outputs.PUSH == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.branch.outputs.HOTFIX_BRANCH }}
+      - name: if something committed - Create pull request
+        if: steps.commit.outputs.PUSH == 'true'
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: ${{ steps.branch.outputs.HOTFIX_BRANCH }}
+          destination_branch: ${{ steps.commit.outputs.BRANCH }}
+          pr_title: "Add stack output to npm folder for ${{ steps.branch.outputs.BRANCH }} branch"
+          pr_body: ":crown: *An automated PR*"
+          pr_label: "auto-pr"
+          pr_draft: false
+          github_token: ${{ secrets.GITHUB_TOKEN }}
