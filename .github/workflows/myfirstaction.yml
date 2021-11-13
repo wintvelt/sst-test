@@ -40,7 +40,7 @@ jobs:
       - name: set npm exists
         id: npm
         run: |
-          if test -e "${{ env.NPM_FOLDER }}"; then
+          if test -e npm; then
             echo "npm folder exists"
             echo "::set-output name=EXISTS::true"
           else
