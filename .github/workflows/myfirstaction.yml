@@ -139,7 +139,7 @@ jobs:
         uses: repo-sync/pull-request@v2
         with:
           source_branch: ${{ steps.branch.outputs.HOTFIX_BRANCH }}
-          destination_branch: ${{ steps.commit.outputs.BRANCH }}
+          destination_branch: ${{ steps.branch.outputs.BRANCH }}
           pr_title: "Add stack output to npm folder for ${{ steps.branch.outputs.BRANCH }} branch"
           pr_body: ":crown: *An automated PR*"
           pr_label: "auto-pr"
