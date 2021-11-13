@@ -61,7 +61,7 @@ jobs:
           echo "::set-output name=HOTFIX_BRANCH::$HOTFIX_BRANCH"
           git config --local user.email "action@github.com"
           git config --local user.name "github-actions"
-          git show-ref
+          git ls-remote --heads git@github.com:${{ github.repository }}.git $HOTFIX_BRANCH
           if git show-ref --quiet refs/remotes/origin/$HOTFIX_BRANCH; then
             echo "found and deleted remote hotfix branch"
             git checkout $HOTFIX_BRANCH
