@@ -56,29 +56,12 @@ jobs:
         id: branch
         run: |
           BRANCH=$(git branch --show-current)
-          HOTFIX_BRANCH=$BRANCH-workflow-auto-hotfix
+          HOTFIX_BRANCH=$BRANCH-workflow-auto-hotfix-$(date +%Y%m%d_%H%M%S)
           echo "::set-output name=BRANCH::$BRANCH"
           echo "::set-output name=HOTFIX_BRANCH::$HOTFIX_BRANCH"
-          git show-ref
-          git ls-remote --heads git@github.com:${{ github.repository }}.git $HOTFIX_BRANCH
           git config --local user.email "action@github.com"
           git config --local user.name "github-actions"
-          if git show-ref --quiet refs/remotes/origin/$HOTFIX_BRANCH; then
-            echo "found and deleted remote hotfix branch"
-            git checkout $HOTFIX_BRANCH
-            git merge $BRANCH -m "auto merge from deploy workflow"
-          else
-            echo "no remote hotfix branch $HOTFIX_BRANCH"
-          fi
-          if git show-ref --quiet refs/heads/$HOTFIX_BRANCH; then
-            echo "did find hotfix branch"
-            git checkout $HOTFIX_BRANCH
-            git merge $BRANCH -m "auto merge from deploy workflow"
-          else
-            echo "did not find hotfix branch"
-            git checkout -b $HOTFIX_BRANCH
-          fi
-          git branch
+          git checkout -b $HOTFIX_BRANCH
       - name: deploy and (if npm exists) save output in npm folder
         run: |
           npm install
