@@ -31,9 +31,11 @@ jobs:
           if [[ $BRANCH == 'master' ]]; then
             echo "we are on MASTER branch"
             echo "::set-output name=STAGE::prod"
+            echo "::set-output name=PUBLISH_ENDPOINT::${{ env.PROD_PUBLISH_ENDPOINT }}"
           else 
             echo "we are on DEV branch"
             echo "::set-output name=STAGE::dev"
+            echo "::set-output name=PUBLISH_ENDPOINT::${{ env.DEV_PUBLISH_ENDPOINT }}"
           fi
       - name: set npm exists
         id: npm
@@ -87,7 +89,7 @@ jobs:
       - name: Publish dependencies
         uses: indiesdev/curl@v1
         with:
-          url: ${{ env.PUBLISH_ENDPOINT }}
+          url: ${{ steps.localenv.outputs.PUBLISH_ENDPOINT }}
           method: PUT
           headers: '{ "Content-Type": "application/json" }'
           body: '{ 
