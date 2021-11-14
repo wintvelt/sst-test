@@ -98,10 +98,11 @@ jobs:
               rm prod-stack-output.json
             fi
             npm version prepatch --preid dev
+            npm publish --access=public --tag dev
           else
             npm version patch
+            npm publish --access=public
           fi
-          npm publish --access=public
       - name: Add all changes and check if we need to commit files
         id: commit
         shell: bash
