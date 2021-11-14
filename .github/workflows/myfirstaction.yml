@@ -30,11 +30,11 @@ jobs:
           echo "::set-output name=branch::$BRANCH"
           if [[ $BRANCH == 'master' ]]; then
             echo "we are on MASTER branch"
-            echo "::set-output name=STAGE::prod"
+            echo "STAGE=prod" >> $GITHUB_ENV
             echo "::set-output name=PUBLISH_ENDPOINT::${{ env.PROD_PUBLISH_ENDPOINT }}"
           else 
             echo "we are on DEV branch"
-            echo "::set-output name=STAGE::dev"
+            echo "STAGE=dev" >> $GITHUB_ENV
             echo "::set-output name=PUBLISH_ENDPOINT::${{ env.DEV_PUBLISH_ENDPOINT }}"
           fi
       - name: set npm exists
@@ -65,7 +65,7 @@ jobs:
       - name: deploy and (if npm exists) save output in npm folder
         run: |
           npm install
-          STAGE=${{ steps.localenv.outputs.STAGE }}
+          STAGE=${{ env.STAGE }}
           if [[ ${{ steps.npm.outputs.EXISTS }} == 'true' ]]; then
             npx sst deploy --stage $STAGE --outputs-file ./npm/$STAGE-stack-output.json
             echo "saving stack output for $STAGE in npm root"
@@ -81,7 +81,7 @@ jobs:
           headers: '{ "Content-Type": "application/json" }'
           body: '{ 
             "ownerName": "${{ github.repository }}", 
-            "stage": "${{ steps.localenv.outputs.STAGE }}", 
+            "stage": "${{ env.STAGE }}", 
             "pack": ${{ steps.package.outputs.content }},
             "authToken": "Basic ${{ secrets.SECRET_PUBLISH_TOKEN }}" 
             }'
@@ -92,7 +92,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
         run: |
           cd npm
-          STAGE=${{ steps.localenv.outputs.STAGE }}
+          STAGE=${{ env.STAGE }}
           if [[ $STAGE == 'dev' ]]; then
             if test -e prod-stack-output.json; then
               rm prod-stack-output.json
