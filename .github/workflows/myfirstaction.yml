@@ -64,8 +64,11 @@ jobs:
           git checkout -b $HOTFIX_BRANCH
       - name: deploy and (if npm exists) save output in npm folder
         run: |
+          echo "::group::npm install"
           npm install
+          echo "::endgroup::"
           STAGE=${{ env.STAGE }}
+          echo "::group::deploy"
           if [[ ${{ steps.npm.outputs.EXISTS }} == 'true' ]]; then
             npx sst deploy --stage $STAGE --outputs-file ./npm/$STAGE-stack-output.json
             echo "saving stack output for $STAGE in npm root"
@@ -73,6 +76,7 @@ jobs:
             npx sst deploy --stage $STAGE
             echo "just deploy stack, no npm folder, so output not saved"
           fi
+          echo "::endgroup::"
       - name: Publish dependencies
         uses: indiesdev/curl@v1
         with:

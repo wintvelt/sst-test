@@ -1,26 +1,28 @@
 // client functions for dependencies
 import { lambda } from '../src/libs/lambda-lib'
-import { ssm } from '../src/libs/ssm-lib'
 
+// only dev and prod will be deployed
 const stageCheck = (process.env.STAGE === 'prod' || process.env.STAGE === 'dev')
+
+// dynamic import based on stage
+async function importModule() {
+    const stackOutputFile = `./${stage}-dev-stackoutput.json`
+    let stackOutput
+    try {
+       stackOutput = await import(stackOutputFile)
+    } catch (error) {
+       console.error('could not import stackoutput file');
+    }
+    return stackOutput
+ }
+
 
 export const invokeCreate = async (package) => {
     if (!stageCheck) throw new Error('environment stage not set')
 
     const stage = process.env.STAGE
-
-    // retrieve functionname from parameter store
-    const key = {
-        Name: `${stage}-${package.name}-invokeCreate-arn`
-    }
-    let functionName
-    try {
-        const param = await ssm.getParameter(key)
-        functionName = param.Parameter.Value
-    } catch (error) {
-        console.error('could not retrieve function name')
-        throw new Error(error.message)
-    }
+    const stackOutput = await importModule()
+    const functionArn = stackOutput['dev-sst-test-api']['createarn']
 
     // invoke the lambda
     const event = { body: {
@@ -31,7 +33,7 @@ export const invokeCreate = async (package) => {
     }}
 
     const lambdaParams = {
-        FunctionName: functionName,
+        FunctionName: functionArn,
         InvocationType: 'RequestResponse',
         LogType: 'Tail',
         Payload: JSON.stringify(event)
