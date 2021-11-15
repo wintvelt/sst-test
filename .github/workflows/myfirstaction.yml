@@ -98,9 +98,7 @@ jobs:
           cd npm
           STAGE=${{ env.STAGE }}
           if [[ $STAGE == 'dev' ]]; then
-            if test -e prod-stack-output.json; then
-              rm prod-stack-output.json
-            fi
+            echo "{}" > prod-stack-output.json
             npm version prepatch --preid dev
             npm publish --access=public --tag dev
           else
