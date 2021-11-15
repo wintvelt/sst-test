@@ -89,7 +89,7 @@ Github repo needs to have the following secrets - they are accessed and used by 
 - `SECRET_PUBLISH_TOKEN`: Basic token used to publish dependencies to a common shared service
 - `NPM_TOKEN`: Token to allow publication of client npm package to npm registry
 
-*THIS SHOULD BE UPDATED*
+*THIS SHOULD BE UPDATED and more*
 In the `.github/workflows` yml doc, the following env var for publishing dependencies
 - this one you can delete: `DEV_PUBLISH_ENDPOINT`: hardcoded url of API endpoint to publish dependencies - only used for the dependency-service
 - should stay in: `PROD_PUBLISH_ENDPOINT`: url for dependencies when on master branch (= prod stage)
