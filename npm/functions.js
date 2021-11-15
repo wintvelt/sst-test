@@ -1,37 +1,40 @@
 // client functions for dependencies
 import { lambda } from '../src/libs/lambda-lib'
 
+// import both stackoutputs
+import devStageOutput from './dev-stack-output.json'
+import prodStageOutput from './dev-stack-output.json'
+
 // only dev and prod will be deployed
-const stageCheck = (process.env.STAGE === 'prod' || process.env.STAGE === 'dev')
+const stage = process.env.STAGE
+const stageCheck = (stage === 'prod' || stage === 'dev')
 
 // dynamic import based on stage
-async function importModule() {
-    const stackOutputFile = `./${stage}-dev-stackoutput.json`
-    let stackOutput
-    try {
-       stackOutput = await import(stackOutputFile)
-    } catch (error) {
-       console.error('could not import stackoutput file');
-    }
-    return stackOutput
+async function importModule(stage) {
+    // const stackOutputFile = `./${stage}-stack-output.json`
+    // let stackOutput
+    // let stackOutput
+    // try {
+    //    stackOutput = await import(stackOutputFile)
+    // } catch (error) {
+    //    console.error('could not import stackoutput file')
+    //    throw new Error(error.message)
+    // }
+    // return stackOutput
+    return stackOutputFile = (stage === 'prod')? prodStageOutput : devStageOutput
  }
 
-
-export const invokeCreate = async (package) => {
+const invoke = async ({event, stackName, functionName}) => {
     if (!stageCheck) throw new Error('environment stage not set')
 
-    const stage = process.env.STAGE
-    const stackOutput = await importModule()
-    const functionArn = stackOutput['dev-sst-test-api']['createarn']
-
-    // invoke the lambda
-    const event = { body: {
-        ownerName: process.env.REPO,
-        stage,
-        pack: package,
-        authToken: `Basic ${process.env.SECRET_PUBLISH_TOKEN}`
-    }}
-
+    let stackOutput
+    try {
+        stackOutput = await importModule(stage)
+    } catch (error) {
+        console.error('could not get endpoints')
+        throw new Error(error.message)
+    }
+    const functionArn = stackOutput[`${stage}-${stackName}`][functionName]
     const lambdaParams = {
         FunctionName: functionArn,
         InvocationType: 'RequestResponse',
@@ -39,16 +42,32 @@ export const invokeCreate = async (package) => {
         Payload: JSON.stringify(event)
     }
 
-    let result
+    let parsedResult = {}
     try {
-        result = await lambda.invoke(lambdaParams)
-        if (result.statusCode > 299) {
-            throw new Error(`lambda invoke failed with statuscode ${result.statusCode} message ${result.message}`)
+        const result = await lambda.invoke(lambdaParams)
+        parsedResult = JSON.parse(result.Payload)
+        if (parsedResult.statusCode > 299) {
+            throw new Error(`lambda invoke failed with statuscode ${parsedResult.statusCode} message ${parsedResult.body}`)
         }
     } catch (error) {
         console.error('invoke lambda failed')
         throw new Error(error.message)
     }
+    return parsedResult
+}
 
-    return result
+export const invokeCreate = (event) => {
+    return invoke({
+        event,
+        stackName: 'sst-test-api',
+        functionName: 'createarn'
+    })
+}
+
+export const invokeCreateAsync = (event) => {
+    return invoke({
+        event,
+        stackName: 'sst-test-api',
+        functionName: 'createAsyncarn'
+    })
 }

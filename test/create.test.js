@@ -5,20 +5,21 @@ const baseEvent = {
     body: {
         ownerName: 'wintvelt/test-run',
         stage: 'dev',
-        pack: { dependencies: { 'firstdep': '0.0.1' } },
+        pack: { dependencies: { 'create-dep': '1.0.0' } },
         authToken: `Basic ${process.env.SECRET_PUBLISH_TOKEN}`
     }
 }
 
 const baseItem = {
     packageStage: 'dev-test-run',
-    dependency: 'firstdep',
-    version: '0.0.1',
+    dependency: 'create-dep',
+    version: '1.0.0',
     createdAt: expect.anything()
 }
 
 test("Test making update Item", () => {
     const result = makeLatest(baseEvent)
+    console.log(result)
     expect(result).toHaveLength(1)
     const Item = result[0]
     expect(Item).toMatchObject(baseItem)
