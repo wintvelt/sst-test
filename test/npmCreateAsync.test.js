@@ -1,6 +1,9 @@
 // tests for the PUT ASYNC endpoint = createAsync function
 import { invokeCreateAsync } from '../npm/functions';
 
+const testNotProd = (...args) =>
+  (process.env.STAGE !== 'prod') ? test(...args) : test.skip(...args);
+
 const baseEvent = {
     body: {
         ownerName: 'wintvelt/test-run',
@@ -9,7 +12,7 @@ const baseEvent = {
     }
 }
 
-test("Test invoking create lambda from npm", async () => {
+testNotProd("Test invoking create lambda from npm", async () => {
     let result = {}
     try {
         result = await invokeCreateAsync(baseEvent)
