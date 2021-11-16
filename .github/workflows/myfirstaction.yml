@@ -27,7 +27,7 @@ jobs:
         id: localenv
         run: |
           BRANCH=$(git branch --show-current)
-          echo "::set-output name=branch::$BRANCH"
+          echo "::set-output name=BRANCH::$BRANCH"
           if [[ $BRANCH == 'master' ]]; then
             echo "we are on MASTER branch"
             echo "STAGE=prod" >> $GITHUB_ENV
@@ -52,16 +52,10 @@ jobs:
         uses: juliangruber/read-file-action@v1
         with:
           path: ./package.json
-      - name: switch to hotfix branch
-        id: branch
+      - name: switch to auto git user
         run: |
-          BRANCH=$(git branch --show-current)
-          HOTFIX_BRANCH=$BRANCH-workflow-auto-hotfix-$(date +%Y%m%d_%H%M%S)
-          echo "::set-output name=BRANCH::$BRANCH"
-          echo "::set-output name=HOTFIX_BRANCH::$HOTFIX_BRANCH"
           git config --local user.email "action@github.com"
           git config --local user.name "github-actions"
-          git checkout -b $HOTFIX_BRANCH
       - name: deploy and (if npm exists) save output in npm folder
         run: |
           echo "::group::npm install"
@@ -122,15 +116,4 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ steps.branch.outputs.HOTFIX_BRANCH }}
-      - name: if something committed - Create pull request
-        if: steps.commit.outputs.PUSH == 'true'
-        uses: repo-sync/pull-request@v2
-        with:
-          source_branch: ${{ steps.branch.outputs.HOTFIX_BRANCH }}
-          destination_branch: ${{ steps.branch.outputs.BRANCH }}
-          pr_title: "Add stack output to npm folder for ${{ steps.branch.outputs.BRANCH }} branch"
-          pr_body: ":crown: *An automated PR*"
-          pr_label: "auto-pr"
-          pr_draft: false
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.localenv.outputs.BRANCH }}
