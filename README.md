@@ -15,7 +15,7 @@ The general idea is that a microservice
 This template contains all the basics, and an example service, for posting (and retrieving) microservice dependencies. Inner workings described at the [end of this doc](#dependency-publication-service).
 
 ## APIs and Event streams
-The microservice is responsible for the following
+The microservice is responsible for:
 - Expose APIs to read/ write to database, and to post commands to the SQS queue, for async processing.
     - async queue APIs should have route format like `/normal/route/async/`
 - Setup SNS topic to publish internal events, for other services to subscribe to
