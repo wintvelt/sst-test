@@ -20,7 +20,7 @@ export default class ApiStack extends sst.Stack {
       defaultFunctionProps: {
         environment: {
           TABLE_NAME: table.tableName,
-          QUEUE_URL: queue.sqsQueue.queueURL,
+          QUEUE_URL: queue.sqsQueue.queueUrl,
           SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
           AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
         },
