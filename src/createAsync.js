@@ -11,7 +11,6 @@ import { inputSchema } from './libs/create-input-schema'
 
 
 const baseHandler = async (event) => {
-    console.log(process.env.QUEUE_URL)
 
     const params = {
         MessageAttributes: {
