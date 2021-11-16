@@ -10,8 +10,6 @@ const baseEvent = {
     }
 }
 
-console.log(process.env)
-
 test("Test invoking create lambda from npm", async () => {
     let result = {}
     try {
@@ -29,7 +27,6 @@ test("Test invoking create lambda from npm with wrong token", async () => {
     try {
         result = await invokeCreate({ body: { ...baseEvent.body, authToken: 'WRONG' } })
     } catch (error) {
-        console.error(error.message)
         result.statusCode = 500
         result.message = error.message
     }

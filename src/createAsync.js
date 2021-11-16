@@ -11,6 +11,7 @@ import { inputSchema } from './libs/create-input-schema'
 
 
 const baseHandler = async (event) => {
+    console.log(process.env.QUEUE_NAME)
 
     const params = {
         MessageAttributes: {
@@ -28,6 +29,7 @@ const baseHandler = async (event) => {
     try {
         await sqs.sendMessage(params)
     } catch (error) {
+        console.error(error.message)
         throw new Error('could not post to queue')
     }
 
