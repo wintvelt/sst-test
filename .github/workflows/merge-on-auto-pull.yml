@@ -4,8 +4,7 @@ on:
     types:
       - labeled
       - unlabeled
-      - reopened
-      - unlocked
+      - opened
 jobs:
   automerge:
     runs-on: ubuntu-latest
@@ -17,7 +16,6 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           MERGE_FORKS: "false"
-          MERGE_LABELS: "auto-pr"
           BLOCK_LABELS: "blocked, wontfix, invalid"
           MERGE_METHOD: "merge"
           CLOSE_ON_CONFLICT: "true"
