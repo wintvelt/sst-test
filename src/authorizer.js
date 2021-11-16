@@ -4,7 +4,8 @@
 // Note that token values are case-sensitive.
 
 export function handler (event, context, callback) {
-    var token = event.headers?.Authorization
+    let token = event.headers?.authorization
+
     switch (token) {
         case `Basic ${process.env.SECRET_PUBLISH_TOKEN}`:
             callback(null, generatePolicy('user', 'Allow', event.methodArn));

@@ -174,16 +174,17 @@ The input schema for the event (to be passed as parameter) to both functions is
                 ownerName: { type: 'string', pattern: '.+/{1}.+' }, // string with 1 slash
                 stage: { type: 'string', enum: ['prod', 'dev'] },
                 pack: { type: 'object' },
-                authToken: { type: 'string', const: `Basic ${process.env.SECRET_PUBLISH_TOKEN}`}
             },
-            required: ['ownerName', 'stage']
+            required: ['ownerName', 'stage', 'pack']
         }
     }
 }
 ```
 
 ## API
-API is public, but heavily throttled. `PUT` API does require a secret token to be included in request body.
+All API enpoints require `Authorization` header to be included in format `Basic (secret-token)`
+
+In addition, endpoints are heavily throttled. But should not cause problems, because expected invocation frequency is low per account/ project: only on each push/ deploy.
 
 ### `GET /`
 Returns list of all [stage-packages] in database who published dependencies. Can be useful to collect the complete contents of the database, by using these ids to perform individual get requests for each.

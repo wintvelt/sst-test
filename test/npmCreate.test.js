@@ -6,7 +6,6 @@ const baseEvent = {
         ownerName: 'wintvelt/test-run',
         stage: 'dev',
         pack: { dependencies: { 'firstdep': '0.0.1' } },
-        authToken: `Basic ${process.env.SECRET_PUBLISH_TOKEN}`
     }
 }
 

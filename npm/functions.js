@@ -10,7 +10,7 @@ const stage = process.env.STAGE
 const stageCheck = (stage === 'prod' || stage === 'dev')
 
 // dynamic import based on stage
-async function importModule(stage) {
+function importModule(stage) {
     // const stackOutputFile = `./${stage}-stack-output.json`
     // let stackOutput
     // let stackOutput
@@ -21,19 +21,14 @@ async function importModule(stage) {
     //    throw new Error(error.message)
     // }
     // return stackOutput
-    return stackOutputFile = (stage === 'prod')? prodStageOutput : devStageOutput
- }
+    return stackOutputFile = (stage === 'prod') ? prodStageOutput : devStageOutput
+}
 
-const invoke = async ({event, stackName, functionName}) => {
+const invoke = async ({ event, stackName, functionName }) => {
     if (!stageCheck) throw new Error('environment stage not set')
 
-    let stackOutput
-    try {
-        stackOutput = await importModule(stage)
-    } catch (error) {
-        console.error('could not get endpoints')
-        throw new Error(error.message)
-    }
+    const stackOutput = importModule(stage)
+    
     const functionArn = stackOutput[`${stage}-${stackName}`][functionName]
     const lambdaParams = {
         FunctionName: functionArn,

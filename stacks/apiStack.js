@@ -26,11 +26,14 @@ export default class ApiStack extends sst.Stack {
                     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
                 },
             },
-            defaultAuthorizationType: ApiAuthorizationType.CUSTOM,
+            defaultAuthorizationType: sst.ApiAuthorizationType.CUSTOM,
             defaultAuthorizer: new HttpLambdaAuthorizer({
                 authorizerName: "LambdaAuthorizer",
                 handler: new sst.Function(this, "Authorizer", {
                     handler: "src/authorizer.handler",
+                    environment: {
+                        SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
+                    }
                 }),
             }),
             defaultThrottlingRateLimit: 500,
