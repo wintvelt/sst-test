@@ -65,7 +65,7 @@ jobs:
       - name: deploy and (if npm exists) save output in npm folder
         run: |
           echo "::group::npm install"
-          npm install
+          npm ci
           echo "::endgroup::"
           STAGE=${{ env.STAGE }}
           echo "::group::deploy"
