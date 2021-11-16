@@ -1,7 +1,6 @@
 name: Auto-Merge
 on:
-  pull_request_target:
-    types: [opened]
+  pull_request
 
 jobs:
   auto-merge-on-auto-pull:
