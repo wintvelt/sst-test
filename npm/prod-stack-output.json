@@ -1,1 +1,18 @@
-{}
+{
+  "prod-sst-test-dependencies": {
+    "ExportsOutputFnGetAttdependenciesTable66493A0FArn170549B3": "arn:aws:dynamodb:eu-central-1:899888592127:table/prod-sst-test-dependencies",
+    "ExportsOutputRefdependenciesTable66493A0F53F99D89": "prod-sst-test-dependencies"
+  },
+  "prod-sst-test-dependencyQueue": {
+    "ExportsOutputRefdependencyQueueBFB130D9C07AD597": "https://sqs.eu-central-1.amazonaws.com/899888592127/prod-sst-test-dependencyQueue.fifo",
+    "ExportsOutputFnGetAttdependencyQueueBFB130D9Arn5C4D4430": "arn:aws:sqs:eu-central-1:899888592127:prod-sst-test-dependencyQueue.fifo",
+    "QueueARN": "arn:aws:sqs:eu-central-1:899888592127:prod-sst-test-dependencyQueue.fifo",
+    "QueueURL": "https://sqs.eu-central-1.amazonaws.com/899888592127/prod-sst-test-dependencyQueue.fifo"
+  },
+  "prod-sst-test-api": {
+    "asyncurl": "https://urhe9nipda.execute-api.eu-central-1.amazonaws.com",
+    "createarn": "arn:aws:lambda:eu-central-1:899888592127:function:prod-sst-test-api-ApiLambdaPUTE05FDB13-4oMgJMk3L7iY",
+    "url": "https://urhe9nipda.execute-api.eu-central-1.amazonaws.com",
+    "createAsyncarn": "arn:aws:lambda:eu-central-1:899888592127:function:prod-sst-test-api-ApiLambdaPUTasyncEC2F4B34-u71h0UrY3c0b"
+  }
+}
