@@ -86,7 +86,7 @@ jobs:
           body: '{ 
             "ownerName": "${{ github.repository }}", 
             "stage": "${{ env.STAGE }}", 
-            "pack": ${{ steps.package.outputs.content }},
+            "pack": ${{ steps.package.outputs.content }}
             }'
           timeout: 5000
       - name: if npm exists - bump npm patch version and publish

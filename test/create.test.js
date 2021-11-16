@@ -1,4 +1,5 @@
 // tests for the PUT endpoint = create function
+// tests only business logic, no persistent DB updates
 import { makeLatest } from '../src/create';
 
 const baseEvent = {
