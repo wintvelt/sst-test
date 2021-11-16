@@ -7,6 +7,7 @@ export function handler (event, context, callback) {
     let token = event.headers?.authorization
     console.log({token})
     console.log(process.env.SECRET_PUBLISH_TOKEN)
+    console.log(`Basic ${process.env.SECRET_PUBLISH_TOKEN}` === token)
 
     switch (token) {
         case `Basic ${process.env.SECRET_PUBLISH_TOKEN}`:
