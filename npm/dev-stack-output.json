@@ -4,6 +4,7 @@
     "ExportsOutputRefdependenciesTable66493A0F53F99D89": "dev-sst-test-dependencies"
   },
   "dev-sst-test-dependencyQueue": {
+    "ExportsOutputFnGetAttdependencyQueueBFB130D9QueueNameBC43625A": "dev-sst-test-dependencyQueue.fifo",
     "ExportsOutputFnGetAttdependencyQueueBFB130D9Arn5C4D4430": "arn:aws:sqs:eu-central-1:899888592127:dev-sst-test-dependencyQueue.fifo",
     "QueueARN": "arn:aws:sqs:eu-central-1:899888592127:dev-sst-test-dependencyQueue.fifo",
     "QueueURL": "https://sqs.eu-central-1.amazonaws.com/899888592127/dev-sst-test-dependencyQueue.fifo"
