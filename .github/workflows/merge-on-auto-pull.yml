@@ -1,5 +1,4 @@
 name: Auto-Merge
-name: automerge
 on:
   pull_request:
     types:
