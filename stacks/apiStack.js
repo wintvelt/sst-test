@@ -1,50 +1,58 @@
+import { HttpLambdaAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers";
 import * as sst from "@serverless-stack/resources";
 
 const routeNames = {
-  get: "GET   /",
-  put: "PUT   /",
-  putAsync: "PUT   /async"
+    get: "GET   /",
+    put: "PUT   /",
+    putAsync: "PUT   /async"
 }
 
 export default class ApiStack extends sst.Stack {
-  // Public reference to the API
-  api;
+    // Public reference to the API
+    api;
 
-  constructor(scope, id, props) {
-    super(scope, id, props);
+    constructor(scope, id, props) {
+        super(scope, id, props);
 
-    const { table, queue } = props;
+        const { table, queue } = props;
 
-    // Create the API
-    this.api = new sst.Api(this, "Api", {
-      defaultFunctionProps: {
-        environment: {
-          TABLE_NAME: table.tableName,
-          QUEUE_URL: queue.sqsQueue.queueUrl,
-          SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
-          AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
-        },
-      },
-      defaultThrottlingRateLimit: 500,
-      defaultThrottlingBurstLimit: 100,
-      routes: {
-        [routeNames.put]: "src/create.handler",
-        [routeNames.putAsync]: "src/createAsync.handler",
-        [routeNames.get]: "src/get.handler"
-      },
-    });
+        // Create the API
+        this.api = new sst.Api(this, "Api", {
+            defaultFunctionProps: {
+                environment: {
+                    TABLE_NAME: table.tableName,
+                    QUEUE_URL: queue.sqsQueue.queueUrl,
+                    SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
+                    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+                },
+            },
+            defaultAuthorizationType: ApiAuthorizationType.CUSTOM,
+            defaultAuthorizer: new HttpLambdaAuthorizer({
+                authorizerName: "LambdaAuthorizer",
+                handler: new sst.Function(this, "Authorizer", {
+                    handler: "src/authorizer.handler",
+                }),
+            }),
+            defaultThrottlingRateLimit: 500,
+            defaultThrottlingBurstLimit: 100,
+            routes: {
+                [routeNames.put]: "src/create.handler",
+                [routeNames.putAsync]: "src/createAsync.handler",
+                [routeNames.get]: "src/get.handler"
+            },
+        });
 
-    this.api.attachPermissions([table]);
-    this.api.attachPermissionsToRoute(routeNames.putAsync,[queue])
-     
-    const outputs = {
-      "url": this.api.url,
-      "asyncurl": this.api.url,
-      "createarn": this.api.getFunction(routeNames.put).functionArn,
-      "createAsyncarn": this.api.getFunction(routeNames.putAsync).functionArn
+        this.api.attachPermissions([table]);
+        this.api.attachPermissionsToRoute(routeNames.putAsync, [queue])
+
+        const outputs = {
+            "url": this.api.url,
+            "asyncurl": this.api.url,
+            "createarn": this.api.getFunction(routeNames.put).functionArn,
+            "createAsyncarn": this.api.getFunction(routeNames.putAsync).functionArn
+        }
+
+        // Show the API endpoint in the output
+        this.addOutputs(outputs);
     }
-
-    // Show the API endpoint in the output
-    this.addOutputs(outputs);
-  }
 }
