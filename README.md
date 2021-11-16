@@ -89,11 +89,12 @@ Github repo needs to have the following secrets - they are accessed and used by 
 - `SECRET_PUBLISH_TOKEN`: Basic token used to publish dependencies to a common shared service
 - `NPM_TOKEN`: Token to allow publication of client npm package to npm registry
 
-*THIS SHOULD BE UPDATED and much more*
+*THIS SHOULD BE UPDATED*
 In the `.github/workflows` yml doc, the following env var for publishing dependencies
 - this one you can delete: `DEV_PUBLISH_ENDPOINT`: hardcoded url of API endpoint to publish dependencies - only used for the dependency-service
 - should stay in: `PROD_PUBLISH_ENDPOINT`: url for dependencies when on master branch (= prod stage)
-Your service will always publish to the prod endpoint. Also when on dev branch. (TODO)
+Your service will always publish to the prod endpoint. Also when on dev branch.
+- you should also change the other dev_publish references to prod_publish
 
 Other environment variables in backend functions can only be set in stack definition. E.g. the dynamoDb tablename needs to be set in API Gateway for the handler function to access `process.env.TABLE_NAME`. And all stack entities (tables, queues, etc) should be set as environment variables, because the name depend on the stage (dev or prod).
 
@@ -103,10 +104,9 @@ Client packages are published to npm with public access. They expose:
 `api.js` file, which exports a default object, containing endpoint urls, structured as follows
 - properties for each endpoint, named in camelCase in the format `[method][route]`, e.g. `putAsync`
 
-`arns.js` file, exposing lambda arns in the same way. For setting permissions.  
+`arns.js` file, exposing lambda arns in the same way. For setting permissions. Typically for sns topics to publish to.  
 `functions.js`, which exposes `invoke[FunctionName]` style functions for lambda invocation.
-
-All functions in client will expect `process.env.STAGE` to be set (to either prod or dev)
+- All functions in client will expect `process.env.STAGE` to be set (to either prod or dev)
 
 so they can be used like this
 ```javascript
@@ -114,18 +114,25 @@ so they can be used like this
 import apiUrls from '@wintvelt/spqr-albums-client/api'
 import { invokePut } from '@wintvelt/spqr-albums-client/functions'
 
-const url = apiUrls.getAlbumsId
+const url = apiUrls.getAlbumsId[process.env.STAGE]
 
-let result
+let fetchResult
 try {
-    result = await invokePut(body)
+    fetchResult = await axios(url+'/albumId1234')
+} catch (error) {
+    ///
+}
+
+let invokeResult
+try {
+    invokeResult = await invokePut(myEvent)
 } catch (error) {
     ///
 }
 ```
 
 
-package content example:
+client package content example:
 
 ```javascript
 // apiEndpoints.js
@@ -140,15 +147,40 @@ export default {
 
 ---
 # Dependency publication service
-*on cloning this repo, replace with specifics for the service*
+*on cloning this repo, replace with specifics for your service*
 
 ## Client
 Per standard, all functions in client will expect `process.env.STAGE` to be set (to either prod or dev)
 Additionally, client functions need
 - `process.env.SECRET_PUBLISH_TOKEN` to be set, to allow publishing dependencies.
-- `process.env.REPO` to be set to github repo name (including owner) - for publishing dependencies
 
+Functions can be imported like this
+```javascript
+import { invoke, invokeAsync } from '@wintvelt/sst-test-client'
+```
 
+`invoke(event)` will directly publish the dependencies, allowing to read the changes applied.
+
+`invokeAsync(event)` will asynchronously publish the dependencies, by adding to a queue (internal) for processing async.
+
+The input schema for the event (to be passed as parameter) to both functions is
+```javascript
+{
+    type: 'object',
+    properties: {
+        body: {
+            type: 'object',
+            properties: {
+                ownerName: { type: 'string', pattern: '.+/{1}.+' }, // string with 1 slash
+                stage: { type: 'string', enum: ['prod', 'dev'] },
+                pack: { type: 'object' },
+                authToken: { type: 'string', const: `Basic ${process.env.SECRET_PUBLISH_TOKEN}`}
+            },
+            required: ['ownerName', 'stage']
+        }
+    }
+}
+```
 
 ## API
 API is public, but heavily throttled. `PUT` API does require a secret token to be included in request body.
@@ -193,9 +225,10 @@ data: {
 ```
 
 ## Published event topics
+(none yet)
 
 ## Published queues for external commands
-
+(only exposed via async API endpoint and async function)
 
 ## Subscription to external event topics
 (none)
