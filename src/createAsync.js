@@ -11,7 +11,7 @@ import { inputSchema } from './libs/create-input-schema'
 
 
 const baseHandler = async (event) => {
-    console.log(process.env.QUEUE_NAME)
+    console.log(process.env.QUEUE_URL)
 
     const params = {
         MessageAttributes: {
@@ -23,7 +23,7 @@ const baseHandler = async (event) => {
         MessageBody: JSON.stringify(event.body),
         MessageDeduplicationId: new Date().toISOString(),  // Required for FIFO queues
         MessageGroupId: "deps",  // Required for FIFO queues
-        QueueUrl: process.env.QUEUE_NAME
+        QueueUrl: process.env.QUEUE_URL
     };
 
     try {
