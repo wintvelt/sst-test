@@ -103,7 +103,7 @@ jobs:
         with:
           url: ${{ steps.localenv.outputs.PUBLISH_ENDPOINT }}
           method: PUT
-          headers: '{ "Content-Type": "application/json", "Authorization": "Basic ${{ secrets.SECRET_PUBLISH_TOKEN }}" }'
+          headers: '{ "Content-Type": "application/json", "Authorization": "Basic ${{ env.SECRET_PUBLISH_TOKEN }}" }'
           body: '{ 
             "ownerName": "${{ github.repository }}", 
             "stage": "${{ env.STAGE }}", 
