@@ -60,19 +60,18 @@ Notes
 │   └───index.js
 ├───test/
 │   ├───post-deploy/
-│   │   └───with-updates/
-│   ├───pre-deploy/
-│   ├───apiStack.test.js
-│   └───create.test.js
+│   ├───post-deploy-with-updates/
+│   └───pre-deploy/
 ├───.gitignore
 ├───package.json
 └───sst.json
 ```
 Notes to this structure
-- `.github/workflows/myfirstaction.yml` contains (github) CI/CD workflow for deploying to dev or prod, and to publish any npm package on client side (if the npm folder exists and if the pushed branch is master)
+- `.github/workflows/myfirstaction.yml` contains (github) CI/CD workflow for deploying to dev or prod, and to publish any npm package on client side (if the npm folder exists)
 - `npm/` contains the client package to published
 - `src/` service core code/ business logic
 - `stacks/` infrastructure-as-code setup of the AWS architecture of the service - will be deployed by CI/CD action workflow only if branch is master (to prod) or dev (to dev)
+- `test/` contains all tests (duh). Naming is relevant for CI/CD workflow [see below](##tests)
 
 ## Naming conventions
 - Service name (`name` in root `package.json`) should be of format `[project]-[service]`
@@ -99,7 +98,7 @@ In the `.github/workflows` yml doc, the following env var for publishing depende
 Your service will always publish to the prod endpoint. Also when on dev branch.
 - you should also change the other dev_publish references to prod_publish
 
-Other environment variables in backend functions can only be set in stack definition. E.g. the dynamoDb tablename needs to be set in API Gateway for the handler function to access `process.env.TABLE_NAME`. And all stack entities (tables, queues, etc) should be set as environment variables, because the name depend on the stage (dev or prod).
+Other environment variables in backend functions can only be set in stack definition. E.g. the dynamoDb tablename needs to be set in API Gateway for the handler function to access `process.env.TABLE_NAME`. And all stack entities (tables, queues, etc) should be set as environment variables, because the name depends on the stage (dev or prod).
 
 ## Service client setup
 Client packages are published to npm with public access. They expose:
@@ -109,7 +108,7 @@ Client packages are published to npm with public access. They expose:
 
 `arns.js` file, exposing lambda arns in the same way. For setting permissions. Typically for sns topics to publish to.  
 `functions.js`, which exposes `invoke[FunctionName]` style functions for lambda invocation.
-- All functions in client will expect `process.env.STAGE` to be set (to either prod or dev)
+- All functions in client will expect `process.env.STAGE` to be set (to either prod or dev). This env variable is set inside the CI/CD deployment flow, but you will need to set it in the function environment variables - typically api stack - as `STAGE: process.env.STAGE`
 
 so they can be used like this
 ```javascript
@@ -148,11 +147,16 @@ export default {
 
 ```
 
-## tests
+## Tests
 The `test` directory contains tests. For CI/CD it has the following structure:
 - `pre-deploy`: these tests will run before deployment. They should not access any deployed infra. So e.g. business logic only. If any test fails, the updates will not be deployed.
 - `post-deploy`: these are tests that access the deployed infrastructure, for reading. These will run only after the new stack has been deployed, either to dev or prod stage.
-- `post-deploy-with-updates`: tests that perform updates on the deployed stack. These will only run when deployment is to dev. Any tests in this folder should have logic to skip the test if stage=prod
+- `post-deploy-with-updates`: tests that perform updates on the deployed stack. These will only run when deployment is to dev. Any tests in this folder should have logic to skip the test if the stage=prod
+
+If any of the post-deployment tests fail
+- the dependencies will still be published
+- but any changes to the npm package will not be published to npm
+- and any updates to stack output variables will not be pushed to the repo
 
 If you run tests locally with `npx sst test` all tests will be run.
 
