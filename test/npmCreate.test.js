@@ -24,13 +24,13 @@ testNotProd("Test invoking create lambda from npm", async () => {
     expect(result.statusCode).toBeLessThanOrEqual(299)
 })
 
-// test("Test invoking create lambda from npm with wrong body", async () => {
-//     let result = {}
-//     try {
-//         result = await invokeCreate({ body: { ...baseEvent.body, stage: 'WRONG' } })
-//     } catch (error) {
-//         result.statusCode = 500
-//         result.message = error.message
-//     }
-//     expect(result.statusCode).toBe(500)
-// })
+test("Test invoking create lambda from npm with wrong body", async () => {
+    let result = {}
+    try {
+        result = await invokeCreate({ body: { ...baseEvent.body, stage: 'WRONG' } })
+    } catch (error) {
+        result.statusCode = 500
+        result.message = error.message
+    }
+    expect(result.statusCode).toBe(500)
+})
