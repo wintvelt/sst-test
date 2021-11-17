@@ -33,8 +33,9 @@ export default class ApiStack extends sst.Stack {
                     handler: "src/authorizer.handler",
                     environment: {
                         SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
-                    }
+                    },
                 }),
+                resultsCacheTtl: 0 // turn off cache to prevent weird errors
             }),
             defaultThrottlingRateLimit: 2000,
             defaultThrottlingBurstLimit: 500,
