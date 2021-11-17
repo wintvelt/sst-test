@@ -61,8 +61,8 @@ export default class ApiStack extends sst.Stack {
         this.api.attachPermissionsToRoute(routeNames.putAsync, [queue])
 
         if (!scope.local) {
-            stack.addDefaultFunctionLayers([sentry]);
-            stack.addDefaultFunctionEnv({
+            this.api.addDefaultFunctionLayers([sentry]);
+            this.api.addDefaultFunctionEnv({
                 SENTRY_DSN,
                 NODE_OPTIONS: "-r @sentry/serverless/dist/awslambda-auto"
             });
