@@ -33,6 +33,7 @@ export const makeLatest = (event) => {
 }
 
 const baseHandler = async (event) => {
+    console.log(event.body)
     const { ownerName, stage, pack } = event.body;
     const name = ownerName.split('/')[1]
 
@@ -97,6 +98,6 @@ const baseHandler = async (event) => {
 export const handler = middy(baseHandler)
     .use(errorLogger())
     .use(jsonBodyParser()) // parses the request body when it's a JSON and converts it to an object
-    .use(validator({ inputSchema })) // validates the input
+    // .use(validator({ inputSchema })) // validates the input
     .use(cors())
     .use(httpErrorHandler({fallbackMessage: 'server error'}))
