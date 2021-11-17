@@ -25,6 +25,14 @@ export default class ApiStack extends sst.Stack {
             SENTRY_DSN
         );
 
+        if (!scope.local) {
+            this.addDefaultFunctionLayers([sentry]);
+            this.addDefaultFunctionEnv({
+                SENTRY_DSN,
+                NODE_OPTIONS: "-r @sentry/serverless/dist/awslambda-auto"
+            });
+        }
+
         const { table, queue } = props;
 
         // Create the API
@@ -59,14 +67,6 @@ export default class ApiStack extends sst.Stack {
 
         this.api.attachPermissions([table]);
         this.api.attachPermissionsToRoute(routeNames.putAsync, [queue])
-
-        if (!scope.local) {
-            this.api.addDefaultFunctionLayers([sentry]);
-            this.api.addDefaultFunctionEnv({
-                SENTRY_DSN,
-                NODE_OPTIONS: "-r @sentry/serverless/dist/awslambda-auto"
-            });
-        }
 
         const outputs = {
             "url": this.api.url,
