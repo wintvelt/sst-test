@@ -36,8 +36,8 @@ export default class ApiStack extends sst.Stack {
                     }
                 }),
             }),
-            defaultThrottlingRateLimit: 500,
-            defaultThrottlingBurstLimit: 100,
+            defaultThrottlingRateLimit: 2000,
+            defaultThrottlingBurstLimit: 500,
             routes: {
                 [routeNames.put]: "src/create.handler",
                 [routeNames.putAsync]: "src/createAsync.handler",
