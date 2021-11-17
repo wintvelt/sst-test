@@ -5,14 +5,14 @@ import errorLogger from '@middy/error-logger'
 import validator from '@middy/validator'
 import httpErrorHandler from '@middy/http-error-handler'
 import cors from '@middy/http-cors'
-// import Sentry from "@sentry/serverless"
+import Sentry from "@sentry/serverless"
 
 import { dynamo } from "./libs/dynamo-lib"
 import { inputSchema } from './libs/create-input-schema'
 
-// Sentry.AWSLambda.init({
-//     dsn: process.env.SENTRY_DSN
-// })
+Sentry.AWSLambda.init({
+    dsn: process.env.SENTRY_DSN
+})
 
 export const makeLatest = (event) => {
     // Get data from event body
@@ -99,10 +99,11 @@ const baseHandler = async (event) => {
     return { statusCode: 200, body: JSON.stringify(response) }
 }
 
-export const handler =
+export const handler = Sentry.AWSLambda.wrapHandler(
     middy(baseHandler)
         .use(errorLogger())
         .use(jsonBodyParser()) // parses the request body when it's a JSON and converts it to an object
         .use(validator({ inputSchema })) // validates the input
         .use(cors())
         .use(httpErrorHandler({ fallbackMessage: 'server error' }))
+)
