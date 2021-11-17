@@ -29,8 +29,10 @@ testDevOnly("Test invoking create lambda from npm with wrong body", async () => 
     try {
         result = await invokeCreate({ body: { ...baseEvent.body, stage: 'WRONG' } })
     } catch (error) {
+        console.log(error)
         result.statusCode = 500
         result.message = error.message
     }
+    console.log(result)
     expect(result.statusCode).toBe(500)
 })
