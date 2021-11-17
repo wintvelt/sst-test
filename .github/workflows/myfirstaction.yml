@@ -89,7 +89,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           paths: 'npm/**/*'
-      - name: if npm exists - bump npm patch version and publish
+      - name: if something in npm changed - bump npm patch version and publish
         # if: (steps.npm.outputs.EXISTS == 'true')
         if: steps.modified.outputs.modified
         env:
