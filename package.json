@@ -20,8 +20,9 @@
   },
   "dependencies": {
     "@aws-cdk/aws-apigatewayv2-authorizers": "1.126.0",
-    "@aws-cdk/aws-lambda": "^1.132.0",
+    "@aws-cdk/aws-lambda": "1.126.0",
     "@aws-cdk/core": "1.126.0",
+    "@joblocal/middy-sentry-error-handler": "^1.0.5",
     "@middy/core": "^2.5.2",
     "@middy/error-logger": "^2.5.2",
     "@middy/http-cors": "^2.5.2",
