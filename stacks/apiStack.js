@@ -1,10 +1,6 @@
 import { HttpLambdaAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers";
 import { Duration } from "@aws-cdk/core";
-import { LayerVersion } from "@aws-cdk/aws-lambda";
 import * as sst from "@serverless-stack/resources";
-
-// arn captured from https://docs.sentry.io/platforms/node/guides/aws-lambda/layer/
-const SENTRY_ARN = 'arn:aws:lambda:eu-central-1:943013980633:layer:SentryNodeServerlessSDK:38'
 
 const routeNames = {
     get: "GET   /",
@@ -18,20 +14,6 @@ export default class ApiStack extends sst.Stack {
 
     constructor(scope, id, props) {
         super(scope, id, props);
-
-        const sentry = LayerVersion.fromLayerVersionArn(
-            this,
-            "SentryLayer",
-            SENTRY_ARN
-        );
-
-        if (!scope.local) {
-            this.addDefaultFunctionLayers([sentry]);
-            this.addDefaultFunctionEnv({
-                SENTRY_DSN: process.env.SENTRY_DSN,
-                NODE_OPTIONS: "-r @sentry/serverless/dist/awslambda-auto"
-            });
-        }
 
         const { table, queue } = props;
 
