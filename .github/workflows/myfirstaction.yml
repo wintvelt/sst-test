@@ -83,8 +83,18 @@ jobs:
             "pack": ${{ steps.package.outputs.content }}
             }'
           timeout: 5000
+      - name: find out if npm folder contents changed
+        id: modified
+        uses: pheel/path-watcher-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          paths: 'npm/**/*'
+          return_files: false
+      - if: steps.modified.outputs.modified
+        run: echo "Hey some change happened in one of your watched paths!"
       - name: if npm exists - bump npm patch version and publish
-        if: (steps.npm.outputs.EXISTS == 'true')
+        # if: (steps.npm.outputs.EXISTS == 'true')
+        if: steps.modified.outputs.modified
         env:
           NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
         run: |
