@@ -10,6 +10,10 @@ import Sentry from "@sentry/serverless"
 import { sqs } from "./libs/sqs-lib"
 import { inputSchema } from './libs/create-input-schema'
 
+Sentry.AWSLambda.init({
+    dsn: process.env.SENTRY_DSN
+})
+
 
 const baseHandler = async (event) => {
 
