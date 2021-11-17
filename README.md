@@ -59,6 +59,9 @@ Notes
 │   ├───apiStack.js
 │   └───index.js
 ├───test/
+│   ├───post-deploy/
+│   │   └───with-updates/
+│   ├───pre-deploy/
 │   ├───apiStack.test.js
 │   └───create.test.js
 ├───.gitignore
@@ -144,6 +147,14 @@ export default {
 }
 
 ```
+
+## tests
+The `test` directory contains tests. For CI/CD it has the following structure:
+- `pre-deploy`: these tests will run before deployment. They should not access any deployed infra. So e.g. business logic only. If any test fails, the updates will not be deployed.
+- `post-deploy`: these are tests that access the deployed infrastructure, for reading. These will run only after the new stack has been deployed, either to dev or prod stage.
+- `post-deploy-with-updates`: tests that perform updates on the deployed stack. These will only run when deployment is to dev. Any tests in this folder should have logic to skip the test if stage=prod
+
+If you run tests locally with `npx sst test` all tests will be run.
 
 ---
 # Dependency publication service
