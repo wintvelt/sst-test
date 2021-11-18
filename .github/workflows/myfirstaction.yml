@@ -31,7 +31,7 @@ jobs:
         fi
     - run: npm ci
     - run: npm run build --if-present
-    - run: npm test test/pre-deploy/*.test.*
+    - run: npm test test/pre-deploy/*.test.* --passWithNoTests
 
   deploy-and-publish-dependencies:
     if: (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev')
@@ -113,11 +113,11 @@ jobs:
           timeout: 5000
       - name: run post-deployment read tests
         run: |
-          npm test test/post-deploy/*.test.*
+          npm test test/post-deploy/*.test.* --passWithNoTests
       - name: run post-deployment write tests (only in dev)
-        if: (${{ env.STAGE }} == 'dev')
+        if: (env.STAGE == 'dev')
         run: |
-          npm test test/post-deploy-with-updates/*.test.*
+          npm test test/post-deploy-with-updates/*.test.* --passWithNoTests
       - name: find out if npm folder contents changed
         id: modified
         uses: pheel/path-watcher-action@v1
