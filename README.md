@@ -31,6 +31,7 @@ Steps to get going:
         - `STAGE=dev`
 5. Customize setup to pass initial test rounds
     - open `package.json` and change the name of your service, and version number
+    - also change the name in `sst.json`
     - rename `npm` folder, to prevent publish to npm
     - build initial AWS stack
         - modify 1 of the stack files in `stacks/` folder
