@@ -29,12 +29,14 @@ Steps to get going:
     - local `.env` file will need (for local testing)
         - `SECRET_PUBLISH_TOKEN`
         - `STAGE=dev`
-5. Customize setup and add secrets
+5. Customize setup to pass initial test rounds
     - open `package.json` and change the name of your service, and version number
-    - modifications from preventing deployment and publishing:
-        - comment out the contents of `stacks/index.js` (prevents deploy to AWS)
-        - rename `npm` folder, to prevent publish to npm
-    - commit again
+    - rename `npm` folder, to prevent publish to npm
+    - build initial AWS stack
+        - modify 1 of the stack files in `stacks/` folder
+        - modify `index.js` in this folder
+    - rework tests
+    - commit again and sync to remote
 
 ## Why this template?
 The general idea is that a microservice
