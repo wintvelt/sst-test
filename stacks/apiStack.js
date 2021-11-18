@@ -1,4 +1,5 @@
 import { HttpLambdaAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers";
+import { Duration } from "@aws-cdk/core";
 import * as sst from "@serverless-stack/resources";
 
 const routeNames = {
@@ -33,11 +34,12 @@ export default class ApiStack extends sst.Stack {
                     handler: "src/authorizer.handler",
                     environment: {
                         SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
-                    }
+                    },
                 }),
+                resultsCacheTtl: Duration.seconds(0) // turn off cache to prevent weird errors
             }),
-            defaultThrottlingRateLimit: 500,
-            defaultThrottlingBurstLimit: 100,
+            defaultThrottlingRateLimit: 2000,
+            defaultThrottlingBurstLimit: 500,
             routes: {
                 [routeNames.put]: "src/create.handler",
                 [routeNames.putAsync]: "src/createAsync.handler",

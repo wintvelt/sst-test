@@ -99,4 +99,4 @@ export const handler = middy(baseHandler)
     .use(jsonBodyParser()) // parses the request body when it's a JSON and converts it to an object
     .use(validator({ inputSchema })) // validates the input
     .use(cors())
-    .use(httpErrorHandler({fallbackMessage: 'server error'}))
+    .use(httpErrorHandler({ fallbackMessage: 'server error' }))

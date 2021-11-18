@@ -9,7 +9,6 @@ import cors from '@middy/http-cors'
 import { sqs } from "./libs/sqs-lib"
 import { inputSchema } from './libs/create-input-schema'
 
-
 const baseHandler = async (event) => {
 
     const params = {

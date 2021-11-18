@@ -1,17 +1,45 @@
 name: deployment workflow
 on: 
   push:
-    branches:
-      - master
-      - dev
     paths-ignore: # if only npm stack-output or package changed, we can ignore this update
       - 'npm/*-stack-output.json'
       - 'npm/package.json'
 jobs:
-  publish-dependencies:
+  pre-deploy-tests:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: eu-central-1
+      SECRET_PUBLISH_TOKEN: ${{ secrets.SECRET_PUBLISH_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+        cache: 'npm'
+    - name: set env vars
+      id: localenv
+      run: |
+        BRANCH=$(git branch --show-current)
+        if [[ $BRANCH == 'master' ]]; then
+          echo "we are on MASTER branch"
+          echo "STAGE=prod" >> $GITHUB_ENV
+        else 
+          echo "we are on DEV branch"
+          echo "STAGE=dev" >> $GITHUB_ENV
+        fi
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm test test/pre-deploy/*.test.*
+
+  deploy-and-publish-dependencies:
+    if: (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev')
+    needs: pre-deploy-tests
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: eu-central-1
       SECRET_PUBLISH_TOKEN: ${{ secrets.SECRET_PUBLISH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       PROD_PUBLISH_ENDPOINT: https://urhe9nipda.execute-api.eu-central-1.amazonaws.com
@@ -27,7 +55,7 @@ jobs:
         id: localenv
         run: |
           BRANCH=$(git branch --show-current)
-          echo "::set-output name=branch::$BRANCH"
+          echo "::set-output name=BRANCH::$BRANCH"
           if [[ $BRANCH == 'master' ]]; then
             echo "we are on MASTER branch"
             echo "STAGE=prod" >> $GITHUB_ENV
@@ -52,16 +80,10 @@ jobs:
         uses: juliangruber/read-file-action@v1
         with:
           path: ./package.json
-      - name: switch to hotfix branch
-        id: branch
+      - name: switch to auto git user
         run: |
-          BRANCH=$(git branch --show-current)
-          HOTFIX_BRANCH=$BRANCH-workflow-auto-hotfix-$(date +%Y%m%d_%H%M%S)
-          echo "::set-output name=BRANCH::$BRANCH"
-          echo "::set-output name=HOTFIX_BRANCH::$HOTFIX_BRANCH"
           git config --local user.email "action@github.com"
           git config --local user.name "github-actions"
-          git checkout -b $HOTFIX_BRANCH
       - name: deploy and (if npm exists) save output in npm folder
         run: |
           echo "::group::npm install"
@@ -82,15 +104,28 @@ jobs:
         with:
           url: ${{ steps.localenv.outputs.PUBLISH_ENDPOINT }}
           method: PUT
-          headers: '{ "Content-Type": "application/json", "Authorization": "Basic ${{ secrets.SECRET_PUBLISH_TOKEN }}" }'
+          headers: '{ "Content-Type": "application/json", "Authorization": "Basic ${{ env.SECRET_PUBLISH_TOKEN }}" }'
           body: '{ 
             "ownerName": "${{ github.repository }}", 
             "stage": "${{ env.STAGE }}", 
             "pack": ${{ steps.package.outputs.content }}
             }'
           timeout: 5000
-      - name: if npm exists - bump npm patch version and publish
-        if: (steps.npm.outputs.EXISTS == 'true')
+      - name: run post-deployment read tests
+        run: |
+          npm test test/post-deploy/*.test.*
+      - name: run post-deployment write tests (only in dev)
+        if: (${{ env.STAGE }} == 'dev')
+        run: |
+          npm test test/post-deploy-with-updates/*.test.*
+      - name: find out if npm folder contents changed
+        id: modified
+        uses: pheel/path-watcher-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          paths: 'npm/**/*'
+      - name: if something in npm changed - bump npm patch version and publish
+        if: steps.modified.outputs.modified
         env:
           NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
         run: |
@@ -122,15 +157,4 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ steps.branch.outputs.HOTFIX_BRANCH }}
-      - name: if something committed - Create pull request
-        if: steps.commit.outputs.PUSH == 'true'
-        uses: repo-sync/pull-request@v2
-        with:
-          source_branch: ${{ steps.branch.outputs.HOTFIX_BRANCH }}
-          destination_branch: ${{ steps.branch.outputs.BRANCH }}
-          pr_title: "Add stack output to npm folder for ${{ steps.branch.outputs.BRANCH }} branch"
-          pr_body: ":crown: *An automated PR*"
-          pr_label: "auto-pr"
-          pr_draft: false
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.localenv.outputs.BRANCH }}

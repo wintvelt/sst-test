@@ -9,18 +9,8 @@ import prodStageOutput from './dev-stack-output.json'
 const stage = process.env.STAGE
 const stageCheck = (stage === 'prod' || stage === 'dev')
 
-// dynamic import based on stage
+// dynamic import based on stage not possible for some reason
 function importModule(stage) {
-    // const stackOutputFile = `./${stage}-stack-output.json`
-    // let stackOutput
-    // let stackOutput
-    // try {
-    //    stackOutput = await import(stackOutputFile)
-    // } catch (error) {
-    //    console.error('could not import stackoutput file')
-    //    throw new Error(error.message)
-    // }
-    // return stackOutput
     return stackOutputFile = (stage === 'prod') ? prodStageOutput : devStageOutput
 }
 
