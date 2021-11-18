@@ -11,16 +11,30 @@ Steps to get going:
     - clone this repo: `git clone https://github.com/wintvelt/sst-test.git .`
     - remove the `.git` folder
     - `git init`
-2. Customize setup and add secrets
-    - open `package.json` and change the name of your service, and version number
-    
-3. Initial commit (locally) , via vscode direct, or
+2. Initial commit (locally) , via vscode direct, or
         - `git add .`
         - `git commit -m "Initial commit"`
-4. create the remote origin - via vscode direct, or
+3. Create the remote origin - via vscode direct, or
     - on github site, create a new repo
     - locally: `git remote add origin [your new github repo url]`
     - `git push -u --force origin master`
+    - best to create a public repo, if you want free use of GitKraken to view branche structure
+    - vscode publishing will not trigger workflow, subsequent commits will. Their test runs will fail until secrets are set
+4. Set the secrets
+    - following secrets need to be set in github repo
+        - `AWS_ACCESS_KEY_ID` to allow deployment to AWS and set permission to access other services
+        - `AWS_SECRET_ACCESS_KEY`
+        - `SECRET_PUBLISH_TOKEN`: Basic token used to publish dependencies to a common shared service
+        - `NPM_TOKEN`: Token to allow publication of client npm package to npm registry
+    - local `.env` file will need (for local testing)
+        - `SECRET_PUBLISH_TOKEN`
+        - `STAGE=dev`
+5. Customize setup and add secrets
+    - open `package.json` and change the name of your service, and version number
+    - modifications from preventing deployment and publishing:
+        - comment out the contents of `stacks/index.js` (prevents deploy to AWS)
+        - rename `npm` folder, to prevent publish to npm
+    - commit again
 
 ## Why this template?
 The general idea is that a microservice
