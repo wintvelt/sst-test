@@ -3,6 +3,26 @@
 This project was bootstrapped with [Create Serverless Stack](https://docs.serverless-stack.com/packages/create-serverless-stack).
 Quite heavily adapted though, for personal microservice setup on AWS with github actions CI/CD.
 
+## How to use
+Steps to get going:
+1. Setup a new local repo with a clone of this template
+    - create a new folder on your machine
+    - open terminal in that folder
+    - clone this repo: `git clone https://github.com/wintvelt/sst-test.git .`
+    - remove the `.git` folder
+    - `git init`
+2. Customize setup and add secrets
+    - open `package.json` and change the name of your service, and version number
+    
+3. Initial commit (locally) , via vscode direct, or
+        - `git add .`
+        - `git commit -m "Initial commit"`
+4. create the remote origin - via vscode direct, or
+    - on github site, create a new repo
+    - locally: `git remote add origin [your new github repo url]`
+    - `git push -u --force origin master`
+
+## Why this template?
 The general idea is that a microservice
 - exposes an API (AWS API Gateway and Lambda) on various routes
 - may have Lambda functions that subscribe to some SNS topics or SQS queues connected to topics
