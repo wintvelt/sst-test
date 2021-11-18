@@ -16,7 +16,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
       with:
-        node-version: '16'
+        node-version: '16.x'
         cache: 'npm'
     - name: set env vars
       id: localenv
@@ -31,7 +31,19 @@ jobs:
         fi
     - run: npm ci
     - run: npm run build --if-present
-    - run: npm test test/pre-deploy/*.test.* --passWithNoTests
+    - run: |
+        DIR="test/pre-deploy/"
+        if [ -d "$DIR" ]
+        then
+          if [ "$(ls -A $DIR)" ]; then
+            echo "Running tests for $DIR"
+            npm test test/pre-deploy/*.test.*
+          else
+            echo "$DIR is Empty"
+          fi
+        else
+          echo "Folder $DIR not found."
+        fi
 
   deploy-and-publish-dependencies:
     if: (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev')
@@ -49,7 +61,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: '16'
+          node-version: '16.x'
           registry-url: https://registry.npmjs.org/
       - name: set env vars
         id: localenv
@@ -113,11 +125,34 @@ jobs:
           timeout: 5000
       - name: run post-deployment read tests
         run: |
-          npm test test/post-deploy/*.test.* --passWithNoTests
+          DIR="test/post-deploy/"
+          if [ -d "$DIR" ]
+          then
+            if [ "$(ls -A $DIR)" ]; then
+              echo "Running tests for $DIR"
+              npm test test/post-deploy/*.test.*
+            else
+              echo "$DIR is Empty"
+            fi
+          else
+            echo "Folder $DIR not found."
+          fi
+          
       - name: run post-deployment write tests (only in dev)
         if: (env.STAGE == 'dev')
         run: |
-          npm test test/post-deploy-with-updates/*.test.* --passWithNoTests
+          DIR="test/post-deploy-with-updates/"
+          if [ -d "$DIR" ]
+          then
+            if [ "$(ls -A $DIR)" ]; then
+              echo "Running tests for $DIR"
+              npm test test/post-deploy-with-updates/*.test.*
+            else
+              echo "$DIR is Empty"
+            fi
+          else
+            echo "Folder $DIR not found."
+          fi
       - name: find out if npm folder contents changed
         id: modified
         uses: pheel/path-watcher-action@v1
