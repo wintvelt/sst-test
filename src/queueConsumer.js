@@ -4,6 +4,7 @@ import validator from '@middy/validator'
 import errorLogger from '@middy/error-logger'
 import httpErrorHandler from '@middy/http-error-handler'
 import sqsJsonBodyParser from '@middy/sqs-json-body-parser'
+import sentry from './libs/sentry-lib'
 
 import { handler as eventHandler } from './create'
 import { inputSchema as recordInputSchema } from './libs/create-input-schema'
@@ -40,7 +41,7 @@ const inputSchema = {
     }
 }
 
-export const handler = middy(baseHandler)
+export const handler = middy(sentry(baseHandler))
     .use(errorLogger())
     .use(sqsJsonBodyParser())
     .use(validator({ inputSchema })) // validates the input

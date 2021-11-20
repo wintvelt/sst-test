@@ -5,6 +5,7 @@ import errorLogger from '@middy/error-logger'
 import validator from '@middy/validator'
 import httpErrorHandler from '@middy/http-error-handler'
 import cors from '@middy/http-cors'
+import sentry from './libs/sentry-lib'
 
 import { sqs } from "./libs/sqs-lib"
 import { inputSchema } from './libs/create-input-schema'
@@ -36,7 +37,7 @@ const baseHandler = async (event) => {
     return { statusCode: 200, body: JSON.stringify(response) }
 }
 
-export const handler = middy(baseHandler)
+export const handler = middy(sentry(baseHandler))
     .use(errorLogger())
     .use(jsonBodyParser()) // parses the request body when it's a JSON and converts it to an object
     .use(validator({ inputSchema })) // validates the input
