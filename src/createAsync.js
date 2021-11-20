@@ -9,13 +9,7 @@ import cors from '@middy/http-cors'
 import { sqs } from "./libs/sqs-lib"
 import { inputSchema } from './libs/create-input-schema'
 
-import Sentry from "@sentry/serverless"
-
-Sentry.AWSLambda.init({
-    dsn: process.env.SENTRY_DSN,
-    tracesSampleRate: 1.0,
-    environment: process.env.STAGE
-});
+import sentry from './libs/sentry-lib'
 
 const baseHandler = async (event) => {
 
@@ -44,7 +38,7 @@ const baseHandler = async (event) => {
     return { statusCode: 200, body: JSON.stringify(response) }
 }
 
-export const handler = middy(Sentry.AWSLambda.wrapHandler(baseHandler))
+export const handler = middy(sentry(baseHandler))
     .use(errorLogger())
     .use(jsonBodyParser()) // parses the request body when it's a JSON and converts it to an object
     .use(validator({ inputSchema })) // validates the input

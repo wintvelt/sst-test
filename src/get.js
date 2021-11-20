@@ -4,14 +4,7 @@ import errorLogger from '@middy/error-logger'
 import httpErrorHandler from '@middy/http-error-handler'
 import cors from '@middy/http-cors'
 import { dynamo } from "./libs/dynamo-lib"
-// import sentry from './libs/sentry-lib'
-import Sentry from "@sentry/serverless"
-
-Sentry.AWSLambda.init({
-    dsn: process.env.SENTRY_DSN,
-    tracesSampleRate: 1.0,
-    environment: process.env.STAGE
-});
+import sentry from './libs/sentry-lib'
 
 const getById = async (id) => {
     const queryParams = {
@@ -67,7 +60,7 @@ const baseHandler = async (event) => {
 }
 
 // export const handler = middy(sentry(baseHandler))
-export const handler = middy(Sentry.AWSLambda.wrapHandler(baseHandler))
+export const handler = middy(sentry(baseHandler))
     .use(errorLogger())
     .use(httpErrorHandler({ fallbackMessage: 'server error' }))
     .use(cors())
