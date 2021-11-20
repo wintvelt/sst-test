@@ -50,11 +50,12 @@ const baseHandler = async (event) => {
         } else {
             result = await getAll()
         }
-
     } catch (error) {
         console.error(error.message);
         throw new Error(error.message);
     }
+
+    throw new Error('we have an error! inside get function')
 
     return { statusCode: 200, body: JSON.stringify(result) }
 }
