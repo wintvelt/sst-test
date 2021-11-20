@@ -49,7 +49,6 @@ const baseHandler = async (event) => {
             result = await getById(id)
         } else {
             result = await getAll()
-            throw new Error('we have an error! inside get function')
         }
     } catch (error) {
         console.error(error.message);
