@@ -13,8 +13,10 @@ export default class queueStack extends sst.Stack {
         this.queueHandler = new sst.Function(this, "queueHandler", {
             handler: "src/queueConsumer.handler",
             environment: {
-                TABLE_NAME: table.tableName
-            }
+                TABLE_NAME: table.tableName,
+                STAGE: process.env.STAGE,
+                SENTRY_DSN: process.env.SENTRY_DSN,
+        }
         })
 
         // Create the SQS Queue

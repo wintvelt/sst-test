@@ -24,6 +24,8 @@ export default class ApiStack extends sst.Stack {
                     TABLE_NAME: table.tableName,
                     QUEUE_URL: queue.sqsQueue.queueUrl,
                     SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
+                    STAGE: process.env.STAGE,
+                    SENTRY_DSN: process.env.SENTRY_DSN,
                     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
                 },
             },
@@ -34,7 +36,9 @@ export default class ApiStack extends sst.Stack {
                     handler: "src/authorizer.handler",
                     environment: {
                         SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
-                    },
+                        STAGE: process.env.STAGE,
+                        SENTRY_DSN: process.env.SENTRY_DSN,
+                        },
                 }),
                 resultsCacheTtl: Duration.seconds(0) // turn off cache to prevent weird errors
             }),
