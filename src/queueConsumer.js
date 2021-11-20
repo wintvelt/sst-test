@@ -4,10 +4,17 @@ import validator from '@middy/validator'
 import errorLogger from '@middy/error-logger'
 import httpErrorHandler from '@middy/http-error-handler'
 import sqsJsonBodyParser from '@middy/sqs-json-body-parser'
-import sentry from './libs/sentry-lib'
 
 import { handler as eventHandler } from './create'
 import { inputSchema as recordInputSchema } from './libs/create-input-schema'
+
+import Sentry from "@sentry/serverless"
+
+Sentry.AWSLambda.init({
+    dsn: process.env.SENTRY_DSN,
+    tracesSampleRate: 1.0,
+    environment: process.env.STAGE
+});
 
 const baseHandler = async (event) => {
     // extract records from event
@@ -41,7 +48,7 @@ const inputSchema = {
     }
 }
 
-export const handler = middy(sentry(baseHandler))
+export const handler = middy(Sentry.AWSLambda.wrapHandler(baseHandler))
     .use(errorLogger())
     .use(sqsJsonBodyParser())
     .use(validator({ inputSchema })) // validates the input
