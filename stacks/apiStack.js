@@ -5,7 +5,6 @@ import * as sst from "@serverless-stack/resources";
 const routeNames = {
     get: "GET   /",
     put: "PUT   /",
-    putAsync: "PUT   /async"
 }
 
 export default class ApiStack extends sst.Stack {
@@ -15,14 +14,13 @@ export default class ApiStack extends sst.Stack {
     constructor(scope, id, props) {
         super(scope, id, props);
 
-        const { table, queue } = props;
+        const { table } = props;
 
         // Create the API
         this.api = new sst.Api(this, "Api", {
             defaultFunctionProps: {
                 environment: {
                     TABLE_NAME: table.tableName,
-                    QUEUE_URL: queue.sqsQueue.queueUrl,
                     SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
                     STAGE: process.env.STAGE,
                     SENTRY_DSN: process.env.SENTRY_DSN,
@@ -46,19 +44,15 @@ export default class ApiStack extends sst.Stack {
             defaultThrottlingBurstLimit: 500,
             routes: {
                 [routeNames.put]: "src/create.handler",
-                [routeNames.putAsync]: "src/createAsync.handler",
                 [routeNames.get]: "src/get.handler"
             },
         });
 
         this.api.attachPermissions([table]);
-        this.api.attachPermissionsToRoute(routeNames.putAsync, [queue])
 
         const outputs = {
             "url": this.api.url,
-            "asyncurl": this.api.url,
             "createarn": this.api.getFunction(routeNames.put).functionArn,
-            "createAsyncarn": this.api.getFunction(routeNames.putAsync).functionArn
         }
 
         // Show the API endpoint in the output

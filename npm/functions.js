@@ -14,7 +14,7 @@ function importModule(stage) {
     return stackOutputFile = (stage === 'prod') ? prodStageOutput : devStageOutput
 }
 
-const invoke = async ({ event, stackName, functionName }) => {
+const invoke = async ({ event, stackName, functionName, async }) => {
     if (!stageCheck) throw new Error('environment stage not set')
 
     const stackOutput = importModule(stage)
@@ -22,7 +22,7 @@ const invoke = async ({ event, stackName, functionName }) => {
     const functionArn = stackOutput[`${stage}-${stackName}`][functionName]
     const lambdaParams = {
         FunctionName: functionArn,
-        InvocationType: 'RequestResponse',
+        InvocationType: (async)? 'Event' : 'RequestResponse',
         LogType: 'Tail',
         Payload: JSON.stringify(event)
     }
@@ -53,6 +53,7 @@ export const invokeCreateAsync = (event) => {
     return invoke({
         event,
         stackName: 'sst-test-api',
-        functionName: 'createAsyncarn'
+        functionName: 'createarn',
+        async: true
     })
 }

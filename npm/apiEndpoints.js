@@ -11,8 +11,4 @@ export default {
         dev: devStageOutput['dev-sst-test-api']?.url,
         prod: prodStageOutput['prod-sst-test-api']?.url,
     },
-    putAsync: {
-        dev: devStageOutput['dev-sst-test-api']?.url + '/async',
-        prod: prodStageOutput['prod-sst-test-api']?.url + '/async',
-    },
 }
