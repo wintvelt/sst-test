@@ -50,9 +50,9 @@ export default class ApiStack extends sst.Stack {
         });
 
         // add permission to invoke the lambda
-        this.asyncApi.attachPermissions([
+        this.asyncApi.attachPermissions(
             lambdaPermissions(api.getFunction(routeNames.put).functionArn)
-        ])
+        )
 
         const outputs = {
             "asyncurl": this.asyncApi.url + '/async',
