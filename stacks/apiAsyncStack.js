@@ -1,7 +1,7 @@
 import { HttpLambdaAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers";
 import { Duration } from "@aws-cdk/core";
 import * as sst from "@serverless-stack/resources";
-import * as iam from "@aws-cdk/aws-iam";
+import { lambdaPermissions } from "../src/libs/permissions-lib";
 
 const routeNames = {
     putAsync: "PUT   /async",
@@ -51,14 +51,7 @@ export default class ApiStack extends sst.Stack {
 
         // add permission to invoke the lambda
         this.asyncApi.attachPermissions([
-            new iam.PolicyStatement({
-                actions: [
-                    "lambda:InvokeFunction",
-                    "lambda:InvokeAsync"
-                ],
-                effect: iam.Effect.ALLOW,
-                resources: [api.getFunction(routeNames.put).functionArn],
-            })
+            lambdaPermissions(api.getFunction(routeNames.put).functionArn)
         ])
 
         const outputs = {

@@ -1,18 +1,14 @@
 import * as iam from "@aws-cdk/aws-iam";
 
-export const generalPermissions = [
+export const lambdaPermissions = (arn) => [
     new iam.PolicyStatement({
-        actions: ["lambda:InvokeFunction"],
-        effect: iam.Effect.ALLOW,
-        resources: [
-            "*",
+        actions: [
+            "lambda:InvokeFunction",
+            "lambda:InvokeAsync"
         ],
-    }),
-    new iam.PolicyStatement({
-        actions: ["ssm:GetParameter"],
         effect: iam.Effect.ALLOW,
         resources: [
-            "arn:aws:ssm:*:*:parameter/*"
+            arn,
         ],
     }),
 ]

@@ -140,7 +140,7 @@ Other environment variables in backend functions can only be set in stack defini
 ## Service client setup
 Client packages are published to npm with public access. They expose:
 
-`api.js` file, which exports a default object, containing endpoint urls, structured as follows
+`apiEndpoints.js` file, which exports a default object, containing endpoint urls, structured as follows
 - properties for each endpoint, named in camelCase in the format `[method][route]`, e.g. `putAsync`
 
 `arns.js` file, exposing lambda arns in the same way. For setting permissions. Typically for sns topics to publish to.  
@@ -190,12 +190,12 @@ The `test` directory contains tests. For CI/CD it has the following structure:
 - `post-deploy`: these are tests that access the deployed infrastructure, for reading. These will run only after the new stack has been deployed, either to dev or prod stage.
 - `post-deploy-with-updates`: tests that perform updates on the deployed stack. These will only run when deployment is to dev. Any tests in this folder should have logic to skip the test if the stage=prod
 
-If any of the post-deployment tests fail
+In CI/CD, Post-deployment tests run after deployment and after publishing, so if any of them fail
 - the dependencies will still be published
 - but any changes to the npm package will not be published to npm
 - and any updates to stack output variables will not be pushed to the repo
 
-If you run tests locally with `npx sst test` all tests will be run.
+If you run tests locally with `npx sst test`, all tests will be run.
 
 ---
 # Dependency publication service
@@ -208,12 +208,12 @@ Additionally, client functions need
 
 Functions can be imported like this
 ```javascript
-import { invoke, invokeAsync } from '@wintvelt/sst-test-client'
+import { invokeCreate, invokeCreateAsync,  } from '@wintvelt/sst-test-client/functions'
 ```
 
-`invoke(event)` will directly publish the dependencies, allowing to read the changes applied.
+`invokeCreate(event)` will directly publish the dependencies, allowing to read the changes applied.
 
-`invokeAsync(event)` will asynchronously publish the dependencies, by adding to a queue (internal) for processing async.
+`invokeCreateAsync(event)` will asynchronously publish the dependencies, by calling create lambda async.
 
 The input schema for the event (to be passed as parameter) to both functions is
 ```javascript
@@ -231,6 +231,17 @@ The input schema for the event (to be passed as parameter) to both functions is
         }
     }
 }
+```
+
+The stack who invokes these functions will need permissions set.
+```javascript
+import arns from '@wintvelt/spqr-albums-client/arns'
+
+const arnWeNeedAccessTo = arns.putAsync[process.env.STAGE]
+
+this.myFunction.attachPermissions([
+    lambdaPermissions(arnWeNeedAccessTo)
+])
 ```
 
 ## API
