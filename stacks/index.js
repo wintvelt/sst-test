@@ -2,11 +2,6 @@ import DbStack from "./DbStack";
 import ApiStack from "./apiStack";
 import AsyncApiStack from "./apiAsyncStack";
 
-const routeNames = {
-  get: "GET   /",
-  put: "PUT   /",
-}
-
 export default function main(app) {
   const dbStack = new DbStack(app, "dependencies")
 
@@ -15,6 +10,6 @@ export default function main(app) {
   })
 
   new AsyncApiStack(app, "asyncApi", {
-    apiFunctionArn: apiStack.api.getFunction(routeNames.put).functionArn
+    api: apiStack.api
   })
 }

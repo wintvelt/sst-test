@@ -1,9 +1,11 @@
 import { HttpLambdaAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers";
 import { Duration } from "@aws-cdk/core";
 import * as sst from "@serverless-stack/resources";
+import * as iam from "@aws-cdk/aws-iam";
 
 const routeNames = {
     putAsync: "PUT   /async",
+    put: "PUT   /",
 }
 
 export default class ApiStack extends sst.Stack {
@@ -13,13 +15,14 @@ export default class ApiStack extends sst.Stack {
     constructor(scope, id, props) {
         super(scope, id, props);
 
-        const { apiFunctionArn } = props;
+        const { api } = props;
+        const functionArn = api.getFunction(routeNames.put).functionArn
 
         // Create the API
         this.asyncApi = new sst.Api(this, "Api", {
             defaultFunctionProps: {
                 environment: {
-                    FUNCTION_ARN: apiFunctionArn,
+                    FUNCTION_ARN: functionArn,
                     SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
                     STAGE: process.env.STAGE,
                     SENTRY_DSN: process.env.SENTRY_DSN,
@@ -35,7 +38,7 @@ export default class ApiStack extends sst.Stack {
                         SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
                         STAGE: process.env.STAGE,
                         SENTRY_DSN: process.env.SENTRY_DSN,
-                        },
+                    },
                 }),
                 resultsCacheTtl: Duration.seconds(0) // turn off cache to prevent weird errors
             }),
@@ -46,8 +49,17 @@ export default class ApiStack extends sst.Stack {
             },
         });
 
+        // add permission to invoke the lambda
+        this.asyncApi.attachPermissions([
+            new iam.PolicyStatement({
+                actions: ["lambda:Invoke"],
+                effect: iam.Effect.ALLOW,
+                resources: [api.getFunction(routeNames.put).functionArn],
+            })
+        ])
+
         const outputs = {
-            "asyncurl": this.asyncApi.url+'/async',
+            "asyncurl": this.asyncApi.url + '/async',
             "createasyncarn": this.asyncApi.getFunction(routeNames.putAsync).functionArn,
         }
 
