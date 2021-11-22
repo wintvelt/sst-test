@@ -30,7 +30,7 @@ const invoke = async ({ event, stackName, functionName, async }) => {
     let parsedResult = {}
     try {
         const result = await lambda.invoke(lambdaParams)
-        parsedResult = JSON.parse(result.Payload)
+        parsedResult = (async)? { statusCode: result.StatusCode, body: result.Payload } : JSON.parse(result.Payload)
         if (parsedResult.statusCode > 299) {
             throw new Error(`lambda invoke failed with statuscode ${parsedResult.statusCode} message ${parsedResult.body}`)
         }
