@@ -9,13 +9,14 @@ import { inputSchema } from './libs/create-input-schema'
 import sentry from './libs/sentry-lib'
 import { lambda } from './libs/lambda-lib'
 
-const baseHandler = async (event) => {  
+const baseHandler = async (event) => {
+    const body = JSON.stringify(event.body)
     const params = {
         FunctionName: process.env.FUNCTION_ARN,
         InvocationType: 'Event',
-        Payload: JSON.stringify(event.body)
-    };
-    await lambda.invoke(params)
+        Payload: JSON.stringify({ ...event, body })
+    }
+    const result = await lambda.invoke(params)
 }
 
 export const handler = middy(sentry(baseHandler))

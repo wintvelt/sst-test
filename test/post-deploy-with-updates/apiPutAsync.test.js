@@ -6,7 +6,7 @@ const url = urls.putAsync.dev // only test on dev stack
 const Authorization = `Basic ${process.env.SECRET_PUBLISH_TOKEN}`
 
 const body = {
-    ownerName: 'wintvelt/put-async-test',
+    ownerName: 'wintvelt/put-api-async-test',
     stage: 'dev',
     pack: { dependencies: { 'firstdep': '0.0.3' } },
 }

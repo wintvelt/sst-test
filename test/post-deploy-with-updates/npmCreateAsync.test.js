@@ -6,7 +6,7 @@ const testDevOnly = (...args) =>
 
 const baseEvent = {
     body: {
-        ownerName: 'wintvelt/test-run',
+        ownerName: 'wintvelt/npm-create-async-test',
         stage: 'dev',
         pack: { dependencies: { 'async-dep': '0.0.1' } },
     }

@@ -245,7 +245,7 @@ this.myFunction.attachPermissions([
 ```
 
 ## API
-All API enpoints require `Authorization` header to be included in format `Basic (secret-token)`
+Alnpml API enpoints require `Authorization` header to be included in format `Basic (secret-token)`
 
 In addition, endpoints are heavily throttled. But should not cause problems, because expected invocation frequency is low per account/ project: only on each push/ deploy.
 
