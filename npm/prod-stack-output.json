@@ -1,15 +1,1 @@
-{
-  "prod-sst-test-dependencies": {
-    "ExportsOutputFnGetAttdependenciesTable66493A0FArn170549B3": "arn:aws:dynamodb:eu-central-1:899888592127:table/prod-sst-test-dependencies",
-    "ExportsOutputRefdependenciesTable66493A0F53F99D89": "prod-sst-test-dependencies"
-  },
-  "prod-sst-test-api": {
-    "createarn": "arn:aws:lambda:eu-central-1:899888592127:function:prod-sst-test-api-ApiLambdaPUTE05FDB13-1jc4IQnp3oax",
-    "ExportsOutputFnGetAttApiLambdaPUTE05FDB13ArnF5342C8B": "arn:aws:lambda:eu-central-1:899888592127:function:prod-sst-test-api-ApiLambdaPUTE05FDB13-1jc4IQnp3oax",
-    "url": "https://a1iak4jpge.execute-api.eu-central-1.amazonaws.com"
-  },
-  "prod-sst-test-asyncApi": {
-    "createasyncarn": "arn:aws:lambda:eu-central-1:899888592127:function:prod-sst-test-asyncApi-ApiLambdaPUTasyncEC2F4B34-jC8QUPNnnYTN",
-    "asyncurl": "https://063jewbbli.execute-api.eu-central-1.amazonaws.com/async"
-  }
-}
+{}
