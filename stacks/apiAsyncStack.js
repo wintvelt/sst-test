@@ -52,7 +52,10 @@ export default class ApiStack extends sst.Stack {
         // add permission to invoke the lambda
         this.asyncApi.attachPermissions([
             new iam.PolicyStatement({
-                actions: ["lambda:Invoke"],
+                actions: [
+                    "lambda:InvokeFunction",
+                    "lambda:InvokeAsync"
+                ],
                 effect: iam.Effect.ALLOW,
                 resources: [api.getFunction(routeNames.put).functionArn],
             })

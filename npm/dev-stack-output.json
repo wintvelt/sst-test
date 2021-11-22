@@ -4,12 +4,12 @@
     "ExportsOutputRefdependenciesTable66493A0F53F99D89": "dev-sst-test-dependencies"
   },
   "dev-sst-test-api": {
-    "createarn": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-api-ApiLambdaPUTE05FDB13-BHnzVfAp28FG",
-    "ExportsOutputFnGetAttApiLambdaPUTE05FDB13ArnF5342C8B": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-api-ApiLambdaPUTE05FDB13-BHnzVfAp28FG",
-    "url": "https://6klsawe709.execute-api.eu-central-1.amazonaws.com"
+    "createarn": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-api-ApiLambdaPUTE05FDB13-XjuAbaUiAsbh",
+    "ExportsOutputFnGetAttApiLambdaPUTE05FDB13ArnF5342C8B": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-api-ApiLambdaPUTE05FDB13-XjuAbaUiAsbh",
+    "url": "https://a2mod3cmha.execute-api.eu-central-1.amazonaws.com"
   },
   "dev-sst-test-asyncApi": {
-    "createasyncarn": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-asyncApi-ApiLambdaPUTasyncEC2F4B34-I0NT80RDSC9v",
-    "asyncurl": "https://a7ummooou2.execute-api.eu-central-1.amazonaws.com/async"
+    "createasyncarn": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-asyncApi-ApiLambdaPUTasyncEC2F4B34-Q7VJAnTi8jAU",
+    "asyncurl": "https://dju3mu3w6e.execute-api.eu-central-1.amazonaws.com/async"
   }
 }

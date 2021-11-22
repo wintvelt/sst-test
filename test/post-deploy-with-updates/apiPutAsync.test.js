@@ -20,7 +20,6 @@ test("API Put Async an update", async () => {
     } catch (error) {
         console.error(error)
     }
-    console.log(result)
-    expect(result).toHaveProperty("data")
-    expect(Array.isArray(result.data)).toBe(true)
+    expect(result).toHaveProperty("statusText")
+    expect(result.status).toBe(200)
 })
