@@ -13,7 +13,7 @@ const baseHandler = async (event) => {
     const params = {
         FunctionName: process.env.FUNCTION_ARN,
         InvocationType: 'Event',
-        Payload: JSON.parse(event.body)
+        Payload: event.body
     };
     await lambda.invoke(params)
 }
