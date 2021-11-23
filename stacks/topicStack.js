@@ -13,7 +13,6 @@ export default class TopicStack extends sst.Stack {
         // Create the Topic
         this.topic = new sst.Topic(this, "Topic", {
             snsTopic: {
-                topicName: "topic",
                 fifo: true
             },
         });
