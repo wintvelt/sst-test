@@ -4,7 +4,7 @@ import ApiStack from "./apiStack";
 import AsyncApiStack from "./apiAsyncStack";
 
 export default function main(app) {
-  new topicStack(app, "topic")
+  new TopicStack(app, "topic")
 
   const dbStack = new DbStack(app, "dependencies")
 
