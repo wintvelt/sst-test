@@ -12,7 +12,7 @@ const baseEvent = {
     }
 }
 
-testDevOnly("Test invoking create lambda from npm", async () => {
+testDevOnly("Test invoking create lambda async from npm", async () => {
     let result = {}
     try {
         result = await invokeCreateAsync(baseEvent)

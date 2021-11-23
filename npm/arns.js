@@ -7,8 +7,4 @@ export default {
         dev: devStageOutput['dev-sst-test-api']?.createarn,
         prod: prodStageOutput['prod-sst-test-api']?.createarn,
     },
-    putAsync: {
-        dev: devStageOutput['dev-sst-test-asyncApi']?.createasyncarn,
-        prod: prodStageOutput['prod-sst-test-asyncApi']?.createasyncarn,
-    },
 }

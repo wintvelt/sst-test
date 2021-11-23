@@ -203,8 +203,6 @@ If you run tests locally with `npx sst test`, all tests will be run.
 
 ## Client
 Per standard, all functions in client will expect `process.env.STAGE` to be set (to either prod or dev)
-Additionally, client functions need
-- `process.env.SECRET_PUBLISH_TOKEN` to be set, to allow publishing dependencies.
 
 Functions can be imported like this
 ```javascript
@@ -233,11 +231,15 @@ The input schema for the event (to be passed as parameter) to both functions is
 }
 ```
 
-The stack who invokes these functions will need permissions set.
+The stack who invokes these functions will need permissions set. Both functions need access to the `put` function arn. Both functions invoke the same lambda.
+- `invokeCreate()` does a synchronous call
+- `invokeCreateAsync()` does a asynchronous call
+
 ```javascript
 import arns from '@wintvelt/spqr-albums-client/arns'
+import { lambdaPermissions } from "../src/libs/permissions-lib";
 
-const arnWeNeedAccessTo = arns.putAsync[process.env.STAGE]
+const arnWeNeedAccessTo = arns.put[process.env.STAGE]
 
 this.myFunction.attachPermissions([
     lambdaPermissions(arnWeNeedAccessTo)
@@ -245,9 +247,11 @@ this.myFunction.attachPermissions([
 ```
 
 ## API
-Alnpml API enpoints require `Authorization` header to be included in format `Basic (secret-token)`
+All API enpoints require `Authorization: Basic (your-secret-token)` header to be included in format
 
 In addition, endpoints are heavily throttled. But should not cause problems, because expected invocation frequency is low per account/ project: only on each push/ deploy.
+
+The following APIs are exposed.
 
 ### `GET /`
 Returns list of all [stage-packages] in database who published dependencies. Can be useful to collect the complete contents of the database, by using these ids to perform individual get requests for each.
@@ -256,7 +260,7 @@ Returns list of all [stage-packages] in database who published dependencies. Can
 ```
 
 ### `GET /?id=[package name]`
-Returns all subscribers to `[package name]` as a list
+Returns all dependencies to `[package name]` as a list
 ```json
 [
     { 
@@ -275,10 +279,8 @@ Request body must be
     "ownerName": "[owner]/[package name]",
     "stage": "dev|prod", // other values not allowed, will return error
     "pack": {}, // object with package.json contents
-    "authToken": "Basic [TOKEN]" // Basic authorization token
 }
 ```
-Authorization token is a basic secret. Created and distributed by the owner who deploys this service.
 
 Response includes
 ```javascript
@@ -287,6 +289,26 @@ data: {
     message: '1 dependencies removed, 1 added, 1 updated, 1 unchanged'
 }
 ```
+
+### `PUT /async`
+Updates dependencies from a `package.json` file asynchronously
+Request body must be
+```javascript
+{ 
+    "ownerName": "[owner]/[package name]",
+    "stage": "dev|prod", // other values not allowed, will return error
+    "pack": {}, // object with package.json contents
+}
+```
+
+API will return a simple result in the shape:
+```javascript
+{
+    status: 200, // status code is 200 if request is posted successfully
+    statusText: "" // empty by default
+}
+```
+
 
 ## Published event topics
 (none yet)
