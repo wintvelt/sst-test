@@ -3,6 +3,8 @@
 This project was bootstrapped with [Create Serverless Stack](https://docs.serverless-stack.com/packages/create-serverless-stack).
 Quite heavily adapted though, for personal microservice setup on AWS with github actions CI/CD.
 
+[An example can be found in a separate readme doc](assets/DependencyPubReadMe.md)
+
 ## How to use
 Steps to get going:
 1. Setup a new local repo with a clone of this template
@@ -11,16 +13,19 @@ Steps to get going:
     - clone this repo: `git clone https://github.com/wintvelt/sst-test.git .`
     - remove the `.git` folder
     - `git init`
-2. Initial commit (locally) , via vscode direct, or
-        - `git add .`
-        - `git commit -m "Initial commit"`
-3. Create the remote origin - via vscode direct, or
+2. Set the name of your own package
+    - open `package.json` and change the name of your service, and version number
+    - also change the name in `sst.json`
+3. Initial commit (locally) , via vscode direct, or
+    - `git add .`
+    - `git commit -m "Initial commit"`
+4. Create the remote origin - via vscode direct, or
     - on github site, create a new repo
     - locally: `git remote add origin [your new github repo url]`
     - `git push -u --force origin master`
     - best to create a public repo, if you want free use of GitKraken to view branche structure
     - vscode publishing will not trigger workflow, subsequent commits will. Their test runs will fail until secrets are set
-4. Set the secrets
+5. Set the secrets
     - following secrets need to be set in github repo
         - `AWS_ACCESS_KEY_ID` to allow deployment to AWS and set permission to access other services
         - `AWS_SECRET_ACCESS_KEY`
@@ -29,9 +34,7 @@ Steps to get going:
     - local `.env` file will need (for local testing)
         - `SECRET_PUBLISH_TOKEN`
         - `STAGE=dev`
-5. Customize setup to pass initial test rounds
-    - open `package.json` and change the name of your service, and version number
-    - also change the name in `sst.json`
+6. Customize setup to pass initial test rounds
     - rename `npm` folder, to prevent publish to npm
     - build initial AWS stack
         - modify 1 of the stack files in `stacks/` folder
@@ -42,14 +45,15 @@ Steps to get going:
 ## Why this template?
 The general idea is that a microservice
 - exposes an API (AWS API Gateway and Lambda) on various routes
-- may have Lambda functions that subscribe to some SNS topics or SQS queues connected to topics
+- may have Lambda functions that subscribe to other SNS topics or creates internal SQS queues connected to topics
+- may publish 1 or more (SNS) topics, for other services to subscribe to
 - has exclusive access to some database (AWS DynamoDB)
-- may optionally publish a public npm package with a client SDK, that other microservices can install to access the microservice
-    - using the client is mandatory. Because the client is a dependency, the published dependency tree will always reflect consumers/users of the service
+- may publish a public npm package with a client SDK, that other microservices can install to access the microservice
+    - for exposing access to other services, using the client is mandatory. Because the client is a dependency, the published dependency tree will always reflect consumers/users of the service
 - includes a github action workflow, that runs tests and deploys (only if on branch master or dev)
 - the workflow also calls a public API, to publish all dependencies
 
-This template contains all the basics, and an example service, for posting (and retrieving) microservice dependencies. Inner workings described at the [end of this doc](#dependency-publication-service).
+This template contains all the basics, and an example service, for posting (and retrieving) microservice dependencies. Inner workings described [in another readme doc](assets/DepenencyPubReadMe.md).
 
 ## APIs and Event streams
 The microservice is responsible for:
@@ -196,125 +200,3 @@ In CI/CD, Post-deployment tests run after deployment and after publishing, so if
 - and any updates to stack output variables will not be pushed to the repo
 
 If you run tests locally with `npx sst test`, all tests will be run.
-
----
-# Dependency publication service
-*on cloning this repo, replace with specifics for your service*
-
-## Client
-Per standard, all functions in client will expect `process.env.STAGE` to be set (to either prod or dev)
-
-Functions can be imported like this
-```javascript
-import { invokeCreate, invokeCreateAsync,  } from '@wintvelt/sst-test-client/functions'
-```
-
-`invokeCreate(event)` will directly publish the dependencies, allowing to read the changes applied.
-
-`invokeCreateAsync(event)` will asynchronously publish the dependencies, by calling create lambda async.
-
-The input schema for the event (to be passed as parameter) to both functions is
-```javascript
-{
-    type: 'object',
-    properties: {
-        body: {
-            type: 'object',
-            properties: {
-                ownerName: { type: 'string', pattern: '.+/{1}.+' }, // string with 1 slash
-                stage: { type: 'string', enum: ['prod', 'dev'] },
-                pack: { type: 'object' },
-            },
-            required: ['ownerName', 'stage', 'pack']
-        }
-    }
-}
-```
-
-The stack who invokes these functions will need permissions set. Both functions need access to the `put` function arn. Both functions invoke the same lambda.
-- `invokeCreate()` does a synchronous call
-- `invokeCreateAsync()` does a asynchronous call
-
-```javascript
-import arns from '@wintvelt/spqr-albums-client/arns'
-import { lambdaPermissions } from "../src/libs/permissions-lib";
-
-const arnWeNeedAccessTo = arns.put[process.env.STAGE]
-
-this.myFunction.attachPermissions([
-    lambdaPermissions(arnWeNeedAccessTo)
-])
-```
-
-## API
-All API enpoints require `Authorization: Basic (your-secret-token)` header to be included in format
-
-In addition, endpoints are heavily throttled. But should not cause problems, because expected invocation frequency is low per account/ project: only on each push/ deploy.
-
-The following APIs are exposed.
-
-### `GET /`
-Returns list of all [stage-packages] in database who published dependencies. Can be useful to collect the complete contents of the database, by using these ids to perform individual get requests for each.
-```json
-[ "[stage]-[package name]" ]
-```
-
-### `GET /?id=[package name]`
-Returns all dependencies to `[package name]` as a list
-```json
-[
-    { 
-        "packageStage": "[stage]-[subscriber package]",
-        "dependency": "[package name from request]",
-        "createdAt": 1636151395685,
-        "version": "^1.126.0"
-    }
-]
-```
-### `PUT /`
-Updates dependencies from a `package.json` file.
-Request body must be
-```javascript
-{ 
-    "ownerName": "[owner]/[package name]",
-    "stage": "dev|prod", // other values not allowed, will return error
-    "pack": {}, // object with package.json contents
-}
-```
-
-Response includes
-```javascript
-data: {
-    result: 'success',
-    message: '1 dependencies removed, 1 added, 1 updated, 1 unchanged'
-}
-```
-
-### `PUT /async`
-Updates dependencies from a `package.json` file asynchronously
-Request body must be
-```javascript
-{ 
-    "ownerName": "[owner]/[package name]",
-    "stage": "dev|prod", // other values not allowed, will return error
-    "pack": {}, // object with package.json contents
-}
-```
-
-API will return a simple result in the shape:
-```javascript
-{
-    status: 200, // status code is 200 if request is posted successfully
-    statusText: "" // empty by default
-}
-```
-
-
-## Published event topics
-(none yet)
-
-## Published queues for external commands
-(only exposed via async API endpoint and async function)
-
-## Subscription to external event topics
-(none)
