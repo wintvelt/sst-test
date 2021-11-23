@@ -1,6 +1,6 @@
 {
   "dev-sst-test-topic": {
-    "arn": "arn:aws:sns:eu-central-1:899888592127:topic.fifo"
+    "arn": "arn:aws:sns:eu-central-1:899888592127:dev-sst-test-Topic.fifo"
   },
   "dev-sst-test-dependencies": {
     "ExportsOutputFnGetAttdependenciesTable66493A0FArn170549B3": "arn:aws:dynamodb:eu-central-1:899888592127:table/dev-sst-test-dependencies",
