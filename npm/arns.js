@@ -7,4 +7,8 @@ export default {
         dev: devStageOutput['dev-sst-test-api']?.createarn,
         prod: prodStageOutput['prod-sst-test-api']?.createarn,
     },
+    topic: {
+        dev: devStageOutput['dev-sst-test-topic']?.createarn,
+        prod: prodStageOutput['prod-sst-test-topic']?.createarn,
+    }
 }
