@@ -3,7 +3,7 @@
 This project was bootstrapped with [Create Serverless Stack](https://docs.serverless-stack.com/packages/create-serverless-stack).
 Quite heavily adapted though, for personal microservice setup on AWS with github actions CI/CD.
 
-[An example can be found in a separate readme doc](assets/DependencyPubReadMe.md)
+An example is explained in [separate readme doc here](assets/DependencyPubReadMe.md)
 
 ## How to use
 Steps to get going:
@@ -131,6 +131,7 @@ Github repo needs to have the following secrets - they are accessed and used by 
 - `AWS_SECRET_ACCESS_KEY`
 - `SECRET_PUBLISH_TOKEN`: Basic token used to publish dependencies to a common shared service
 - `NPM_TOKEN`: Token to allow publication of client npm package to npm registry
+- `SENTRY_DSN`: Token to connect to sentry for observability (not really secret, but consistent in setup)
 
 *THIS SHOULD BE UPDATED*
 In the `.github/workflows` yml doc, the following env var for publishing dependencies
