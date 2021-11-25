@@ -8,9 +8,13 @@
     "ExportsOutputFnGetAttdependenciesTable66493A0FArn170549B3": "arn:aws:dynamodb:eu-central-1:899888592127:table/dev-sst-test-dependencies",
     "ExportsOutputRefdependenciesTable66493A0F53F99D89": "dev-sst-test-dependencies"
   },
+  "dev-sst-test-dlq": {
+    "ExportsOutputFnGetAttdlqQueueDFD2FC86Arn92685311": "arn:aws:sqs:eu-central-1:899888592127:dev-sst-test-dlq",
+    "arn": "arn:aws:sqs:eu-central-1:899888592127:dev-sst-test-dlq"
+  },
   "dev-sst-test-api": {
+    "ExportsOutputFnGetAttputHandlerFE01D35EArn8CC0083F": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-api-putHandlerFE01D35E-G77RUWS8zGCI",
     "createarn": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-api-putHandlerFE01D35E-G77RUWS8zGCI",
-    "ExportsOutputFnGetAttApiLambdaPUTE05FDB13ArnF5342C8B": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-api-ApiLambdaPUTE05FDB13-XjuAbaUiAsbh",
     "url": "https://a2mod3cmha.execute-api.eu-central-1.amazonaws.com"
   },
   "dev-sst-test-asyncApi": {
