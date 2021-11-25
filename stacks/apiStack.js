@@ -17,7 +17,7 @@ export default class ApiStack extends sst.Stack {
         const { table, dlq } = props;
 
         // Create the API
-        this.api = new sst.Api(this, "Api", {
+        this.api = new sst.Api(this, "api", {
             defaultAuthorizationType: sst.ApiAuthorizationType.CUSTOM,
             defaultAuthorizer: new HttpLambdaAuthorizer({
                 authorizerName: "LambdaAuthorizer",

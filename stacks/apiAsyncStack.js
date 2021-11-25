@@ -19,7 +19,7 @@ export default class ApiStack extends sst.Stack {
         const functionArn = api.getFunction(routeNames.put).functionArn
 
         // Create the API
-        this.asyncApi = new sst.Api(this, "Api", {
+        this.asyncApi = new sst.Api(this, "apiAsync", {
             defaultFunctionProps: {
                 environment: {
                     FUNCTION_ARN: functionArn,
