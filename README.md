@@ -201,3 +201,15 @@ In CI/CD, Post-deployment tests run after deployment and after publishing, so if
 - and any updates to stack output variables will not be pushed to the repo
 
 If you run tests locally with `npx sst test`, all tests will be run.
+
+## Observability
+The example functions contain a wrapper to report any internal error to a Sentry project. Sentry will only capture internally triggered errors, typically 5xx internal server errors inside the function.
+
+Other types of errors, including e.g. failed input validation, unauthorized access etc are typically 4xx errors. These will not be captured in Sentry, but need to be monitored in Cloudwatch metrics.
+
+Setting up metrics and alerts in Cloudwatch requires manual setup in the AWS Console. Rough steps:
+- create a new dashboard
+- add a widget with stats (line graph for example)
+- add metrics for the API
+
+NB: You need to lookup the API based on the API Id. The name of the api is unfortunately not set in Cloudwatch. ID can be found in the `(stage)-stack-output.json` files. They are the 10 character codes in front of the `.execute-api` part in the urls of the endpoints.
