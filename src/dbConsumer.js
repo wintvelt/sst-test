@@ -5,7 +5,7 @@ import sentry from './libs/sentry-lib'
 
 
 const baseHandler = async (event) => {
-    console.log(event)
+    console.log(event.Records)
     return "OK"
 }
 
