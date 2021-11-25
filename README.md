@@ -213,3 +213,5 @@ Setting up metrics and alerts in Cloudwatch requires manual setup in the AWS Con
 - add metrics for the API
 
 NB: You need to lookup the API based on the API Id. The name of the api is unfortunately not set in Cloudwatch. ID can be found in the `(stage)-stack-output.json` files. They are the 10 character codes in front of the `.execute-api` part in the urls of the endpoints.
+
+Another annoyance is that every time the stack is removed and rebuilt (sometimes necessary due to stack dependencies), you need to manually updated Cloudwatch dashboard too.
