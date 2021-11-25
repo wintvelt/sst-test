@@ -1,5 +1,7 @@
 {
   "dev-sst-test-topic": {
+    "ExportsOutputReftopicTopic3B807C262F7D39A5": "arn:aws:sns:eu-central-1:899888592127:dev-sst-test-topic.fifo",
+    "ExportsOutputFnGetAtttopicTopic3B807C26TopicName1E11DB8E": "dev-sst-test-topic.fifo",
     "arn": "arn:aws:sns:eu-central-1:899888592127:dev-sst-test-topic.fifo"
   },
   "dev-sst-test-dependencies": {
