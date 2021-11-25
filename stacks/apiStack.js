@@ -14,19 +14,10 @@ export default class ApiStack extends sst.Stack {
     constructor(scope, id, props) {
         super(scope, id, props);
 
-        const { table } = props;
+        const { table, dlq } = props;
 
         // Create the API
         this.api = new sst.Api(this, "Api", {
-            defaultFunctionProps: {
-                environment: {
-                    TABLE_NAME: table.tableName,
-                    SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
-                    STAGE: process.env.STAGE,
-                    SENTRY_DSN: process.env.SENTRY_DSN,
-                    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
-                },
-            },
             defaultAuthorizationType: sst.ApiAuthorizationType.CUSTOM,
             defaultAuthorizer: new HttpLambdaAuthorizer({
                 authorizerName: "LambdaAuthorizer",
@@ -43,8 +34,27 @@ export default class ApiStack extends sst.Stack {
             defaultThrottlingRateLimit: 2000,
             defaultThrottlingBurstLimit: 500,
             routes: {
-                [routeNames.put]: "src/create.handler",
-                [routeNames.get]: "src/get.handler"
+                [routeNames.get]: new sst.Function(this, "getHandler", {
+                    handler: "src/get.handler",
+                    environment: {
+                        TABLE_NAME: table.tableName,
+                        SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
+                        STAGE: process.env.STAGE,
+                        SENTRY_DSN: process.env.SENTRY_DSN,
+                        AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+                    },    
+                }),
+                [routeNames.put]: new sst.Function(this, "putHandler", {
+                    handler: "src/create.handler",
+                    deadLetterQueue: dlq.sqsQueue,
+                    environment: {
+                        TABLE_NAME: table.tableName,
+                        SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
+                        STAGE: process.env.STAGE,
+                        SENTRY_DSN: process.env.SENTRY_DSN,
+                        AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+                    },    
+                }),
             },
         });
 

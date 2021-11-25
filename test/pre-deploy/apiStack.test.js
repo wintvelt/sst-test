@@ -3,6 +3,7 @@ import * as sst from "@serverless-stack/resources";
 import ApiStack from "../../stacks/apiStack";
 import DbStack from "../../stacks/DbStack";
 import TopicStack from "../../stacks/topicStack";
+import DlqStack from "../../stacks/dlqStack";
 
 test("Test Stack", () => {
   const app = new sst.App();
@@ -13,8 +14,11 @@ test("Test Stack", () => {
     topic: topicStack.topic
   });
 
+  const dlqStack = new DlqStack(app, "dlq")
+
   const apiStack = new ApiStack(app, "api", {
     table: dbStack.table,
+    dlq: dlqStack.queue
   })
 
   expect(dbStack).to(haveResource("AWS::DynamoDB::Table"));

@@ -1,8 +1,6 @@
 // handler for GET route
 import middy from '@middy/core'
 import errorLogger from '@middy/error-logger'
-import httpErrorHandler from '@middy/http-error-handler'
-import cors from '@middy/http-cors'
 import sentry from './libs/sentry-lib'
 
 
