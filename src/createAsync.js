@@ -16,7 +16,7 @@ const baseHandler = async (event) => {
         InvocationType: 'Event',
         Payload: JSON.stringify({ ...event, body })
     }
-    const result = await lambda.invoke(params)
+    await lambda.invoke(params)
 }
 
 export const handler = middy(sentry(baseHandler))

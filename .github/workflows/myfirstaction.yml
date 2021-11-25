@@ -57,7 +57,7 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       PROD_PUBLISH_ENDPOINT: https://063jewbbli.execute-api.eu-central-1.amazonaws.com/async
-      DEV_PUBLISH_ENDPOINT: https://dju3mu3w6e.execute-api.eu-central-1.amazonaws.com/async
+      DEV_PUBLISH_ENDPOINT: https://5iao1dbkb2.execute-api.eu-central-1.amazonaws.com/async
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
