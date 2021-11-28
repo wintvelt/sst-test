@@ -1,7 +1,6 @@
 {
   "dev-sst-test-topic": {
     "ExportsOutputReftopicTopic3B807C262F7D39A5": "arn:aws:sns:eu-central-1:899888592127:dev-sst-test-topic.fifo",
-    "ExportsOutputFnGetAtttopicTopic3B807C26TopicName1E11DB8E": "dev-sst-test-topic.fifo",
     "arn": "arn:aws:sns:eu-central-1:899888592127:dev-sst-test-topic.fifo"
   },
   "dev-sst-test-dependencies": {
@@ -13,12 +12,12 @@
     "arn": "arn:aws:sqs:eu-central-1:899888592127:dev-sst-test-dlq"
   },
   "dev-sst-test-api": {
-    "ExportsOutputFnGetAttputHandlerFE01D35EArn8CC0083F": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-api-putHandlerFE01D35E-G77RUWS8zGCI",
-    "createarn": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-api-putHandlerFE01D35E-G77RUWS8zGCI",
-    "url": "https://0drh2eew13.execute-api.eu-central-1.amazonaws.com"
+    "ExportsOutputFnGetAttputHandlerFE01D35EArn8CC0083F": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-api-putHandlerFE01D35E-oFalkuXw3bq9",
+    "createarn": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-api-putHandlerFE01D35E-oFalkuXw3bq9",
+    "url": "https://05xwzckoac.execute-api.eu-central-1.amazonaws.com"
   },
   "dev-sst-test-asyncApi": {
-    "createasyncarn": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-asyncApi-apiAsyncLambdaPUTasync1456A7-3hSfm26roLys",
+    "createasyncarn": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-asyncApi-apiAsyncLambdaPUTasync1456A7-U8mo0blcRzMH",
     "asyncurl": "https://7awthdkgp6.execute-api.eu-central-1.amazonaws.com/async"
   }
 }
