@@ -5,12 +5,10 @@ import sentry from './libs/sentry-lib'
 
 
 const baseHandler = async (event) => {
-    console.log(event.Records)
+    console.log(event.Records[0].eventName)
+    console.log(event.Records[0].dynamodb)
     return "OK"
 }
 
-// export const handler = middy(sentry(baseHandler))
 export const handler = middy(sentry(baseHandler))
     .use(errorLogger())
-    // .use(httpErrorHandler({ fallbackMessage: 'server error' }))
-    // .use(cors())
