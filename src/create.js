@@ -32,6 +32,26 @@ export const makeLatest = (event) => {
     return updates
 }
 
+export const splitNewChanged = (oldDeps, latestDeps) => {
+    let depsToAdd = []
+    let depsToChange = []
+    let unchanged = 0
+    latestDeps.forEach(item => {
+        const inOldDep = oldDeps.filter(it => (it.dependency === item.dependency))
+        const existedInOldDeps = inOldDep.length > 0
+        if (existedInOldDeps) {
+            if (item.version !== inOldDep[0].version) {
+                depsToChange.push(item)
+            } else {
+                unchanged++
+            }
+        } else {
+            depsToAdd.push(item)
+        }
+    })
+    return { depsToAdd, depsToChange, unchanged }
+}
+
 const baseHandler = async (event) => {
     const { ownerName, stage, pack } = event.body;
     const name = ownerName.split('/')[1]
@@ -51,35 +71,19 @@ const baseHandler = async (event) => {
     }
     const oldDeps = queryResult.Items || []
     const latestDeps = makeLatest(event)
-    console.log({oldDeps, latestDeps})
 
     const { dependencies } = pack
     const depsToDel = oldDeps
         .filter(({ dependency }) => !Object.hasOwnProperty.call(dependencies, dependency))
 
-    let depsToAdd = []
-    let depsToChange = []
-    let unchanged = 0
-    latestDeps.forEach(item => {
-        const inOldDep = oldDeps.filter(it => (it.dependency === item.dependency))
-        const existedInOldDeps = inOldDep.length > 0
-        if (existedInOldDeps) {
-            if (item.version !== inOldDep[0].version) {
-                depsToChange.push(item)
-            } else {
-                unchanged++
-            }
-        } else {
-            depsToAdd.push(item)
-        }
-    })
+    const { depsToAdd, depsToChange, unchanged } = splitNewChanged(oldDeps, latestDeps)
 
     const delUpdates = depsToDel.map(({ packageStage, dependency }) => ({
         TableName: process.env.TABLE_NAME,
         Key: { packageStage, dependency }
     })).map(dynamo.del)
 
-    const updates = latestDeps.map(Item => ({
+    const updates = [...depsToAdd, ...depsToChange].map(Item => ({
         TableName: process.env.TABLE_NAME,
         Item
     })).map(dynamo.put)
