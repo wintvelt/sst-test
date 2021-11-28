@@ -1,6 +1,7 @@
 // tests for the PUT endpoint = create function
 // tests only business logic, no persistent DB updates
 import { makeLatest, splitNewChanged } from '../../src/create';
+import { createMessage } from '../../src/dbConsumer';
 
 const baseEvent = {
     body: {
@@ -34,6 +35,26 @@ const latestDeps = [
     }
 ]
 
+const record = {
+    eventName: 'INSERT',
+    dynamodb: {
+        ApproximateCreationDateTime: 1638137679,
+        Keys: {
+            dependency: { S: 'firstdep' },
+            packageStage: { S: 'dev-put-api-async-test' }
+        },
+        NewImage: {
+            createdAt: { S: '2021-11-28T22:14:39.047Z' },
+            dependency: { S: 'firstdep' },
+            version: { S: '0.0.3' },
+            packageStage: { S: 'dev-put-api-async-test' }
+        },
+        SequenceNumber: '2900000000016695167612',
+        SizeBytes: 149,
+        StreamViewType: 'NEW_AND_OLD_IMAGES'
+    }
+}
+
 
 test("Test making update Item", () => {
     const result = makeLatest(baseEvent)
@@ -47,4 +68,11 @@ test("Test splitting new/changed/unchanged in dependencies", () => {
     expect(depsToAdd).toHaveLength(0)
     expect(depsToChange).toHaveLength(0)
     expect(unchanged).toBe(1)
+})
+
+test("Create topic message from db stream record", () => {
+    const message = createMessage(record)
+    expect(message.eventName).toBe('INSERT')
+    expect(message.version).toBe('0.0.3')
+    expect(message.oldVersion).toBe(undefined)
 })

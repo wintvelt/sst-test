@@ -5,21 +5,30 @@ import sentry from './libs/sentry-lib'
 import { sns } from './libs/sns-lib'
 
 const postTopic = (message) => sns.publish({
-    Message: JSON.stringify(message),
-    TopicArn: process.env.TOPIC_ARN
+    Message: message,
+    TopicArn: process.env.TOPIC_ARN,
+    MessageDeduplicationId: Date.now().toString(),  // Required for FIFO
+    MessageGroupId: "deps",  // Required for FIFO
 })
 
-const handleRecord = (record) => {
+export const createMessage = (record) => {
     const isDeleted = (record.eventName === 'REMOVE')
     const isNew = (record.eventName === 'INSERT')
-    return postTopic({
+    const data = record.dynamodb
+    return {
         eventName: record.eventName,
-        packageStage: (isDeleted)? record.OldImage.packageStage.S : record.NewImage.packageStage.S,
-        dependency: (isDeleted)? record.OldImage.dependency.S : record.NewImage.dependency.S,
-        version: (isDeleted)? undefined : record.NewImage.version.S,
-        oldVersion: (isNew)? undefined : record.OldImage.version.S,
-        createdAt: (isDeleted)? record.OldImage.createdAt.S : record.NewImage.createdAt.S
-    })
+        packageStage: (isDeleted)? data.OldImage.packageStage.S : data.NewImage.packageStage.S,
+        dependency: (isDeleted)? data.OldImage.dependency.S : data.NewImage.dependency.S,
+        version: (isDeleted)? undefined : data.NewImage.version.S,
+        oldVersion: (isNew)? undefined : data.OldImage.version.S,
+        createdAt: (isDeleted)? data.OldImage.createdAt.S : data.NewImage.createdAt.S
+    }
+}
+
+const handleRecord = (record) => {
+    const messageRec = createMessage(record)
+    console.log(messageRec)
+    return postTopic(JSON.stringify(messageRec))
 }
 
 const baseHandler = async (event) => {
