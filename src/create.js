@@ -51,6 +51,7 @@ const baseHandler = async (event) => {
     }
     const oldDeps = queryResult.Items || []
     const latestDeps = makeLatest(event)
+    console.log({oldDeps, latestDeps})
 
     const { dependencies } = pack
     const depsToDel = oldDeps
