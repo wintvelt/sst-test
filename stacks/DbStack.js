@@ -22,8 +22,9 @@ export default class DbStack extends sst.Stack {
       defaultFunctionProps: {
         timeout: 20,
         environment: { 
-          topicName: topic.topicName,
+          TOPIC_ARN: topic.topicArn,
           SENTRY_DSN: process.env.SENTRY_DSN,
+          STAGE: process.env.STAGE
         },
         permissions: [topic],
       },
