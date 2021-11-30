@@ -3,6 +3,13 @@
 This project was bootstrapped with [Create Serverless Stack](https://docs.serverless-stack.com/packages/create-serverless-stack).
 Quite heavily adapted though, for personal microservice setup on AWS with github actions CI/CD.
 
+TODO: capture and save the event stream
+- Currently only the *output* state changes are saved (published to a topic).
+- But event stream should be from outside source only. 
+- So only outside update (PUT, POST, DELETE) calls. Because these represent a state change in the database.
+- This could be done in the update lambda, after the API. 
+- However, original source could be from an async call, in which case original source is async lambda. And that might lead to double logging.
+
 An example is explained in [separate readme doc here](assets/DependencyPubReadMe.md)
 
 ## How to use
@@ -15,7 +22,7 @@ Steps to get going:
     - `git init`
 2. Set the name of your own package
     - open `package.json` and change the name of your service, and version number
-    - also change the name in `sst.json`
+    - also change the name in `sst.json` - this will be used in all infra stacks (lambda etc)
 3. Initial commit (locally) , via vscode direct, or
     - `git add .`
     - `git commit -m "Initial commit"`
