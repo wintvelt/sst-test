@@ -1,6 +1,9 @@
-import AWS from "aws-sdk";
+import AWSXRay from "aws-xray-sdk-core"
+import AWS from "aws-sdk"
 
-const snsClient = new AWS.SNS({apiVersion: '2010-03-31'})
+const AWSWrapped = AWSXRay.captureAWS(AWS)
+
+const snsClient = new AWSWrapped.SNS({apiVersion: '2010-03-31'})
 
 export const sns = {
     publish: (params) => snsClient.publish(params).promise()
