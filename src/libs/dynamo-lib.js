@@ -1,6 +1,9 @@
-import AWS from "aws-sdk";
+import AWSXRay from "aws-xray-sdk-core"
+import AWS from "aws-sdk"
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const AWSWrapped = AWSXRay.captureAWS(AWS)
+
+const dynamoDb = new AWSWrapped.DynamoDB.DocumentClient();
 
 export const dynamo = {
     put: (params) => dynamoDb.put(params).promise(),
