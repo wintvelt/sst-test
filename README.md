@@ -13,7 +13,7 @@ TODO: capture and save the event stream
 An example is explained in [separate readme doc here](assets/DependencyPubReadMe.md)
 
 ## How to use
-Steps to get going:
+Basic steps to get going:
 1. Setup a new local repo with a clone of this template
     - create a new folder on your machine
     - open terminal in that folder
