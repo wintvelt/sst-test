@@ -1,6 +1,8 @@
 import AWSXRay from "aws-xray-sdk-core"
 import AWS from "aws-sdk"
 
+AWSXRay.setContextMissingStrategy("LOG_ERROR")
+
 const AWSWrapped = AWSXRay.captureAWS(AWS)
 
 const dynamoDb = new AWSWrapped.DynamoDB.DocumentClient();
