@@ -1,7 +1,7 @@
 // tests for the PUT endpoint = create function
 // tests only business logic, no persistent DB updates
 import { makeLatest, splitNewChanged } from '../../src/create';
-import { createMessage } from '../../src/dbConsumer';
+import { createMessage, createMessageAttr } from '../../src/dbConsumer';
 
 const baseEvent = {
     body: {
@@ -75,4 +75,11 @@ test("Create topic message from db stream record", () => {
     expect(message.eventName).toBe('INSERT')
     expect(message.version).toBe('0.0.3')
     expect(message.oldVersion).toBe(undefined)
+})
+
+test("Create topic message attributes from db stream record", () => {
+    const messageAttr = createMessageAttr(createMessage(record))
+    expect(messageAttr.eventName?.StringValue).toBe('INSERT')
+    expect(messageAttr.packageStage?.StringValue).toBe('dev-put-api-async-test')
+    expect(messageAttr.dependency?.StringValue).toBe('firstdep')
 })
