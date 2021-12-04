@@ -1,7 +1,7 @@
 import { expect, haveResource } from "@aws-cdk/assert";
 import * as sst from "@serverless-stack/resources";
 import ApiStack from "../../stacks/apiStack";
-import DbStack from "../../stacks/DbStack";
+import DbStack from "../../stacks/dbStack";
 import TopicStack from "../../stacks/topicStack";
 import DlqStack from "../../stacks/dlqStack";
 
@@ -10,7 +10,7 @@ test("Test Stack", () => {
 
   const topicStack = new TopicStack(app, "topic");
 
-  const dbStack = new DbStack(app, "dependencies", {
+  const dbStack = new DbStack(app, "table", {
     topic: topicStack.topic
   });
 

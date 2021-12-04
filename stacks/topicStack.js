@@ -11,11 +11,7 @@ export default class TopicStack extends sst.Stack {
         super(scope, id, props);
 
         // Create the Topic
-        this.topic = new sst.Topic(this, "topic", {
-            snsTopic: {
-                fifo: true
-            },
-        });
+        this.topic = new sst.Topic(this, "topic");
 
         const outputs = {
             "arn": this.topic.topicArn

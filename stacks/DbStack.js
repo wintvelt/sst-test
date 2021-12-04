@@ -10,7 +10,7 @@ export default class DbStack extends sst.Stack {
     const { topic } = props
 
     // Create the DynamoDB table
-    this.table = new sst.Table(this, "dependencies", {
+    this.table = new sst.Table(this, "table", {
       fields: {
         packageStage: sst.TableFieldType.STRING,
         dependency: sst.TableFieldType.STRING,
