@@ -8,8 +8,8 @@ const postTopic = (message, messageAttr) => sns.publish({
     Message: message,
     MessageAttributes: messageAttr,
     TopicArn: process.env.TOPIC_ARN,
-    MessageDeduplicationId: Date.now().toString(),  // Required for FIFO
-    MessageGroupId: "deps",  // Required for FIFO
+    // MessageDeduplicationId: Date.now().toString(),  // Required for FIFO
+    // MessageGroupId: "deps",  // Required for FIFO
 })
 
 export const createMessage = (record) => {
