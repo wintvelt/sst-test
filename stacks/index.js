@@ -1,7 +1,7 @@
-import DbStack from "./dbStack";
-import TopicStack from "./topicStack";
-import ApiStack from "./apiStack";
-import AsyncApiStack from "./apiAsyncStack";
+import DbStack from "./dbStack"
+import TopicStack from "./topicStack"
+import ApiStack from "./apiStack"
+import AsyncApiStack from "./apiAsyncStack"
 import DlqStack from "./dlqStack"
 
 export default function main(app) {
