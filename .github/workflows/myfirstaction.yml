@@ -38,7 +38,7 @@ jobs:
         then
           if [ "$(ls -A $DIR)" ]; then
             echo "Running tests for $DIR"
-            npm test test/pre-deploy/*.test.*
+            npm run test test/pre-deploy/*.test.*
           else
             echo "$DIR is Empty"
           fi
