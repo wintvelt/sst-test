@@ -27,7 +27,7 @@ export default class ApiStack extends sst.Stack {
                         SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
                         STAGE: process.env.STAGE,
                         SENTRY_DSN: process.env.SENTRY_DSN,
-                        },
+                    },
                 }),
                 resultsCacheTtl: Duration.seconds(0) // turn off cache to prevent weird errors
             }),
@@ -42,7 +42,7 @@ export default class ApiStack extends sst.Stack {
                         STAGE: process.env.STAGE,
                         SENTRY_DSN: process.env.SENTRY_DSN,
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
-                    },    
+                    },
                 }),
                 [routeNames.put]: new sst.Function(this, "putHandler", {
                     handler: "src/create.handler",
@@ -53,7 +53,7 @@ export default class ApiStack extends sst.Stack {
                         STAGE: process.env.STAGE,
                         SENTRY_DSN: process.env.SENTRY_DSN,
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
-                    },    
+                    },
                 }),
             },
         });

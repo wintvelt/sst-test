@@ -1,6 +1,7 @@
 import { HttpLambdaAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers";
 import { Duration } from "@aws-cdk/core";
 import * as sst from "@serverless-stack/resources";
+import { layerProps } from "../src/libs/lambda-layers-lib";
 import { lambdaPermissions } from "../src/libs/permissions-lib";
 
 const routeNames = {
@@ -20,15 +21,6 @@ export default class ApiStack extends sst.Stack {
 
         // Create the API
         this.asyncApi = new sst.Api(this, "apiAsync", {
-            defaultFunctionProps: {
-                environment: {
-                    FUNCTION_ARN: functionArn,
-                    SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
-                    STAGE: process.env.STAGE,
-                    SENTRY_DSN: process.env.SENTRY_DSN,
-                    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
-                },
-            },
             defaultAuthorizationType: sst.ApiAuthorizationType.CUSTOM,
             defaultAuthorizer: new HttpLambdaAuthorizer({
                 authorizerName: "LambdaAuthorizer",
@@ -45,13 +37,18 @@ export default class ApiStack extends sst.Stack {
             defaultThrottlingRateLimit: 2000,
             defaultThrottlingBurstLimit: 500,
             routes: {
-                [routeNames.putAsync]: {
-                    function: {
-                        handler: "src/createAsync.handler",
-                        timeout: 10,
-                        bundle: { copyFiles: [{ from: "common", to: "." }] }
-                    }
-                }
+                [routeNames.putAsync]: new sst.Function(this, 'createAsync', {
+                    handler: "src/createAsync.handler",
+                    environment: {
+                        FUNCTION_ARN: functionArn,
+                        SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
+                        STAGE: process.env.STAGE,
+                        SENTRY_DSN: process.env.SENTRY_DSN,
+                        AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+                    },
+                    timeout: 10,
+                    ...layerProps(this, "traceLogLayer")
+                })
             },
         });
 
