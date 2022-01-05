@@ -1,0 +1,14 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+exporters:
+  logzio:
+    account_token: FoeuZkrcBIGaEOEBJyTVaqhQpdovDqlh
+    region: EU
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [logzio]
