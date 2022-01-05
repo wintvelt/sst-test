@@ -1,7 +1,6 @@
 // handler for PUT route
 import middy from '@middy/core'
 import jsonBodyParser from '@middy/http-json-body-parser'
-import errorLogger from '@middy/error-logger'
 import validator from '@middy/validator'
 import httpErrorHandler from '@middy/http-error-handler'
 import cors from '@middy/http-cors'
@@ -98,7 +97,6 @@ const baseHandler = async (event) => {
 }
 
 export const handler = middy(sentry(baseHandler))
-    // .use(errorLogger())
     .use(jsonBodyParser()) // parses the request body when it's a JSON and converts it to an object
     .use(validator({ inputSchema })) // validates the input
     .use(cors())

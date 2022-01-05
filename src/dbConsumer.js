@@ -1,6 +1,5 @@
 // handler for GET route
 import middy from '@middy/core'
-import errorLogger from '@middy/error-logger'
 import sentry from './libs/sentry-lib'
 import { sns } from './libs/sns-lib'
 
@@ -58,4 +57,3 @@ const baseHandler = async (event) => {
 }
 
 export const handler = middy(sentry(baseHandler))
-    .use(errorLogger())

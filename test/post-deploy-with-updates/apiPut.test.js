@@ -27,7 +27,7 @@ test("API Put an update", async () => {
 
 test("API Put invalid update should return error", async () => {
     let result
-    const invalidBody = { ...body, stage: "RANDOM" }
+    const invalidBody = { ...body, stage: "WRONG" }
     try {
         result = await axios.put(url, invalidBody, { headers: { Authorization } })
         // if (result.status > 299) throw new Error(result.statusText)
