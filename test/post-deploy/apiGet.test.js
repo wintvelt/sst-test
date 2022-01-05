@@ -11,7 +11,7 @@ test("API GET retrieve list of publications", async () => {
         result = await axios.get(getUrl, { headers: { Authorization } })
         if (result.status > 299) throw new Error(result.statusText)
     } catch (error) {
-        console.error(error.message)
+        result = error
     }
     expect(result).toHaveProperty("data")
     expect(Array.isArray(result.data)).toBe(true)

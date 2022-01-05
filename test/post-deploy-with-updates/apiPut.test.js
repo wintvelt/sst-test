@@ -18,9 +18,23 @@ test("API Put an update", async () => {
         result = await axios.put(url, body, { headers: { Authorization } })
         // if (result.status > 299) throw new Error(result.statusText)
     } catch (error) {
-        console.error(error)
+        result = error
     }
     expect(result).toHaveProperty("statusText")
     expect(result.status).toBe(200)
     expect(result).toHaveProperty("data")
+})
+
+test("API Put invalid update should return error", async () => {
+    let result
+    const invalidBody = { ...body, stage: "RANDOM" }
+    try {
+        result = await axios.put(url, invalidBody, { headers: { Authorization } })
+        // if (result.status > 299) throw new Error(result.statusText)
+    } catch (error) {
+        result = error.response
+    }
+    expect(result).toHaveProperty("statusText")
+    expect(result.status).toBe(400)
+    expect(result.data).toBe('Event object failed validation')
 })

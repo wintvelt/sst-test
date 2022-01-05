@@ -51,7 +51,6 @@ const baseHandler = async (event) => {
             result = await getAll()
         }
     } catch (error) {
-        console.error(error.message);
         throw new Error(error.message);
     }
 

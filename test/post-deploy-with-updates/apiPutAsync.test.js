@@ -18,7 +18,7 @@ test("API Put Async an update", async () => {
         result = await axios.put(url, body, { headers: { Authorization } })
         // if (result.status > 299) throw new Error(result.statusText)
     } catch (error) {
-        console.error(error)
+        result = error
     }
     expect(result).toHaveProperty("statusText")
     expect(result.status).toBe(200)

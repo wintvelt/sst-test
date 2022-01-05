@@ -66,7 +66,6 @@ const baseHandler = async (event) => {
     try {
         queryResult = await dynamo.query(queryParams)
     } catch (error) {
-        console.error(error.message);
         throw new Error(error.message);
     }
     const oldDeps = queryResult.Items || []
@@ -90,7 +89,6 @@ const baseHandler = async (event) => {
     try {
         await Promise.all(updates.concat(delUpdates));
     } catch (error) {
-        console.error(error.message);
         throw new Error(error.message);
     }
     const message = `${depsToDel.length} dependencies removed, ${depsToAdd.length} added, ` +
@@ -100,7 +98,7 @@ const baseHandler = async (event) => {
 }
 
 export const handler = middy(sentry(baseHandler))
-    .use(errorLogger())
+    // .use(errorLogger())
     .use(jsonBodyParser()) // parses the request body when it's a JSON and converts it to an object
     .use(validator({ inputSchema })) // validates the input
     .use(cors())

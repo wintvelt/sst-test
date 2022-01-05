@@ -17,7 +17,6 @@ testDevOnly("Test invoking create lambda from npm", async () => {
     try {
         result = await invokeCreate(baseEvent)
     } catch (error) {
-        console.error(error.message)
         result.statusCode = 500
         result.message = error.message
     }
