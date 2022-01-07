@@ -3,7 +3,7 @@
 // For any other token value returns an HTTP 500 status code. 
 // Note that token values are case-sensitive.
 
-export function handler (event, context, callback) {
+function handler(event, context, callback) {
     let token = event.headers?.authorization
 
     switch (token) {
@@ -11,7 +11,7 @@ export function handler (event, context, callback) {
             callback(null, generatePolicy('user', 'Allow', event.methodArn));
             break;
         default:
-            console.log({token})
+            console.log({ token })
             console.log(process.env.SECRET_PUBLISH_TOKEN)
             console.log(`Basic ${process.env.SECRET_PUBLISH_TOKEN}` === token)
             callback("Unauthorized");   // Return a 401 Unauthorized response
@@ -38,3 +38,5 @@ const generatePolicy = (principalId, effect, resource) => {
 
     return authResponse;
 }
+
+module.exports = { handler }

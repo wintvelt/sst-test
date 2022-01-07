@@ -10,7 +10,7 @@ const postTopic = (message, messageAttr) => sns.publish({
     // MessageGroupId: "deps",  // Required for FIFO
 })
 
-export const createMessage = (record) => {
+const createMessage = (record) => {
     const isDeleted = (record.eventName === 'REMOVE')
     const isNew = (record.eventName === 'INSERT')
     const data = record.dynamodb
@@ -29,7 +29,7 @@ const attr = (string) => ({
     StringValue: string
 })
 
-export const createMessageAttr = (messageRec) => {
+const createMessageAttr = (messageRec) => {
     return {
         eventName: attr(messageRec.eventName),
         packageStage: attr(messageRec.packageStage),
@@ -57,4 +57,4 @@ const baseHandler = async (event) => {
 
 const handler = middy(baseHandler)
 
-module.exports = { handler }
+module.exports = { handler, createMessage, createMessageAttr }

@@ -7,7 +7,7 @@ import cors from '@middy/http-cors'
 import { dynamo } from "./libs/dynamo-lib"
 import { inputSchema } from './libs/create-input-schema'
 
-export const makeLatest = (event) => {
+const makeLatest = (event) => {
     // Get data from event body
     const { ownerName, stage, pack } = event.body;
     const name = ownerName.split('/')[1]
@@ -30,7 +30,7 @@ export const makeLatest = (event) => {
     return updates
 }
 
-export const splitNewChanged = (oldDeps, latestDeps) => {
+const splitNewChanged = (oldDeps, latestDeps) => {
     let depsToAdd = []
     let depsToChange = []
     let unchanged = 0
@@ -101,4 +101,4 @@ const handler = middy(baseHandler)
     .use(cors())
     .use(httpErrorHandler({ fallbackMessage: 'server error' }))
 
-module.exports = { handler } // module exports to make Open Telemetry work
+module.exports = { handler, makeLatest, splitNewChanged } // module exports to make Open Telemetry work
