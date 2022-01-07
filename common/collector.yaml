@@ -5,7 +5,7 @@ receivers:
       http:
 exporters:
   logging:
-    loglevel: debug
+    loglevel: error
   logzio:
     account_token: FoeuZkrcBIGaEOEBJyTVaqhQpdovDqlh
     region: EU
