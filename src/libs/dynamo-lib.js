@@ -1,11 +1,11 @@
-import AWSXRay from "aws-xray-sdk-core"
+// import AWSXRay from "aws-xray-sdk-core"
 import AWS from "aws-sdk"
 
-AWSXRay.setContextMissingStrategy("LOG_ERROR")
+// AWSXRay.setContextMissingStrategy("LOG_ERROR")
 
-const AWSWrapped = AWSXRay.captureAWS(AWS)
+// const AWSWrapped = AWSXRay.captureAWS(AWS)
 
-const dynamoDb = new AWSWrapped.DynamoDB.DocumentClient();
+const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 export const dynamo = {
     put: (params) => dynamoDb.put(params).promise(),
