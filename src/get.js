@@ -3,7 +3,6 @@ import middy from '@middy/core'
 import httpErrorHandler from '@middy/http-error-handler'
 import cors from '@middy/http-cors'
 import { dynamo } from "./libs/dynamo-lib"
-import sentry from './libs/sentry-lib'
 
 const getById = async (id) => {
     const queryParams = {
@@ -56,7 +55,8 @@ const baseHandler = async (event) => {
     return { statusCode: 200, body: JSON.stringify(result) }
 }
 
-// export const handler = middy(sentry(baseHandler))
-export const handler = middy(sentry(baseHandler))
+const handler = middy(baseHandler)
     .use(httpErrorHandler({ fallbackMessage: 'server error' }))
     .use(cors())
+
+module.exports = { handler }

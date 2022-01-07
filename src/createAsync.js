@@ -5,7 +5,6 @@ import validator from '@middy/validator'
 import httpErrorHandler from '@middy/http-error-handler'
 import cors from '@middy/http-cors'
 import { inputSchema } from './libs/create-input-schema'
-import sentry from './libs/sentry-lib'
 import { lambda } from './libs/lambda-lib'
 
 const baseHandler = async (event) => {
@@ -18,7 +17,7 @@ const baseHandler = async (event) => {
     await lambda.invoke(params)
 }
 
-const handler = middy(sentry(baseHandler))
+const handler = middy(baseHandler)
     .use(jsonBodyParser()) // parses the request body when it's a JSON and converts it to an object
     .use(validator({ inputSchema })) // validates the input
     .use(cors())

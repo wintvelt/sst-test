@@ -1,6 +1,5 @@
 // handler for GET route
 import middy from '@middy/core'
-import sentry from './libs/sentry-lib'
 import { sns } from './libs/sns-lib'
 
 const postTopic = (message, messageAttr) => sns.publish({
@@ -56,4 +55,6 @@ const baseHandler = async (event) => {
     return "OK"
 }
 
-export const handler = middy(sentry(baseHandler))
+const handler = middy(baseHandler)
+
+module.exports = { handler }

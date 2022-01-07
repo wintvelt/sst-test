@@ -6,7 +6,6 @@ import httpErrorHandler from '@middy/http-error-handler'
 import cors from '@middy/http-cors'
 import { dynamo } from "./libs/dynamo-lib"
 import { inputSchema } from './libs/create-input-schema'
-import sentry from './libs/sentry-lib'
 
 export const makeLatest = (event) => {
     // Get data from event body
@@ -96,7 +95,7 @@ const baseHandler = async (event) => {
     return { statusCode: 200, body: JSON.stringify(response) }
 }
 
-const handler = middy(sentry(baseHandler))
+const handler = middy(baseHandler)
     .use(jsonBodyParser()) // parses the request body when it's a JSON and converts it to an object
     .use(validator({ inputSchema })) // validates the input
     .use(cors())
