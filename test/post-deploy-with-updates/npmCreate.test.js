@@ -23,7 +23,7 @@ testDevOnly("Test invoking create lambda from npm", async () => {
     expect(result.statusCode).toBeLessThanOrEqual(299)
 })
 
-console.log(process.env)
+// console.log(process.env)
 // testDevOnly("Test invoking create lambda from npm with wrong body", async () => {
 //     let result = {}
 //     try {
