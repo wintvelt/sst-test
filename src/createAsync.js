@@ -18,8 +18,10 @@ const baseHandler = async (event) => {
     await lambda.invoke(params)
 }
 
-export const handler = middy(sentry(baseHandler))
+const handler = middy(sentry(baseHandler))
     .use(jsonBodyParser()) // parses the request body when it's a JSON and converts it to an object
     .use(validator({ inputSchema })) // validates the input
     .use(cors())
     .use(httpErrorHandler({ fallbackMessage: 'server error' }))
+
+module.exports = { handler } // module exports to make Open Telemetry work

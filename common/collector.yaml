@@ -4,6 +4,8 @@ receivers:
       grpc:
       http:
 exporters:
+  logging:
+    loglevel: debug
   logzio:
     account_token: FoeuZkrcBIGaEOEBJyTVaqhQpdovDqlh
     region: EU
