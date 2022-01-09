@@ -1,6 +1,6 @@
 import * as sst from "@serverless-stack/resources";
 import { lambdaAuthorizerProps } from "../src/libs/lambda-authorizer-lib";
-import { tracingEnvProps, tracingLayerProps } from "../src/libs/lambda-layers-lib";
+// import { tracingEnvProps, tracingLayerProps } from "../src/libs/lambda-layers-lib";
 import { lambdaPermissions } from "../src/libs/permissions-lib";
 
 const routeNames = {
@@ -32,10 +32,10 @@ export default class ApiStack extends sst.Stack {
                         STAGE: process.env.STAGE,
                         SENTRY_DSN: process.env.SENTRY_DSN,
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1,
-                        ...tracingEnvProps
+                        // ...tracingEnvProps
                     },
                     timeout: 10,
-                    ...tracingLayerProps(this, "put"),
+                    // ...tracingLayerProps(this, "put"),
                 })
             },
         });

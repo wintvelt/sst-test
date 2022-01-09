@@ -1,6 +1,6 @@
 import { lambdaAuthorizerProps } from "../src/libs/lambda-authorizer-lib";
 import * as sst from "@serverless-stack/resources";
-import { tracingEnvProps, tracingLayerProps } from "../src/libs/lambda-layers-lib";
+// import { tracingEnvProps, tracingLayerProps } from "../src/libs/lambda-layers-lib";
 
 const routeNames = {
     get: "GET   /",
@@ -8,7 +8,7 @@ const routeNames = {
 }
 
 const envProps = (env, table) => ({
-    ...tracingEnvProps,
+    // ...tracingEnvProps,
     TABLE_NAME: table.tableName,
     SECRET_PUBLISH_TOKEN: env.SECRET_PUBLISH_TOKEN,
     STAGE: env.STAGE,
@@ -33,13 +33,13 @@ export default class ApiStack extends sst.Stack {
                 [routeNames.get]: new sst.Function(this, "getHandler", {
                     handler: "src/get.handler",
                     environment: envProps(process.env, table),
-                    ...tracingLayerProps(this, "get")
+                    // ...tracingLayerProps(this, "get")
                 }),
                 [routeNames.put]: new sst.Function(this, "putHandler", {
                     handler: "src/create.handler",
                     deadLetterQueue: dlq.sqsQueue,
                     environment: envProps(process.env, table),
-                    ...tracingLayerProps(this, "put")
+                    // ...tracingLayerProps(this, "put")
                 }),
             },
         });

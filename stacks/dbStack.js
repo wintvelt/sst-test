@@ -1,5 +1,5 @@
 import * as sst from "@serverless-stack/resources";
-import { tracingEnvProps, tracingLayerProps } from "../src/libs/lambda-layers-lib";
+// import { tracingEnvProps, tracingLayerProps } from "../src/libs/lambda-layers-lib";
 
 export default class DbStack extends sst.Stack {
   // Public reference to the table
@@ -26,9 +26,9 @@ export default class DbStack extends sst.Stack {
           TOPIC_ARN: topic.topicArn,
           SENTRY_DSN: process.env.SENTRY_DSN,
           STAGE: process.env.STAGE,
-          ...tracingEnvProps
+          // ...tracingEnvProps
         },
-        ...tracingLayerProps(this, "db"),
+        // ...tracingLayerProps(this, "db"),
         permissions: [topic],
       },
       stream: true,
