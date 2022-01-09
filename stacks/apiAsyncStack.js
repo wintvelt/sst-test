@@ -1,7 +1,8 @@
-import * as sst from "@serverless-stack/resources";
-import { lambdaAuthorizerProps } from "../src/libs/lambda-authorizer-lib";
-// import { tracingEnvProps, tracingLayerProps } from "../src/libs/lambda-layers-lib";
-import { lambdaPermissions } from "../src/libs/permissions-lib";
+import * as sst from "@serverless-stack/resources"
+import { lambdaAuthorizerProps } from "../src/libs/lambda-authorizer-lib"
+// import { tracingEnvProps, tracingLayerProps } from "../src/libs/lambda-layers-lib"
+import * as cdk from "@aws-cdk/core"
+import { lambdaPermissions } from "../src/libs/permissions-lib"
 
 const routeNames = {
     putAsync: "PUT   /async",
@@ -43,6 +44,10 @@ export default class ApiStack extends sst.Stack {
         // add permission to invoke the lambda
         this.asyncApi.attachPermissions(
             lambdaPermissions(api.getFunction(routeNames.put).functionArn)
+        )
+
+        this.getAllFunctions().forEach(fn =>
+            cdk.Tags.of(fn).add("lumigo:auto-trace", "true")
         )
 
         const outputs = {

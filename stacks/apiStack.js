@@ -1,6 +1,7 @@
 import { lambdaAuthorizerProps } from "../src/libs/lambda-authorizer-lib";
 import * as sst from "@serverless-stack/resources";
 // import { tracingEnvProps, tracingLayerProps } from "../src/libs/lambda-layers-lib";
+import * as cdk from "@aws-cdk/core"
 
 const routeNames = {
     get: "GET   /",
@@ -45,6 +46,10 @@ export default class ApiStack extends sst.Stack {
         });
 
         this.api.attachPermissions([table]);
+
+        this.getAllFunctions().forEach(fn =>
+            cdk.Tags.of(fn).add("lumigo:auto-trace", "true")
+        )
 
         const outputs = {
             "url": this.api.url,
