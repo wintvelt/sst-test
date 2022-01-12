@@ -1,5 +1,5 @@
-// import AWSXRay from "aws-xray-sdk-core"
 import AWS from "aws-sdk"
+// import AWSXRay from "aws-xray-sdk-core"
 
 // AWSXRay.setContextMissingStrategy("LOG_ERROR")
 // const AWSWrapped = AWSXRay.captureAWS(AWS)

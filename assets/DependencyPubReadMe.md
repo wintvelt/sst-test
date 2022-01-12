@@ -51,7 +51,8 @@ const myEvent = {
 const result = await createInvoke(myEvent)
 ```
 
-The stack invokes these functions will need permissions set. Both functions need access to the `put` function arn. Both functions invoke the same lambda.
+The stack that invokes these functions will need permissions to do so. 
+Both functions need access to the `put` function arn. Both functions invoke the same lambda.
 - `invokeCreate()` does a synchronous call
 - `invokeCreateAsync()` does a asynchronous call
 
@@ -77,9 +78,9 @@ const getUrl = urls.get.dev // to get the endpoint to the dev stage endpoint for
 ```
 
 The following APIs are exposed.
-- `urls.get[stage]` to be used for both getting list and for getting dependency records for indivual package.
-- `urls.put[stage]`
-- `urls.putAsync[stage]`
+- `urls.get.[stage]` to be used for both getting list and for getting dependency records for indivual package.
+- `urls.put.[stage]`
+- `urls.putAsync.[stage]`
 
 
 ### `GET /`

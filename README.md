@@ -51,7 +51,7 @@ Basic steps to get going:
 
 ## Why this template?
 The general idea is that a microservice
-- exposes an API (AWS API Gateway and Lambda) on various routes
+- exposes APIs (AWS API Gateway and Lambda) on various routes
 - may have Lambda functions that subscribe to other SNS topics or creates internal SQS queues connected to topics
 - may publish 1 or more (SNS) topics, for other services to subscribe to
 - has exclusive access to some database (AWS DynamoDB)
@@ -60,7 +60,7 @@ The general idea is that a microservice
 - includes a github action workflow, that runs tests and deploys (only if on branch master or dev)
 - the workflow also calls a public API, to publish all dependencies
 
-This template contains all the basics, and an example service, for posting (and retrieving) microservice dependencies. Inner workings described [in another readme doc](assets/DepenencyPubReadMe.md).
+This template contains all the basics, for posting (and retrieving) microservice dependencies. Inner workings described [in another readme doc](assets/DepenencyPubReadMe.md).
 
 ## APIs and Event streams
 The microservice is responsible for:
