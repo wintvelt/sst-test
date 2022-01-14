@@ -19,5 +19,5 @@ test("API GET with wrong Auth", async () => {
     const [error, result] = await apiCall(axios.get(getUrl, { headers: { Authorization: 'FOUT' } }))
     
     expect(result).toBeNull()
-    expect(error.reponse.status).toBe(401)
+    expect(error.response.status).toBe(401)
 })

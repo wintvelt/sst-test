@@ -13,7 +13,7 @@ const baseEvent = {
 }
 
 testDevOnly("Test invoking create lambda from npm", async () => {
-    const [error, result] = invokeCreate(baseEvent)
+    const [error, result] = await invokeCreate(baseEvent)
 
     expect(error).toBeNull()
     expect(result.statusCode).toBeLessThanOrEqual(299)

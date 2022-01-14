@@ -1,6 +1,7 @@
 //test get api endpoint
 import axios from 'axios'
 import urls from '../../npm/apiEndpoints'
+import { apiCall } from '../../src/libs/promise-lib'
 
 const url = urls.putAsync.dev // only test on dev stack
 const Authorization = `Basic ${process.env.SECRET_PUBLISH_TOKEN}`
