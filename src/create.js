@@ -87,8 +87,7 @@ const baseHandler = async (event) => {
 
     const message = `${depsToDel.length} dependencies removed, ${depsToAdd.length} added, ` +
         `${depsToChange.length} updated, ${unchanged} unchanged`
-    const response = { result: 'success', message }
-    return { statusCode: 200, body: JSON.stringify(response) }
+    return { statusCode: 200, message }
 }
 
 const handler = middy(baseHandler)

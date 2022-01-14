@@ -44,7 +44,7 @@ export const invoke = async ({ event, stackName, functionName, async }) => {
     const [error, result] = await lambda.invoke(lambdaParams)
     if (error) return [error, null]
     const parsedResult = (async) ?
-        { statusCode: result.StatusCode, body: result.Payload }
+        { statusCode: result.StatusCode, message: result.Payload }
         : JSON.parse(result.Payload)
     if (parsedResult.statusCode > 299) {
         const newError = new Error(

@@ -17,6 +17,7 @@ testDevOnly("Test invoking create lambda from npm", async () => {
 
     expect(error).toBeNull()
     expect(result.statusCode).toBeLessThanOrEqual(299)
+    console.log(result)
 })
 
 // console.log(process.env)
