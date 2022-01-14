@@ -13,13 +13,9 @@ const body = {
 
 
 test("API Put Async an update", async () => {
-    let result
-    try {
-        result = await axios.put(url, body, { headers: { Authorization } })
-        // if (result.status > 299) throw new Error(result.statusText)
-    } catch (error) {
-        result = error
-    }
+    const [error, result] = await apiCall(axios.put(url, body, { headers: { Authorization } }))
+    
+    expect(error).toBeNull()
     expect(result).toHaveProperty("statusText")
     expect(result.status).toBe(200)
 })

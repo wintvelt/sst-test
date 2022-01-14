@@ -14,12 +14,9 @@ const getById = async (id) => {
         },
     };
 
-    let result
-    try {
-        result = await dynamo.query(queryParams)
-    } catch (error) {
-        throw new Error(error.message);
-    }
+    const [err, result] = await dynamo.query(queryParams)
+    if (err) throw new Error(err.message)
+
     return result.Items
 }
 
@@ -29,12 +26,9 @@ const getAll = async () => {
         ProjectionExpression: "packageStage",
     };
 
-    let result
-    try {
-        result = await dynamo.scan(params)
-    } catch (error) {
-        throw new Error(error.message);
-    }
+    const [err, result] = await dynamo.scan(params)
+    if (err) throw new Error(err.message)
+
     return [...new Set(result.Items.map(it => it.packageStage))]
 }
 

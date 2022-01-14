@@ -60,12 +60,9 @@ const baseHandler = async (event) => {
         ExpressionAttributeNames: { '#ps': 'packageStage' },
         ExpressionAttributeValues: { ':ps': `${stage}-${name}` },
     };
-    let queryResult
-    try {
-        queryResult = await dynamo.query(queryParams)
-    } catch (error) {
-        throw new Error(error.message);
-    }
+    const [err, queryResult] = await dynamo.query(queryParams)
+    if (err) throw new Error(error.message)
+
     const oldDeps = queryResult.Items || []
     const latestDeps = makeLatest(event)
 
@@ -84,11 +81,10 @@ const baseHandler = async (event) => {
         TableName: process.env.TABLE_NAME,
         Item
     })).map(dynamo.put)
-    try {
-        await Promise.all(updates.concat(delUpdates));
-    } catch (error) {
-        throw new Error(error.message);
-    }
+
+    const results = await Promise.all(updates.concat(delUpdates))
+    if (results.some(tuple => tuple[0])) throw new Error(err.message)
+
     const message = `${depsToDel.length} dependencies removed, ${depsToAdd.length} added, ` +
         `${depsToChange.length} updated, ${unchanged} unchanged`
     const response = { result: 'success', message }

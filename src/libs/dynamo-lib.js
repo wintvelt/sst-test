@@ -1,5 +1,6 @@
 // import AWSXRay from "aws-xray-sdk-core"
 import AWS from "aws-sdk"
+import { apiCall } from "./promise-lib";
 
 // AWSXRay.setContextMissingStrategy("LOG_ERROR")
 
@@ -8,8 +9,8 @@ import AWS from "aws-sdk"
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 export const dynamo = {
-    put: (params) => dynamoDb.put(params).promise(),
-    query: (params) => dynamoDb.query(params).promise(),
-    scan: (params) => dynamoDb.scan(params).promise(),
-    del: (params) => dynamoDb.delete(params).promise()
+    put: (params) => apiCall(dynamoDb.put(params).promise()),
+    query: (params) => apiCall(dynamoDb.query(params).promise()),
+    scan: (params) => apiCall(dynamoDb.scan(params).promise()),
+    del: (params) => apiCall(dynamoDb.delete(params).promise())
 }

@@ -13,28 +13,20 @@ const body = {
 
 
 test("API Put an update", async () => {
-    let result
-    try {
-        result = await axios.put(url, body, { headers: { Authorization } })
-        // if (result.status > 299) throw new Error(result.statusText)
-    } catch (error) {
-        result = error
-    }
+    const [error, result] = await apiCall(axios.put(url, body, { headers: { Authorization } }))
+
+    expect(error).toBeNull()
     expect(result).toHaveProperty("statusText")
     expect(result.status).toBe(200)
     expect(result).toHaveProperty("data")
 })
 
 test("API Put invalid update should return error", async () => {
-    let result
     const invalidBody = { ...body, stage: "WRONG" }
-    try {
-        result = await axios.put(url, invalidBody, { headers: { Authorization } })
-        // if (result.status > 299) throw new Error(result.statusText)
-    } catch (error) {
-        result = error.response
-    }
-    expect(result).toHaveProperty("statusText")
-    expect(result.status).toBe(400)
-    expect(result.data).toBe('Event object failed validation')
+    const [error, result] = await apiCall(axios.put(url, invalidBody, { headers: { Authorization } }))
+
+    expect(result).toBeNull()
+    expect(error.response).toHaveProperty("statusText")
+    expect(error.response.status).toBe(400)
+    expect(error.response.data).toBe('Event object failed validation')
 })

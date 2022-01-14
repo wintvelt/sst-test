@@ -50,8 +50,9 @@ const baseHandler = async (event) => {
         const record = Records[i]
         updates.push(handleRecord(record))
     }
-    const result = await Promise.all(updates)
-    console.log(result)
+    const results = await Promise.all(updates)
+    if (results.some(tuple => tuple[0])) throw new Error(err.message)
+    console.log(results.map(tuple => tuple[1]))
     return "OK"
 }
 

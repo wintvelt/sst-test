@@ -166,12 +166,8 @@ try {
     ///
 }
 
-let invokeResult
-try {
-    invokeResult = await invokePut(myEvent)
-} catch (error) {
-    ///
-}
+const [error, invokeResult] = await invokePut(myEvent)
+if (error) throw new Error("error")
 ```
 
 

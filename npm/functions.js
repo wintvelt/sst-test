@@ -18,26 +18,24 @@ const invoke = async ({ event, stackName, functionName, async }) => {
     if (!stageCheck) throw new Error('environment stage not set')
 
     const stackOutput = importModule(stage)
-    
+
     const functionArn = stackOutput[`${stage}-${stackName}`][functionName]
     const lambdaParams = {
         FunctionName: functionArn,
-        InvocationType: (async)? 'Event' : 'RequestResponse',
+        InvocationType: (async) ? 'Event' : 'RequestResponse',
         LogType: 'Tail',
         Payload: JSON.stringify(event)
     }
 
-    let parsedResult = {}
-    try {
-        const result = await lambda.invoke(lambdaParams)
-        parsedResult = (async)? { statusCode: result.StatusCode, body: result.Payload } : JSON.parse(result.Payload)
-        if (parsedResult.statusCode > 299) {
-            throw new Error(`lambda invoke failed with statuscode ${parsedResult.statusCode} message ${parsedResult.body}`)
-        }
-    } catch (error) {
-        console.error('invoke lambda failed')
-        throw new Error(error.message)
+    const [error, result] = await lambda.invoke(lambdaParams)
+    if (error) throw new Error(error.message)
+    const parsedResult = (async) ?
+        { statusCode: result.StatusCode, body: result.Payload }
+        : JSON.parse(result.Payload)
+    if (parsedResult.statusCode > 299) {
+        throw new Error(`lambda invoke failed with statuscode ${parsedResult.statusCode} message ${parsedResult.body}`)
     }
+
     return parsedResult
 }
 

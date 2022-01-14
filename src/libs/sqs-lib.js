@@ -1,5 +1,6 @@
 // import AWSXRay from "aws-xray-sdk-core"
 import AWS from "aws-sdk"
+import { apiCall } from "./promise-lib"
 
 // AWSXRay.setContextMissingStrategy("LOG_ERROR")
 // const AWSWrapped = AWSXRay.captureAWS(AWS)
@@ -7,5 +8,5 @@ import AWS from "aws-sdk"
 const sqsQueue = new AWS.SQS({ apiVersion: '2012-11-05' })
 
 export const sqs = {
-    sendMessage: (params) => sqsQueue.sendMessage(params).promise()
+    sendMessage: (params) => apiCall(sqsQueue.sendMessage(params).promise())
 }
