@@ -39,4 +39,5 @@ const generatePolicy = (principalId, effect, resource) => {
     return authResponse;
 }
 
+// module exports to make Open Telemetry work for logz.io
 module.exports = { handler }

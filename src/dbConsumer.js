@@ -57,4 +57,5 @@ const baseHandler = async (event) => {
 
 const handler = middy(baseHandler)
 
+// module exports to make Open Telemetry work for logz.io
 module.exports = { handler, createMessage, createMessageAttr }

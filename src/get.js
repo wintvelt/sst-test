@@ -59,4 +59,5 @@ const handler = middy(baseHandler)
     .use(httpErrorHandler({ fallbackMessage: 'server error' }))
     .use(cors())
 
+// module exports to make Open Telemetry work for logz.io
 module.exports = { handler }
