@@ -3,13 +3,6 @@
 This project was bootstrapped with [Create Serverless Stack](https://docs.serverless-stack.com/packages/create-serverless-stack).
 Quite heavily adapted though, for personal microservice setup on AWS with github actions CI/CD.
 
-TODO: capture and save the event stream
-- Currently only the *output* state changes are saved (published to a topic).
-- But event stream should be from outside source only. 
-- So only outside update (PUT, POST, DELETE) calls. Because these represent a state change in the database.
-- This could be done in the update lambda, after the API. 
-- However, original source could be from an async call, in which case original source is async lambda. And that might lead to double logging.
-
 An example is explained in [separate readme doc here](assets/DependencyPubReadMe.md)
 
 ## How to use
@@ -78,7 +71,7 @@ It is up to the processing (receiving) microservice to
 
 ## Service structure
 Service structure is typically as follows
-![microservice structure](/assets/microservice-structure.png)
+![microservice structure](/stackdef/stackdef.png)
 Notes
 - Only 1 version of npm package is available, published from master branch. Stage (dev or prod) can be passed as a parameter to most functions exposed in package.
 - Some private functions may be exposed in npm package too. The consuming service needs to have sufficient authorization to access the infrastructure (database, queues etc) from these clients.
@@ -138,7 +131,6 @@ Github repo needs to have the following secrets - they are accessed and used by 
 - `AWS_SECRET_ACCESS_KEY`
 - `SECRET_PUBLISH_TOKEN`: Basic token used to publish dependencies to a common shared service
 - `NPM_TOKEN`: Token to allow publication of client npm package to npm registry
-- `SENTRY_DSN`: Token to connect to sentry for observability (not really secret, but consistent in setup)
 
 *THIS SHOULD BE UPDATED*
 In the `.github/workflows` yml doc, the following env var for publishing dependencies
@@ -152,7 +144,7 @@ Other environment variables in backend functions can only be set in stack defini
 ## Service client setup
 Client packages are published to npm with public access. They expose:
 
-`apiEndpoints.js` file, which exports a default object, containing endpoint urls, structured as follows
+`api.js` file, which exports a default object, containing endpoint urls, structured as follows
 - properties for each endpoint, named in camelCase in the format `[method][route]`, e.g. `putAsync`
 
 `arns.js` file, exposing lambda arns in the same way. For setting permissions. Typically for sns topics to publish to.  
@@ -186,7 +178,7 @@ try {
 client package content example:
 
 ```javascript
-// apiEndpoints.js
+// api.js
 export default {
     getAlbumsId: {
         dev: 'https://aws/route/to/some/endpoint',
@@ -210,9 +202,10 @@ In CI/CD, Post-deployment tests run after deployment and after publishing, so if
 If you run tests locally with `npx sst test`, all tests will be run.
 
 ## Observability
-The example functions contain a wrapper to report any internal error to a Sentry project. Sentry will only capture internally triggered errors, typically 5xx internal server errors inside the function.
 
-Other types of errors, including e.g. failed input validation, unauthorized access etc are typically 4xx errors. These will not be captured in Sentry, but need to be monitored in Cloudwatch metrics.
+Typically 5xx internal server errors inside the function will be posted to the Cloudwatch logs.
+
+Other types of errors, including e.g. failed input validation, unauthorized access etc are typically 4xx errors. These will not be captured in function logs, but in other Cloudwatch logs for APi gateways.
 
 Setting up metrics and alerts in Cloudwatch requires manual setup in the AWS Console. Rough steps:
 - create a new dashboard
@@ -222,3 +215,13 @@ Setting up metrics and alerts in Cloudwatch requires manual setup in the AWS Con
 NB: You need to lookup the API based on the API Id. The name of the api is unfortunately not set in Cloudwatch. ID can be found in the `(stage)-stack-output.json` files. They are the 10 character codes in front of the `.execute-api` part in the urls of the endpoints.
 
 Another annoyance is that every time the stack is removed and rebuilt (sometimes necessary due to stack dependencies), you need to manually updated Cloudwatch dashboard too.
+
+### Lumigo for observability
+This template uses [Lumigo](https://lumigo.io/) to observe the stack.
+All stacks that include functions have the following snippet included:
+```javascript
+        this.getAllFunctions().forEach(fn =>
+            cdk.Tags.of(fn).add("lumigo:auto-trace", "true")
+        )
+```
+Which will automatically enable functions for Lumigo tracing. An account on Lumigo needs to be set up first for this to work.

@@ -1,0 +1,273 @@
+{
+  "nodes": {
+    "create.js": {
+      "name": "create.js",
+      "pubs": [
+        {
+          "name": "table"
+        },
+        {
+          "name": "dlq-queue"
+        }
+      ],
+      "subs": [
+        {
+          "name": "PUT /"
+        }
+      ],
+      "type": "function",
+      "cluster": "internal",
+      "isQuery": false,
+      "nodeId": "node0"
+    },
+    "createAsync.js": {
+      "name": "createAsync.js",
+      "subs": [
+        {
+          "name": "PUT /async"
+        }
+      ],
+      "pubs": [
+        {
+          "name": "create.js",
+          "async": true
+        }
+      ],
+      "type": "function",
+      "cluster": "internal",
+      "isQuery": false,
+      "nodeId": "node1"
+    },
+    "authorizer.js": {
+      "name": "authorizer.js",
+      "type": "function",
+      "subs": [
+        {
+          "name": "GET /",
+          "async": false
+        },
+        {
+          "name": "PUT /"
+        },
+        {
+          "name": "PUT /async"
+        }
+      ],
+      "cluster": "internal",
+      "isQuery": true,
+      "nodeId": "node2"
+    },
+    "dbConsumer.js": {
+      "name": "dbConsumer.js",
+      "subs": [
+        {
+          "name": "table"
+        }
+      ],
+      "pubs": [
+        {
+          "name": "topic"
+        }
+      ],
+      "type": "function",
+      "cluster": "internal",
+      "isQuery": false,
+      "nodeId": "node3"
+    },
+    "get.js": {
+      "name": "get.js",
+      "subs": [
+        {
+          "name": "GET /"
+        }
+      ],
+      "queries": [
+        {
+          "name": "table"
+        }
+      ],
+      "type": "function",
+      "cluster": "internal",
+      "isQuery": true,
+      "nodeId": "node4"
+    },
+    "invokeCreate.js": {
+      "name": "invokeCreate.js",
+      "cluster": "input",
+      "pubs": [
+        {
+          "name": "create.js"
+        }
+      ],
+      "type": "function",
+      "isQuery": false,
+      "nodeId": "node5"
+    },
+    "invokeCreateAsync.js": {
+      "name": "invokeCreateAsync.js",
+      "cluster": "input",
+      "pubs": [
+        {
+          "name": "create.js",
+          "async": true
+        }
+      ],
+      "type": "function",
+      "isQuery": false,
+      "nodeId": "node6"
+    },
+    "PUT /": {
+      "name": "PUT /",
+      "type": "API",
+      "cluster": "input",
+      "isQuery": false,
+      "nodeId": "node7"
+    },
+    "table": {
+      "name": "table",
+      "type": "table",
+      "cluster": "internal",
+      "nodeId": "node8"
+    },
+    "dlq-queue": {
+      "name": "dlq-queue",
+      "type": "queue",
+      "cluster": "output",
+      "nodeId": "node9"
+    },
+    "PUT /async": {
+      "name": "PUT /async",
+      "type": "API",
+      "cluster": "input",
+      "isQuery": false,
+      "nodeId": "node10"
+    },
+    "GET /": {
+      "name": "GET /",
+      "type": "API",
+      "cluster": "input",
+      "isQuery": true,
+      "nodeId": "node11"
+    },
+    "topic": {
+      "name": "topic",
+      "type": "topic",
+      "cluster": "output",
+      "nodeId": "node12"
+    }
+  },
+  "edges": [
+    {
+      "name": "PUT /",
+      "depType": "sub",
+      "fromName": "PUT /",
+      "toName": "create.js",
+      "async": false,
+      "isQuery": false
+    },
+    {
+      "name": "table",
+      "depType": "pub",
+      "fromName": "create.js",
+      "toName": "table",
+      "async": false,
+      "isQuery": false
+    },
+    {
+      "name": "dlq-queue",
+      "depType": "pub",
+      "fromName": "create.js",
+      "toName": "dlq-queue",
+      "async": false,
+      "isQuery": false
+    },
+    {
+      "name": "PUT /async",
+      "depType": "sub",
+      "fromName": "PUT /async",
+      "toName": "createAsync.js",
+      "async": false,
+      "isQuery": false
+    },
+    {
+      "name": "create.js",
+      "async": true,
+      "depType": "pub",
+      "fromName": "createAsync.js",
+      "toName": "create.js",
+      "isQuery": false
+    },
+    {
+      "name": "GET /",
+      "async": false,
+      "depType": "sub",
+      "fromName": "GET /",
+      "toName": "authorizer.js",
+      "isQuery": true
+    },
+    {
+      "name": "PUT /",
+      "depType": "sub",
+      "fromName": "PUT /",
+      "toName": "authorizer.js",
+      "async": false,
+      "isQuery": true
+    },
+    {
+      "name": "PUT /async",
+      "depType": "sub",
+      "fromName": "PUT /async",
+      "toName": "authorizer.js",
+      "async": false,
+      "isQuery": true
+    },
+    {
+      "name": "table",
+      "depType": "sub",
+      "fromName": "table",
+      "toName": "dbConsumer.js",
+      "async": true,
+      "isQuery": false
+    },
+    {
+      "name": "topic",
+      "depType": "pub",
+      "fromName": "dbConsumer.js",
+      "toName": "topic",
+      "async": false,
+      "isQuery": false
+    },
+    {
+      "name": "GET /",
+      "depType": "sub",
+      "fromName": "GET /",
+      "toName": "get.js",
+      "async": false,
+      "isQuery": true
+    },
+    {
+      "name": "table",
+      "depType": "query",
+      "fromName": "get.js",
+      "toName": "table",
+      "async": false,
+      "isQuery": true
+    },
+    {
+      "name": "create.js",
+      "depType": "pub",
+      "fromName": "invokeCreate.js",
+      "toName": "create.js",
+      "async": false,
+      "isQuery": false
+    },
+    {
+      "name": "create.js",
+      "async": true,
+      "depType": "pub",
+      "fromName": "invokeCreateAsync.js",
+      "toName": "create.js",
+      "isQuery": false
+    }
+  ]
+}

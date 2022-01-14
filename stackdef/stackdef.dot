@@ -1,0 +1,87 @@
+digraph {
+        node [shape=plaintext fontname="Arial" fontsize="10"]
+        edge [fontname="Arial" fontsize="10"]
+        subgraph cluster0 {
+            label="internal"
+            fontname="Arial"
+            fontsize=10
+            color=grey
+            style=dashed
+            node0 [ shape=box label=<
+            <table border="0" cellborder="0" cellspacing="0">
+            <tr><td align="left"><font point-size="14">create.js</font></td></tr>
+            </table>>]
+        node1 [ shape=box label=<
+            <table border="0" cellborder="0" cellspacing="0">
+            <tr><td align="left"><font point-size="14">createAsync.js</font></td></tr>
+            </table>>]
+        node2 [ shape=box color=orange label=<
+            <table border="0" cellborder="0" cellspacing="0">
+            <tr><td align="left"><font point-size="14">authorizer.js</font></td></tr>
+            </table>>]
+        node3 [ shape=box label=<
+            <table border="0" cellborder="0" cellspacing="0">
+            <tr><td align="left"><font point-size="14">dbConsumer.js</font></td></tr>
+            </table>>]
+        node4 [ shape=box color=orange label=<
+            <table border="0" cellborder="0" cellspacing="0">
+            <tr><td align="left"><font point-size="14">get.js</font></td></tr>
+            </table>>]
+        node8 [ shape=cylinder label=<
+            <table border="0" cellborder="0" cellspacing="0">
+            <tr><td align="left"><font point-size="14">table</font></td></tr>
+            </table>>]
+    }
+    subgraph cluster1 {
+            label="input"
+            fontname="Arial"
+            fontsize=10
+            color=grey
+            style=dashed
+            node5 [ shape=plaintext label=<
+            <table border="0" cellborder="0" cellspacing="0">
+            <tr><td align="left"><font point-size="12">invokeCreate.js</font></td></tr>
+            </table>>]
+        node6 [ shape=plaintext label=<
+            <table border="0" cellborder="0" cellspacing="0">
+            <tr><td align="left"><font point-size="12">invokeCreateAsync.js</font></td></tr>
+            </table>>]
+        node7 [ shape=invhouse fontsize=12 label="PUT\n/"]
+        node10 [ shape=invhouse fontsize=12 label="PUT\n/async"]
+        node11 [ shape=invhouse color=orange fontsize=12 label="GET\n/"]
+    }
+    subgraph cluster2 {
+            label="output"
+            fontname="Arial"
+            fontsize=10
+            color=grey
+            style=dashed
+            node9 [ shape=rarrow style=dashed color=red label=<
+            <table border="0" cellborder="0" cellspacing="0">
+            <tr><td align="left"><font point-size="14">dlq-queue</font></td></tr>
+            </table>>]
+        node12 [ shape=rarrow label=<
+            <table border="0" cellborder="0" cellspacing="0">
+            <tr><td align="left"><font point-size="14">topic</font></td></tr>
+            </table>>]
+    }
+    node7 -> node0
+    node0 -> node8
+    node0 -> node9
+    node10 -> node1
+    node1 -> node0 [arrowhead = nonenoneonormal]
+    node11 -> node2 [color=orange arrowhead=nonenonenoneoinv]
+    node7 -> node2 [color=orange arrowhead=nonenonenoneoinv]
+    node10 -> node2 [color=orange arrowhead=nonenonenoneoinv]
+    node8 -> node3 [arrowhead = nonenoneonormal]
+    node3 -> node12
+    node11 -> node4 [color=orange arrowhead=nonenonenoneoinv]
+    node4 -> node8 [color=orange arrowhead=nonenonenoneoinv]
+    node5 -> node0
+    node6 -> node0 [arrowhead = nonenoneonormal]
+
+    labelloc="t"
+    fontname="Arial"
+    fontsize="20"
+    label="sst-test"
+}
