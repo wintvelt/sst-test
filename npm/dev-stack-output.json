@@ -3,7 +3,8 @@
     "arn": "arn:aws:sns:eu-central-1:899888592127:dev-sst-test-topic"
   },
   "dev-sst-test-dlq": {
-    "arn": "arn:aws:sqs:eu-central-1:899888592127:dev-sst-test-dlq"
+    "arn": "arn:aws:sqs:eu-central-1:899888592127:dev-sst-test-dlq",
+    "url": "https://sqs.eu-central-1.amazonaws.com/899888592127/dev-sst-test-dlq"
   },
   "dev-sst-test-api": {
     "createarn": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-api-putHandlerFE01D35E-e2BlGQZphiL2",
