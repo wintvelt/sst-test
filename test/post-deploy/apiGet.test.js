@@ -1,6 +1,6 @@
 //test get api endpoint
 import axios from 'axios'
-import urls from '../../npm/apiEndpoints'
+import urls from '../../npm/urls'
 import { apiCall } from '../../src/libs/promise-lib'
 
 const getUrl = urls.get.dev // only test on dev stack

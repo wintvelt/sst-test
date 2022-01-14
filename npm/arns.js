@@ -6,5 +6,9 @@ export default {
     put: {
         dev: devStageOutput['dev-sst-test-api']?.createarn,
         prod: prodStageOutput['prod-sst-test-api']?.createarn,
-    }
+    },
+    dlq: {
+        dev: devStageOutput['dev-sst-test-dlq']?.arn,
+        prod: prodStageOutput['prod-sst-test-dlq']?.arn,
+    },
 }

@@ -13,7 +13,8 @@ export default class DlqStack extends sst.Stack {
         this.queue = new sst.Queue(this, "dlq")
 
         const outputs = {
-            "arn": this.queue.sqsQueue.queueArn
+            "arn": this.queue.sqsQueue.queueArn,
+            "url": this.queue.sqsQueue.queueUrl
         }
 
         // Show the output

@@ -1,4 +1,4 @@
-// apiEndpoints.js
+// urls.js
 import devStageOutput from './dev-stack-output.json'
 import prodStageOutput from './dev-stack-output.json'
 
@@ -14,5 +14,9 @@ export default {
     putAsync: {
         dev: devStageOutput['dev-sst-test-asyncApi']?.asyncurl,
         prod: prodStageOutput['prod-sst-test-asyncApi']?.asyncurl,
+    },
+    dlq: {
+        dev: devStageOutput['dev-sst-test-dlq']?.url,
+        prod: prodStageOutput['prod-sst-test-dlq']?.url,
     },
 }
