@@ -43,8 +43,7 @@
       "type": "function",
       "subs": [
         {
-          "name": "GET /",
-          "async": false
+          "name": "GET /"
         },
         {
           "name": "PUT /"
@@ -199,10 +198,10 @@
     },
     {
       "name": "GET /",
-      "async": false,
       "depType": "sub",
       "fromName": "GET /",
       "toName": "authorizer.js",
+      "async": false,
       "isQuery": true
     },
     {

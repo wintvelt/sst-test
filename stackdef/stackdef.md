@@ -31,10 +31,12 @@
     - [ ] add query of `table`
 
 ### In `/npm` folder expose functions and arn info for client
-  - [ ] expose arn for API `GET /`
-  - [ ] expose arn for API `PUT /`
-  - [ ] expose arn for API `PUT /async`
+  - [x] expose arn for queue `dlq-queue`
   - [ ] expose arn of `create.js` for permission to invoke function `invokeCreate.js`
   - [ ] expose arn of `create.js` for permission to invoke function `invokeCreateAsync.js`
   - [ ] expose function `invokeCreate.js` to invoke `create.js`
   - [ ] expose function `invokeCreateAsync.js` to invoke `create.js`
+  - [ ] expose url endpoint for API `GET /`
+  - [ ] expose url endpoint for API `PUT /`
+  - [ ] expose url endpoint for API `PUT /async`
+  - [ ] expose url endpoint for queue `dlq-queue`
