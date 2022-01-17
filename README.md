@@ -59,14 +59,15 @@ This template contains all the basics, for posting (and retrieving) microservice
 The microservice is responsible for:
 - Expose APIs to read/ write to database, and to post commands to the SQS queue, for async processing.
     - async queue APIs should have route format like `/normal/route/async/`
-- Setup SNS topic to publish internal events, for other services to subscribe to
-- Setup SQS queue for other services to post commands to, and setup function to consume commands
+- Setup SNS topic as output to publish internal events, for other services to subscribe to
+- Setup SQS queue as input for other services to post commands to, and setup function to consume commands
+- Setup SQS queues as output for e.g. dead letter queues
 - Publish a client that allows other services to connect (to dev and prod versions)
     - to subscribe to the published SNS topic - includes name/ endpoint
     - to post commands to SQS queue - includes queue name/endpoint and input validation
 
 It is up to the processing (receiving) microservice to
-- connect to external SNS topic(s) to consume events
+- connect to external SNS topic(s) or SQS queues to consume events
 - (optionally) setup an SQS queue connected to the SNS topic to consume events
 
 ## Service structure
@@ -89,13 +90,16 @@ Notes
 │   ├───arns.js
 │   ├───functions.js
 │   ├───index.js
-│   └───package.json
+│   ├───package.json
+│   └───urls.js
 ├───src/
 │   ├───libs/
 │   │   └───dynamo-lib.js
 │   ├───create.js
 │   ├───get.js
 │   └───queueConsumer.js
+├───stackdef/
+│   └───stackdef.png
 ├───stacks/
 │   ├───apiStack.js
 │   └───index.js
@@ -111,6 +115,7 @@ Notes to this structure
 - `.github/workflows/myfirstaction.yml` contains (github) CI/CD workflow for deploying to dev or prod, and to publish any npm package on client side (if the npm folder exists)
 - `npm/` contains the client package to published
 - `src/` service core code/ business logic
+- `stackdef/` is optional, in this example contains png picture of service structure - use npm package [stack-graph](https://www.npmjs.com/package/stack-graph) to create these
 - `stacks/` infrastructure-as-code setup of the AWS architecture of the service - will be deployed by CI/CD action workflow only if branch is master (to prod) or dev (to dev)
 - `test/` contains all tests (duh). Naming is relevant for CI/CD workflow [see below](##tests)
 
