@@ -3,7 +3,6 @@
     "arn": "arn:aws:sns:eu-central-1:899888592127:dev-sst-test-topic"
   },
   "dev-sst-test-table": {
-    "forceDeploy": "1",
     "arn": "arn:aws:sqs:eu-central-1:899888592127:dev-sst-test-failover-queue",
     "url": "https://sqs.eu-central-1.amazonaws.com/899888592127/dev-sst-test-failover-queue"
   },
