@@ -73,6 +73,7 @@ It is up to the processing (receiving) microservice to
 ## Service structure
 Service structure is typically as follows
 ![microservice structure](/stackdef/stackdef.png)
+
 Notes
 - Only 1 version of npm package is available, published from master branch. Stage (dev or prod) can be passed as a parameter to most functions exposed in package.
 - Some private functions may be exposed in npm package too. The consuming service needs to have sufficient authorization to access the infrastructure (database, queues etc) from these clients.
