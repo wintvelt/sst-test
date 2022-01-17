@@ -84,9 +84,8 @@ Notes
 ```
 ├───.github/
 │   └───workflows/
-│       └───myfirstaction.yml
+│       └───testPublishDeploy.yml
 ├───npm/
-│   ├───api.js
 │   ├───arns.js
 │   ├───functions.js
 │   ├───index.js
@@ -112,7 +111,7 @@ Notes
 └───sst.json
 ```
 Notes to this structure
-- `.github/workflows/myfirstaction.yml` contains (github) CI/CD workflow for deploying to dev or prod, and to publish any npm package on client side (if the npm folder exists)
+- `.github/workflows/testPublishDeploy.yml` contains (github) CI/CD workflow for deploying to dev or prod, and to publish any npm package on client side (if the npm folder exists)
 - `npm/` contains the client package to published
 - `src/` service core code/ business logic
 - `stackdef/` is optional, in this example contains png picture of service structure - use npm package [stack-graph](https://www.npmjs.com/package/stack-graph) to create these
@@ -127,6 +126,7 @@ Notes to this structure
     - no need to duplicate the service name. And in deployment, service name will be added anyway.
     - this also makes referencing in the code easier
     - for multiple same-type stacks, prepend with a short qualifier, in with dashes. E.g. `simple-topic` and `versioned-topic`
+    - for dead letter queues or failure queues, include `dlq` or `failover` in the queue name
 - Client package name (to be published on npm) should be of format `@owner/[project]-[service]-client`
     - set in `package.json` in /npm folder
 
@@ -149,7 +149,7 @@ Other environment variables in backend functions can only be set in stack defini
 ## Service client setup
 Client packages are published to npm with public access. They expose:
 
-`api.js` file, which exports a default object, containing endpoint urls, structured as follows
+`urls.js` file, which exports a default object, containing endpoint urls, structured as follows
 - properties for each endpoint, named in camelCase in the format `[method][route]`, e.g. `putAsync`
 
 `arns.js` file, exposing lambda arns in the same way. For setting permissions. Typically for sns topics to publish to.  
@@ -159,7 +159,7 @@ Client packages are published to npm with public access. They expose:
 so they can be used like this
 ```javascript
 // consumer.js
-import apiUrls from '@wintvelt/spqr-albums-client/api'
+import apiUrls from '@wintvelt/spqr-albums-client/urls'
 import { invokePut } from '@wintvelt/spqr-albums-client/functions'
 
 const url = apiUrls.getAlbumsId[process.env.STAGE]
@@ -179,7 +179,7 @@ if (error) throw new Error("error")
 client package content example:
 
 ```javascript
-// api.js
+// urls.js
 export default {
     getAlbumsId: {
         dev: 'https://aws/route/to/some/endpoint',
@@ -193,7 +193,7 @@ export default {
 The `test` directory contains tests. For CI/CD it has the following structure:
 - `pre-deploy`: these tests will run before deployment. They should not access any deployed infra. So e.g. business logic only. If any test fails, the updates will not be deployed.
 - `post-deploy`: these are tests that access the deployed infrastructure, for reading. These will run only after the new stack has been deployed, either to dev or prod stage.
-- `post-deploy-with-updates`: tests that perform updates on the deployed stack. These will only run when deployment is to dev. Any tests in this folder should have logic to skip the test if the stage=prod
+- `post-deploy-with-updates`: tests that perform updates on the deployed stack. These will only run when deployment is to dev. As additional safety measure, any tests in this folder should have logic to skip the test if the stage=prod
 
 In CI/CD, Post-deployment tests run after deployment and after publishing, so if any of them fail
 - the dependencies will still be published
@@ -206,7 +206,7 @@ If you run tests locally with `npx sst test`, all tests will be run.
 
 Typically 5xx internal server errors inside the function will be posted to the Cloudwatch logs.
 
-Other types of errors, including e.g. failed input validation, unauthorized access etc are typically 4xx errors. These will not be captured in function logs, but in other Cloudwatch logs for APi gateways.
+Other types of errors, including e.g. failed input validation, unauthorized access etc are typically 4xx errors. These will not be captured in function logs, but in other Cloudwatch logs for API gateways - named `aws/vendedlogs/...` from sst-serverless stack
 
 Setting up metrics and alerts in Cloudwatch requires manual setup in the AWS Console. Rough steps:
 - create a new dashboard
