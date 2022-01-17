@@ -1,4 +1,5 @@
 # Serverless microservice setup
+![full workflow](https://github.com/wintvelt/sst-test/actions/workflows/testPublishDeploy.yml/badge.svg)
 
 This project was bootstrapped with [Create Serverless Stack](https://docs.serverless-stack.com/packages/create-serverless-stack).
 Quite heavily adapted though, for personal microservice setup on AWS with github actions CI/CD.
