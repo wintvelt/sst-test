@@ -1,7 +1,7 @@
 ## Todo list to create your stack
 
 ### In `/stacks` folder create the stack
-  - [ ] add API stack for `PUT /`
+  - [x] add API stack for `PUT /`
     - [ ] add function definition for `create.js`
     - [ ] add permissions for `create.js` to access `table`
     - [ ] add permissions for `create.js` to access `dlq-queue`
