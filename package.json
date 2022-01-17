@@ -17,7 +17,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "1.132.0",
     "axios": "^0.24.0",
-    "stack-graph": "^1.10.0"
+    "stack-graph": "^1.10.1"
   },
   "dependencies": {
     "@aws-cdk/aws-apigatewayv2-authorizers": "1.132.0",

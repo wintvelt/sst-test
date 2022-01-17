@@ -54,9 +54,7 @@ export default class DbStack extends sst.Stack {
 
         const outputs = {
             "arn": failureQueue.sqsQueue.queueArn,
-            "url": failureQueue.sqsQueue.queueUrl,
-            "forceDeploy": "1"
-        }
+            "url": failureQueue.sqsQueue.queueUrl        }
         // Show the failover queue endpoint in the output
         this.addOutputs(outputs);
     }

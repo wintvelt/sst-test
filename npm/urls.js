@@ -19,4 +19,8 @@ export default {
         dev: devStageOutput['dev-sst-test-dlq']?.url,
         prod: prodStageOutput['prod-sst-test-dlq']?.url,
     },
+    failover: {
+        dev: devStageOutput['dev-sst-test-table']?.url,
+        prod: prodStageOutput['prod-sst-test-table']?.url,
+    },
 }

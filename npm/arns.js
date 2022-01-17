@@ -15,4 +15,8 @@ export default {
         dev: devStageOutput['dev-sst-test-dlq']?.arn,
         prod: prodStageOutput['prod-sst-test-dlq']?.arn,
     },
+    failover: {
+        dev: devStageOutput['dev-sst-test-table']?.arn,
+        prod: prodStageOutput['prod-sst-test-table']?.arn,
+    },
 }
