@@ -42,7 +42,6 @@ export default class DbStack extends sst.Stack {
                     function: dbConsumer,
                     consumerProps: {
                         startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-                        retryAttempts: 5,
                         onFailure: new SqsDlq(failureQueue.sqsQueue)
                     }
                 }
