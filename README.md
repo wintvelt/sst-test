@@ -23,7 +23,7 @@ Basic steps to get going:
 4. Create the remote origin - via vscode direct, or
     - on github site, create a new repo
     - locally: `git remote add origin [your new github repo url]`
-    - `git push -u --force origin master`
+    - `git push -u --force origin main`
     - best to create a public repo, if you want free use of GitKraken to view branche structure
     - vscode publishing will not trigger workflow, subsequent commits will. Their test runs will fail until secrets are set
 5. Set the secrets
@@ -51,7 +51,7 @@ The general idea is that a microservice
 - has exclusive access to some database (AWS DynamoDB)
 - may publish a public npm package with a client SDK, that other microservices can install to access the microservice
     - for exposing access to other services, using the client is mandatory. Because the client is a dependency, the published dependency tree will always reflect consumers/users of the service
-- includes a github action workflow, that runs tests and deploys (only if on branch master or dev)
+- includes a github action workflow, that runs tests and deploys (only if on branch main or dev)
 - the workflow also calls a public API, to publish all dependencies
 
 This template contains all the basics, for posting (and retrieving) microservice dependencies. Inner workings described [in another readme doc](assets/DepenencyPubReadMe.md).
@@ -76,7 +76,7 @@ Service structure is typically as follows
 ![microservice structure](/stackdef/stackdef.png)
 
 Notes
-- Only 1 version of npm package is available, published from master branch. Stage (dev or prod) can be passed as a parameter to most functions exposed in package.
+- Only 1 version of npm package is available, published from main branch. Stage (dev or prod) can be passed as a parameter to most functions exposed in package.
 - Some private functions may be exposed in npm package too. The consuming service needs to have sufficient authorization to access the infrastructure (database, queues etc) from these clients.
     - advantage is that services on the same (AWS) infrastructure can access each other within the infrastructure - calling `AWS.lambda.invoke()`, without the detour through public access
     - normal use case would be synchronous calls, where the consumer cares about the response from the lambda function
@@ -117,7 +117,7 @@ Notes to this structure
 - `npm/` contains the client package to published
 - `src/` service core code/ business logic
 - `stackdef/` is optional, in this example contains png picture of service structure - use npm package [stack-graph](https://www.npmjs.com/package/stack-graph) to create these
-- `stacks/` infrastructure-as-code setup of the AWS architecture of the service - will be deployed by CI/CD action workflow only if branch is master (to prod) or dev (to dev)
+- `stacks/` infrastructure-as-code setup of the AWS architecture of the service - will be deployed by CI/CD action workflow only if branch is main (to prod) or dev (to dev)
 - `test/` contains all tests (duh). Naming is relevant for CI/CD workflow [see below](##tests)
 
 ## Naming conventions
@@ -142,7 +142,7 @@ Github repo needs to have the following secrets - they are accessed and used by 
 *THIS SHOULD BE UPDATED maybe more*
 In the `.github/workflows` yml doc, the following env var for publishing dependencies
 - this one you can delete: `DEV_PUBLISH_ENDPOINT`: hardcoded url of API endpoint to publish dependencies - only used for the dependency-service
-- should stay in: `PROD_PUBLISH_ENDPOINT`: url for dependencies when on master branch (= prod stage)
+- should stay in: `PROD_PUBLISH_ENDPOINT`: url for dependencies when on main branch (= prod stage)
 Your service will always publish to the prod endpoint. Also when on dev branch.
 - you should also change the other dev_publish references to prod_publish
 
