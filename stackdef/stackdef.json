@@ -66,6 +66,9 @@
       "pubs": [
         {
           "name": "topic"
+        },
+        {
+          "name": "failover-queue"
         }
       ],
       "type": "function",
@@ -153,6 +156,12 @@
       "type": "topic",
       "cluster": "output",
       "nodeId": "node12"
+    },
+    "failover-queue": {
+      "name": "failover-queue",
+      "type": "queue",
+      "cluster": "output",
+      "nodeId": "node13"
     }
   },
   "edges": [
@@ -233,6 +242,14 @@
       "depType": "pub",
       "fromName": "dbConsumer.js",
       "toName": "topic",
+      "async": false,
+      "isQuery": false
+    },
+    {
+      "name": "failover-queue",
+      "depType": "pub",
+      "fromName": "dbConsumer.js",
+      "toName": "failover-queue",
       "async": false,
       "isQuery": false
     },

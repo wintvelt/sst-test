@@ -64,6 +64,10 @@ digraph {
             <table border="0" cellborder="0" cellspacing="0">
             <tr><td align="left"><font point-size="14">topic</font></td></tr>
             </table>>]
+        node13 [ shape=rarrow style=dashed color=red label=<
+            <table border="0" cellborder="0" cellspacing="0">
+            <tr><td align="left"><font point-size="14">failover-queue</font></td></tr>
+            </table>>]
     }
     node7 -> node0
     node0 -> node8
@@ -75,6 +79,7 @@ digraph {
     node10 -> node2 [color=orange arrowhead=nonenonenoneoinv]
     node8 -> node3 [arrowhead = nonenoneonormal]
     node3 -> node12
+    node3 -> node13
     node11 -> node4 [color=orange arrowhead=nonenonenoneoinv]
     node4 -> node8 [color=orange arrowhead=nonenonenoneoinv]
     node5 -> node0

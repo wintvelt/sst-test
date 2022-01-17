@@ -25,7 +25,7 @@ module.exports = {
         {
             name: "dbConsumer.js",
             subs: ["table"],
-            pubs: [{ name: "topic" }]
+            pubs: [{ name: "topic" }, { name: "failover-queue"}]
         },
         {
             name: "get.js",
