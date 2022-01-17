@@ -2,28 +2,28 @@
 
 ### In `/stacks` folder create the stack
   - [x] add API stack for `PUT /`
-    - [ ] add function definition for `create.js`
-    - [ ] add permissions for `create.js` to access `table`
-    - [ ] add permissions for `create.js` to access `dlq-queue`
-  - [ ] add table stack for `table`
-    - [ ] add function definition for `dbConsumer.js`
-    - [ ] add permissions for `dbConsumer.js` to access `topic`
-    - [ ] add permissions for `dbConsumer.js` to access `failover-queue`
-  - [ ] add queue stack for `dlq-queue`
-  - [ ] add API stack for `PUT /async`
-    - [ ] add function definition for `createAsync.js`
-    - [ ] add permissions for `createAsync.js` to access `create.js`
-  - [ ] add API stack for `GET /`
-    - [ ] add function definition for `authorizer.js`
-    - [ ] add function definition for `get.js`
-    - [ ] add permissions for `get.js` to access `table`
-  - [ ] add topic stack for `topic`
-  - [ ] add queue stack for `failover-queue`
+    - [x] add function definition for `create.js`
+    - [x] add permissions for `create.js` to access `table`
+    - [x] add permissions for `create.js` to access `dlq-queue`
+  - [x] add table stack for `table`
+    - [x] add function definition for `dbConsumer.js`
+    - [x] add permissions for `dbConsumer.js` to access `topic`
+    - [x] add permissions for `dbConsumer.js` to access `failover-queue`
+  - [x] add queue stack for `dlq-queue`
+  - [x] add API stack for `PUT /async`
+    - [x] add function definition for `createAsync.js`
+    - [x] add permissions for `createAsync.js` to access `create.js`
+  - [x] add API stack for `GET /`
+    - [x] add function definition for `authorizer.js`
+    - [x] add function definition for `get.js`
+    - [x] add permissions for `get.js` to access `table`
+  - [x] add topic stack for `topic`
+  - [x] add queue stack for `failover-queue`
 
 ### In `/src` folder create the handler functions
-  - [ ] create `create.js` handler
-    - [ ] add update for `table`
-    - [ ] add update for `dlq-queue`
+  - [x] create `create.js` handler
+    - [x] add update for `table`
+    - [x] add update for `dlq-queue`
   - [ ] create `createAsync.js` handler
     - [ ] add update for `create.js`
   - [ ] create `authorizer.js` handler
