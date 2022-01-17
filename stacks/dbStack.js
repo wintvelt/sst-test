@@ -13,7 +13,7 @@ export default class DbStack extends sst.Stack {
 
         const { topic } = props
         const dbConsumer = new sst.Function(this, 'dbConsumer', {
-            handler: "src/dbConsumer.main",
+            handler: "src/dbConsumer.handler",
             timeout: 20,
             environment: {
                 TOPIC_ARN: topic.topicArn,
