@@ -6,33 +6,30 @@ const testDevOnly = (...args) =>
 
 const baseEvent = {
     body: {
-        ownerName: 'wintvelt/test-run',
+        ownerName: 'wintvelt/npm-create-test',
         stage: 'dev',
         pack: { dependencies: { 'firstdep': '0.0.1' } },
     }
 }
 
 testDevOnly("Test invoking create lambda from npm", async () => {
-    let result = {}
-    try {
-        result = await invokeCreate(baseEvent)
-    } catch (error) {
-        console.error(error.message)
-        result.statusCode = 500
-        result.message = error.message
-    }
+    const [error, result] = await invokeCreate(baseEvent)
+
+    expect(error).toBeNull()
     expect(result.statusCode).toBeLessThanOrEqual(299)
+    console.log(result)
 })
 
-testDevOnly("Test invoking create lambda from npm with wrong body", async () => {
-    let result = {}
-    try {
-        result = await invokeCreate({ body: { ...baseEvent.body, stage: 'WRONG' } })
-    } catch (error) {
-        console.log(error)
-        result.statusCode = 500
-        result.message = error.message
-    }
-    console.log(result)
-    expect(result.statusCode).toBe(500)
-})
+// console.log(process.env)
+// testDevOnly("Test invoking create lambda from npm with wrong body", async () => {
+//     let result = {}
+//     try {
+//         result = await invokeCreate({ body: { ...baseEvent.body, stage: 'WRONG' } })
+//     } catch (error) {
+//         console.log(error)
+//         result.statusCode = 500
+//         result.message = error.message
+//     }
+//     console.log(result)
+//     expect(result.statusCode).toBe(500)
+// })

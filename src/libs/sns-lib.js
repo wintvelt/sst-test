@@ -5,8 +5,8 @@ import { apiCall } from "./promise-lib"
 // AWSXRay.setContextMissingStrategy("LOG_ERROR")
 // const AWSWrapped = AWSXRay.captureAWS(AWS)
 
-const sqsQueue = new AWS.SQS({ apiVersion: '2012-11-05' })
+const snsClient = new AWS.SNS({apiVersion: '2010-03-31'})
 
-export const sqs = {
-    sendMessage: (params) => apiCall(sqsQueue.sendMessage(params).promise())
+export const sns = {
+    publish: (params) => apiCall(snsClient.publish(params).promise())
 }

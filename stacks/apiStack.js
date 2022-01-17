@@ -1,12 +1,20 @@
-import { HttpLambdaAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers";
-import { Duration } from "@aws-cdk/core";
+import { lambdaAuthorizerProps } from "../src/libs/lambda-authorizer-lib";
 import * as sst from "@serverless-stack/resources";
+// import { tracingEnvProps, tracingLayerProps } from "../src/libs/lambda-layers-lib";
+import * as cdk from "@aws-cdk/core"
 
 const routeNames = {
     get: "GET   /",
     put: "PUT   /",
-    putAsync: "PUT   /async"
 }
+
+const envProps = (env, table) => ({
+    // ...tracingEnvProps,
+    TABLE_NAME: table.tableName,
+    SECRET_PUBLISH_TOKEN: env.SECRET_PUBLISH_TOKEN,
+    STAGE: env.STAGE,
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+})
 
 export default class ApiStack extends sst.Stack {
     // Public reference to the API
@@ -15,46 +23,37 @@ export default class ApiStack extends sst.Stack {
     constructor(scope, id, props) {
         super(scope, id, props);
 
-        const { table, queue } = props;
+        const { table, dlq } = props;
 
         // Create the API
-        this.api = new sst.Api(this, "Api", {
-            defaultFunctionProps: {
-                environment: {
-                    TABLE_NAME: table.tableName,
-                    QUEUE_URL: queue.sqsQueue.queueUrl,
-                    SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
-                    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
-                },
-            },
-            defaultAuthorizationType: sst.ApiAuthorizationType.CUSTOM,
-            defaultAuthorizer: new HttpLambdaAuthorizer({
-                authorizerName: "LambdaAuthorizer",
-                handler: new sst.Function(this, "Authorizer", {
-                    handler: "src/authorizer.handler",
-                    environment: {
-                        SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN,
-                    },
-                }),
-                resultsCacheTtl: Duration.seconds(0) // turn off cache to prevent weird errors
-            }),
+        this.api = new sst.Api(this, "api", {
+            ...lambdaAuthorizerProps(this, "src/authorizer.handler", process.env),
             defaultThrottlingRateLimit: 2000,
             defaultThrottlingBurstLimit: 500,
             routes: {
-                [routeNames.put]: "src/create.handler",
-                [routeNames.putAsync]: "src/createAsync.handler",
-                [routeNames.get]: "src/get.handler"
+                [routeNames.get]: new sst.Function(this, "getHandler", {
+                    handler: "src/get.handler",
+                    environment: envProps(process.env, table),
+                    // ...tracingLayerProps(this, "get")
+                }),
+                [routeNames.put]: new sst.Function(this, "putHandler", {
+                    handler: "src/create.handler",
+                    deadLetterQueue: dlq.sqsQueue,
+                    environment: envProps(process.env, table),
+                    // ...tracingLayerProps(this, "put")
+                }),
             },
         });
 
         this.api.attachPermissions([table]);
-        this.api.attachPermissionsToRoute(routeNames.putAsync, [queue])
+
+        this.getAllFunctions().forEach(fn =>
+            cdk.Tags.of(fn).add("lumigo:auto-trace", "true")
+        )
 
         const outputs = {
             "url": this.api.url,
-            "asyncurl": this.api.url,
             "createarn": this.api.getFunction(routeNames.put).functionArn,
-            "createAsyncarn": this.api.getFunction(routeNames.putAsync).functionArn
         }
 
         // Show the API endpoint in the output

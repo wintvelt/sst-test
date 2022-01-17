@@ -6,20 +6,15 @@ const testDevOnly = (...args) =>
 
 const baseEvent = {
     body: {
-        ownerName: 'wintvelt/test-run',
+        ownerName: 'wintvelt/npm-create-async-test',
         stage: 'dev',
         pack: { dependencies: { 'async-dep': '0.0.1' } },
     }
 }
 
-testDevOnly("Test invoking create lambda from npm", async () => {
-    let result = {}
-    try {
-        result = await invokeCreateAsync(baseEvent)
-    } catch (error) {
-        console.error(error.message)
-        result.statusCode = 500
-        result.message = error.message
-    }
+testDevOnly("Test invoking create lambda async from npm", async () => {
+    const [error, result] = await invokeCreateAsync(baseEvent)
+
+    expect(error).toBeNull()
     expect(result.statusCode).toBeLessThanOrEqual(299)
 })

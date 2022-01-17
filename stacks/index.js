@@ -1,16 +1,24 @@
-import DbStack from "./DbStack";
-import ApiStack from "./apiStack";
-import queueStack from "./queueStack";
+import DbStack from "./dbStack"
+import TopicStack from "./topicStack"
+import ApiStack from "./apiStack"
+import AsyncApiStack from "./apiAsyncStack"
+import DlqStack from "./dlqStack"
 
 export default function main(app) {
-  const dbStack = new DbStack(app, "dependencies")
+  const topicStack = new TopicStack(app, "topic")
 
-  const queue = new queueStack(app, "dependencyQueue", {
-    table: dbStack.table
+  const dbStack = new DbStack(app, "table", {
+    topic: topicStack.topic
   })
 
-  new ApiStack(app, "api", {
+  const dlqStack = new DlqStack(app, "dlq")
+
+  const apiStack = new ApiStack(app, "api", {
     table: dbStack.table,
-    queue: queue.queue
+    dlq: dlqStack.queue
+  })
+
+  new AsyncApiStack(app, "asyncApi", {
+    api: apiStack.api
   })
 }

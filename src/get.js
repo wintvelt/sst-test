@@ -1,9 +1,8 @@
 // handler for GET route
 import middy from '@middy/core'
-import errorLogger from '@middy/error-logger'
 import httpErrorHandler from '@middy/http-error-handler'
 import cors from '@middy/http-cors'
-import { dynamo } from "./libs/dynamo-lib";
+import { dynamo } from "./libs/dynamo-lib"
 
 const getById = async (id) => {
     const queryParams = {
@@ -15,12 +14,9 @@ const getById = async (id) => {
         },
     };
 
-    let result
-    try {
-        result = await dynamo.query(queryParams)
-    } catch (error) {
-        throw new Error(error.message);
-    }
+    const [err, result] = await dynamo.query(queryParams)
+    if (err) throw new Error(err.message)
+
     return result.Items
 }
 
@@ -30,12 +26,9 @@ const getAll = async () => {
         ProjectionExpression: "packageStage",
     };
 
-    let result
-    try {
-        result = await dynamo.scan(params)
-    } catch (error) {
-        throw new Error(error.message);
-    }
+    const [err, result] = await dynamo.scan(params)
+    if (err) throw new Error(err.message)
+
     return [...new Set(result.Items.map(it => it.packageStage))]
 }
 
@@ -49,16 +42,16 @@ const baseHandler = async (event) => {
         } else {
             result = await getAll()
         }
-
     } catch (error) {
-        console.error(error.message);
         throw new Error(error.message);
     }
 
     return { statusCode: 200, body: JSON.stringify(result) }
 }
 
-export const handler = middy(baseHandler)
-    .use(errorLogger())
+const handler = middy(baseHandler)
     .use(httpErrorHandler({ fallbackMessage: 'server error' }))
     .use(cors())
+
+// module exports to make Open Telemetry work for logz.io
+module.exports = { handler }
