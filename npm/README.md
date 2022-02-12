@@ -11,7 +11,7 @@ This package exposes the following
 Example
 ```javascript
 // example
-import { invokeCreate, invokeCreateAsync } from '@wintvelt/sst-test-client/functions'
+import { invokeCreate, invokeCreateAsync } from '@wintvelt/sst-test-client'
 
 event = {
     body: {
@@ -32,33 +32,39 @@ if (err) throw new Error(error)
 ```
 
 ## 2. AWS arns to add permissions to your stack to invoke
-Each arn has a `dev` and `prod` version.
-- `put` needed for the `invokeCreate` function
-- `putAsync` needed for the `invokeCreateAsync` function
-- `dlq` needed to access the dead letter queue output - to subscribe your service to the queue
+Arns for all relevant inputs and outputs will be made available.
+
+Naming conventions apply:
+- first key will be stage, do `dev` or `prod`
+- for functions: `invoke[function name]Arn`, in camelCase, so e.g. `invokeCreateArn`
+
+In this package, the following arns are available:
+- `createArn` - for both sync as async invocation
+- `dlqQueueArn`
+- `topicArn`
+- `failoverQueueArn`
 
 In an example:
 ```javascript
-import { put, putAsync, dlq } from '@wintvelt/sst-test-client/arns'
+import { arns } from '@wintvelt/sst-test-client'
 
 // in your stack class:
       this.myApi.attachPermissions(
-            lambdaPermissions(put[process.env.stage])
+            lambdaPermissions(arns[process.env.stage].invokeCreateArn)
       )
 ```
 
 ## 3. urls of AWS endpoints
 The following urls are exposed:
-- `get` for external access to the GET REST API
-- `put` for external access to the REST API for synchronous invocation
-- `putAsync` for external access to the REST API for async invocation 
-- `dlq` the url of the dead letter queue - for subscribing your lambda to the queue
+- `url` for all external access to API - GET /, PUT /, PUT /async
+- `dlqQueueUrl` the url of the dead letter queue - for subscribing your lambda to the queue
+- `failoverQueueUrl` the url of the failover queue of the db consumer - for subscribing your lambda to the queue
 
 Also with versions per stage, as in example below
 ``` javascript
-import urls from '@wintvelt/sst-test-client/urls'
+import { urls } from '@wintvelt/sst-test-client`
 
-const url = urls.put.dev
+const url = urls.dev.url
 const body = {
     ownerName: '[github owner]/[package name]',
     stage: 'prod', // or 'dev', other values are not allowed
@@ -75,7 +81,7 @@ try {
 
 Requests to the REST APIs require an `Authorization: 'Basic [secret key]'` token in the headers.
 
-Response format of `put` API is
+Response format of `PUT` API is
 ```javascript
 {
     statusCode: 200,
@@ -83,7 +89,7 @@ Response format of `put` API is
 }
 ```
 
-The `putAsync` API call will return simplified response
+The `PUT /async` API call will return simplified response
 ```javascript
 {
     statusCode: 200,

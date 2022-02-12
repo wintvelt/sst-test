@@ -1,59 +1,101 @@
-import { lambdaAuthorizerProps } from "../src/libs/lambda-authorizer-lib";
-import * as sst from "@serverless-stack/resources";
-// import { tracingEnvProps, tracingLayerProps } from "../src/libs/lambda-layers-lib";
-import * as cdk from "@aws-cdk/core"
-
-const routeNames = {
-    get: "GET   /",
-    put: "PUT   /",
-}
-
-const envProps = (env, table) => ({
-    // ...tracingEnvProps,
-    TABLE_NAME: table.tableName,
-    SECRET_PUBLISH_TOKEN: env.SECRET_PUBLISH_TOKEN,
-    STAGE: env.STAGE,
-    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
-})
+import * as sst from "@serverless-stack/resources"
+import * as cdk from "aws-cdk-lib"
+import { HttpLambdaAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers-alpha"
+import { DomainName } from "@aws-cdk/aws-apigatewayv2-alpha"
 
 export default class ApiStack extends sst.Stack {
-    // Public reference to the API
-    api;
+    // Public reference
+    api
+    apiFunctions
+    queues
+    topics
+    buckets
 
     constructor(scope, id, props) {
         super(scope, id, props);
 
-        const { table, dlq } = props;
-
+        // create the route components: queues, functions
+        // TODO: topics
+        this.queues = {
+            "dlq-queue": new sst.Queue(this, "dlqQueue"),
+        }
+        this.apiFunctions = {}
+        this.apiFunctions["create.js"] = new sst.Function(this, "create", {
+            handler: "src/create.handler",
+            environment: {
+                STAGE: scope.stage,
+                AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1,
+                TABLE: props.table.tableName,
+            },
+            deadLetterQueue: this.queues["dlq-queue"].sqsQueue,
+            permissions: [
+                props.table,
+            ],
+        })
+        this.apiFunctions["get.js"] = new sst.Function(this, "get", {
+            handler: "src/get.handler",
+            environment: {
+                STAGE: scope.stage,
+                AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1,
+                TABLE: props.table.tableName,
+            },
+            permissions: [
+                props.table,
+            ],
+        })
+        this.apiFunctions["createAsync.js"] = new sst.Function(this, "createAsync", {
+            handler: "src/createAsync.handler",
+            environment: {
+                STAGE: scope.stage,
+                AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1,
+                CREATE_FUNC: this.apiFunctions["create.js"].functionArn,
+            },
+            permissions: [
+                this.apiFunctions["create.js"],
+            ],
+        })
+        const authorizer = new sst.Function(this, "authorizer", {
+            handler: "src/authorizer.handler",
+            environment: {
+                STAGE: scope.stage,
+                AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1,
+                SECRET_PUBLISH_TOKEN: process.env.SECRET_PUBLISH_TOKEN
+            },
+        })
         // Create the API
         this.api = new sst.Api(this, "api", {
-            ...lambdaAuthorizerProps(this, "src/authorizer.handler", process.env),
-            defaultThrottlingRateLimit: 2000,
-            defaultThrottlingBurstLimit: 500,
-            routes: {
-                [routeNames.get]: new sst.Function(this, "getHandler", {
-                    handler: "src/get.handler",
-                    environment: envProps(process.env, table),
-                    // ...tracingLayerProps(this, "get")
+            defaultAuthorizationType: sst.ApiAuthorizationType.CUSTOM,
+            defaultAuthorizer: new HttpLambdaAuthorizer("authorizer", authorizer, {
+                authorizerName: "LambdaAuthorizer",
+                resultsCacheTtl: cdk.Duration.seconds(0) // turn off cache to prevent weird errors
+            }),
+            customDomain: {
+                domainName: DomainName.fromDomainNameAttributes(this, "MyDomain", {
+                    name: 'apiv2-dev.clubalmanac.com',
                 }),
-                [routeNames.put]: new sst.Function(this, "putHandler", {
-                    handler: "src/create.handler",
-                    deadLetterQueue: dlq.sqsQueue,
-                    environment: envProps(process.env, table),
-                    // ...tracingLayerProps(this, "put")
-                }),
+                path: 'depmanager'
             },
+            routes: {
+                "PUT /": this.apiFunctions["create.js"],
+                "PUT /async": this.apiFunctions["createAsync.js"],
+                "GET /": this.apiFunctions["get.js"],
+            }
         });
 
-        this.api.attachPermissions([table]);
-
+        // add tags for autotrace lambda in lumigo, includes authorizers
         this.getAllFunctions().forEach(fn =>
             cdk.Tags.of(fn).add("lumigo:auto-trace", "true")
         )
+        // for tracing of API in logz.io (lumigo misses gateway errors)
+        cdk.Tags.of(this).add("logz:trace", "true")
 
+        // add output to use in npm client
         const outputs = {
             "url": this.api.url,
-            "createarn": this.api.getFunction(routeNames.put).functionArn,
+            "customDomainUrl": this.api.customDomainUrl,
+            "createArn": this.apiFunctions["create.js"].functionArn,
+            "dlqQueueArn": this.queues["dlq-queue"].sqsQueue.queueArn,
+            "dlqQueueUrl": this.queues["dlq-queue"].sqsQueue.queueUrl,
         }
 
         // Show the API endpoint in the output

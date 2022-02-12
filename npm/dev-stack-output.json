@@ -1,21 +1,13 @@
 {
-  "dev-sst-test-topic": {
-    "arn": "arn:aws:sns:eu-central-1:899888592127:dev-sst-test-topic"
-  },
   "dev-sst-test-table": {
-    "arn": "arn:aws:sqs:eu-central-1:899888592127:dev-sst-test-failover-queue",
-    "url": "https://sqs.eu-central-1.amazonaws.com/899888592127/dev-sst-test-failover-queue"
-  },
-  "dev-sst-test-dlq": {
-    "arn": "arn:aws:sqs:eu-central-1:899888592127:dev-sst-test-dlq",
-    "url": "https://sqs.eu-central-1.amazonaws.com/899888592127/dev-sst-test-dlq"
+    "failoverQueueUrl": "https://sqs.eu-central-1.amazonaws.com/899888592127/dev-sst-test-failoverQueue",
+    "failoverQueueArn": "arn:aws:sqs:eu-central-1:899888592127:dev-sst-test-failoverQueue",
+    "topicArn": "arn:aws:sns:eu-central-1:899888592127:dev-sst-test-topic"
   },
   "dev-sst-test-api": {
-    "createarn": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-api-putHandlerFE01D35E-EfuPzuc1wmiN",
-    "url": "https://efbym4bp59.execute-api.eu-central-1.amazonaws.com"
-  },
-  "dev-sst-test-asyncApi": {
-    "createasyncarn": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-asyncApi-createAsync1DF6D60F-NNhnmCKfowUJ",
-    "asyncurl": "https://b8foqlh9w2.execute-api.eu-central-1.amazonaws.com/async"
+    "dlqQueueArn": "arn:aws:sqs:eu-central-1:899888592127:dev-sst-test-dlqQueue",
+    "createArn": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-api-create1C7A9D36-05X2ef812K2g",
+    "url": "https://5e5y54y0m3.execute-api.eu-central-1.amazonaws.com",
+    "dlqQueueUrl": "https://sqs.eu-central-1.amazonaws.com/899888592127/dev-sst-test-dlqQueue"
   }
 }

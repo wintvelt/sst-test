@@ -1,8 +1,6 @@
 // lib for client functions for dependencies
 import AWS from "aws-sdk"
-// import both stackoutputs
-import devStageOutput from '../dev-stack-output.json'
-import prodStageOutput from '../dev-stack-output.json'
+import { importModule } from "./stack-output-lib.js"
 
 const lambdaFunc = new AWS.Lambda()
 
@@ -23,17 +21,9 @@ const lambda = {
 const stage = process.env.STAGE
 const stageCheck = (stage === 'prod' || stage === 'dev')
 
-// dynamic import based on stage not possible for some reason
-function importModule(stage) {
-    return stackOutputFile = (stage === 'prod') ? prodStageOutput : devStageOutput
-}
-
-export const invoke = async ({ event, stackName, functionName, async }) => {
+export const invoke = async ({ event, functionArn, async }) => {
     if (!stageCheck) throw new Error('environment stage not set')
 
-    const stackOutput = importModule(stage)
-
-    const functionArn = stackOutput[`${stage}-${stackName}`][functionName]
     const lambdaParams = {
         FunctionName: functionArn,
         InvocationType: (async) ? 'Event' : 'RequestResponse',
