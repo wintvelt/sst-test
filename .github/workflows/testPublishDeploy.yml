@@ -55,7 +55,7 @@ jobs:
       SECRET_PUBLISH_TOKEN: ${{ secrets.SECRET_PUBLISH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       PROD_PUBLISH_ENDPOINT: https://82aq1alw5h.execute-api.eu-central-1.amazonaws.com/async
-      DEV_PUBLISH_ENDPOINT: https://b8foqlh9w2.execute-api.eu-central-1.amazonaws.com/async
+      DEV_PUBLISH_ENDPOINT: https://qhid0nxstb.execute-api.eu-central-1.amazonaws.com/async
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
