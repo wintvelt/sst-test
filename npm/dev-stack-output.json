@@ -5,9 +5,10 @@
     "topicArn": "arn:aws:sns:eu-central-1:899888592127:dev-sst-test-topic"
   },
   "dev-sst-test-api": {
+    "customDomainUrl": "https://apiv2-dev.clubalmanac.com/depmanager/",
     "dlqQueueArn": "arn:aws:sqs:eu-central-1:899888592127:dev-sst-test-dlqQueue",
-    "createArn": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-api-create1C7A9D36-05X2ef812K2g",
-    "url": "https://5e5y54y0m3.execute-api.eu-central-1.amazonaws.com",
+    "createArn": "arn:aws:lambda:eu-central-1:899888592127:function:dev-sst-test-api-create1C7A9D36-E8OHyG3oTk3W",
+    "url": "https://qhid0nxstb.execute-api.eu-central-1.amazonaws.com",
     "dlqQueueUrl": "https://sqs.eu-central-1.amazonaws.com/899888592127/dev-sst-test-dlqQueue"
   }
 }

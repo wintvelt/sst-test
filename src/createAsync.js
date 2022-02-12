@@ -10,7 +10,7 @@ import { lambda } from './libs/lambda-lib'
 const baseHandler = async (event) => {
     const body = JSON.stringify(event.body)
     const params = {
-        FunctionName: process.env.FUNCTION_ARN,
+        FunctionName: process.env.CREATE_FUNC,
         InvocationType: 'Event',
         Payload: JSON.stringify({ ...event, body })
     }

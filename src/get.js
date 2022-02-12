@@ -22,7 +22,7 @@ const getById = async (id) => {
 
 const getAll = async () => {
     const params = {
-        TableName: process.env.TABLE_NAME,
+        TableName: process.env.TABLE,
         ProjectionExpression: "packageStage",
     };
 

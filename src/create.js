@@ -55,13 +55,16 @@ const baseHandler = async (event) => {
     const name = ownerName.split('/')[1]
 
     const queryParams = {
-        TableName: process.env.TABLE_NAME,
+        TableName: process.env.TABLE,
         KeyConditionExpression: '#ps = :ps',
         ExpressionAttributeNames: { '#ps': 'packageStage' },
         ExpressionAttributeValues: { ':ps': `${stage}-${name}` },
     };
     const [err, queryResult] = await dynamo.query(queryParams)
-    if (err) throw new Error(error.message)
+    if (err) {
+        console.error(err)
+        throw new Error('something went wrong')
+    }
 
     const oldDeps = queryResult.Items || []
     const latestDeps = makeLatest(event)
@@ -73,17 +76,18 @@ const baseHandler = async (event) => {
     const { depsToAdd, depsToChange, unchanged } = splitNewChanged(oldDeps, latestDeps)
 
     const delUpdates = depsToDel.map(({ packageStage, dependency }) => ({
-        TableName: process.env.TABLE_NAME,
+        TableName: process.env.TABLE,
         Key: { packageStage, dependency }
     })).map(dynamo.del)
 
     const updates = [...depsToAdd, ...depsToChange].map(Item => ({
-        TableName: process.env.TABLE_NAME,
+        TableName: process.env.TABLE,
         Item
     })).map(dynamo.put)
 
     const results = await Promise.all(updates.concat(delUpdates))
-    if (results.some(tuple => tuple[0])) throw new Error(err.message)
+    const errorFound = results.find(tuple => tuple[0])
+    if (errorFound) throw new Error(errorFound)
 
     const message = `${depsToDel.length} dependencies removed, ${depsToAdd.length} added, ` +
         `${depsToChange.length} updated, ${unchanged} unchanged`

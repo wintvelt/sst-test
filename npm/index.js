@@ -1,6 +1,6 @@
 // Client for publishing dependencies
-import { importModule } from "./stack-output-lib.js"
-import { invoke } from "./lib/function-lib"
+import { importModule } from "./libs/stack-output-lib.js"
+import { invoke } from "./libs/function-lib.js"
 
 const stackOutput = (stage) => importModule(stage)
 
@@ -13,10 +13,10 @@ export const arns = {
         failoverArn: stackOutput(`dev`)['dev-sst-test-table'].failoverArn,
     },
     prod: {
-        createArn: stackOutput('prod')['prod-sst-test-api'].createArn,
-        dlqQueueArn: stackOutput(`prod`)['prod-sst-test-api'].dlqQueueArn,
-        topicArn: stackOutput(`prod`)['prod-sst-test-table'].topicArn,
-        failoverArn: stackOutput(`prod`)['prod-sst-test-table'].failoverArn,
+        createArn: stackOutput('prod')['prod-sst-test-api']?.createArn,
+        dlqQueueArn: stackOutput(`prod`)['prod-sst-test-api']?.dlqQueueArn,
+        topicArn: stackOutput(`prod`)['prod-sst-test-table']?.topicArn,
+        failoverArn: stackOutput(`prod`)['prod-sst-test-table']?.failoverArn,
     }
 }
 
@@ -43,8 +43,8 @@ export const urls = {
         dlqQueueUrl: stackOutput(`dev`)['dev-sst-test-api'].dlqQueueUrl
     },
     prod: {
-        failoverQueueUrl: stackOutput('prod')['prod-sst-test-table'].failoverQueueUrl,
-        url: stackOutput(`prod`)['prod-sst-test-api'].url,
-        dlqQueueUrl: stackOutput(`prod`)['prod-sst-test-api'].dlqQueueUrl
+        failoverQueueUrl: stackOutput('prod')['prod-sst-test-table']?.failoverQueueUrl,
+        url: stackOutput(`prod`)['prod-sst-test-api']?.url,
+        dlqQueueUrl: stackOutput(`prod`)['prod-sst-test-api']?.dlqQueueUrl
     }
 }

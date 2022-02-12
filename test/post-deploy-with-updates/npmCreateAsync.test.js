@@ -1,5 +1,5 @@
 // tests for the PUT ASYNC endpoint = createAsync function
-import { invokeCreateAsync } from '../../npm/functions';
+import { invokeCreateAsync } from '../../npm';
 
 const testDevOnly = (...args) =>
     (process.env.STAGE !== 'prod') ? test(...args) : test.skip(...args);

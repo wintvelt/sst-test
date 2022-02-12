@@ -36,9 +36,9 @@ export default class TableStack extends sst.Stack {
                 myKey: sst.TableFieldType.STRING,
                 myOtherKey: sst.TableFieldType.STRING,
             },
-            primaryIndex: { partitionKey: "myKey", sortKey: "myOtherKey" },
+            primaryIndex: { partitionKey: "packageStage", sortKey: "dependency" },
             globalIndexes: {
-                myIndex: { partitionKey: "myOtherKey", sortKey: "myKey" },
+                myIndex: { partitionKey: "dependency", sortKey: "packageStage" },
             },
             stream: true,
             consumers: {

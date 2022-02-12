@@ -1,5 +1,5 @@
 // tests for the PUT endpoint = create function
-import { invokeCreate } from '../../npm/functions';
+import { invokeCreate } from '../../npm';
 
 const testDevOnly = (...args) =>
     (process.env.STAGE !== 'prod') ? test(...args) : test.skip(...args);

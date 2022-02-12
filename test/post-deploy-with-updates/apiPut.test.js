@@ -1,9 +1,9 @@
 //test get api endpoint
 import axios from 'axios'
-import urls from '../../npm/urls'
+import { urls } from '../../npm'
 import { apiCall } from '../../src/libs/promise-lib'
 
-const url = urls.put.dev
+const url = urls.dev.url + '/'
 const Authorization = `Basic ${process.env.SECRET_PUBLISH_TOKEN}`
 
 const body = {
